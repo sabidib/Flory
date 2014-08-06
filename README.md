@@ -1,4 +1,4 @@
 flory
 =====
 
-A simple javascript library for creating educational demos in polymer physics using webGL.
+A simple javascript library for creating educational molecular dynamics demos using webGL.
