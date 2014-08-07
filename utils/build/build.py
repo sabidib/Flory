@@ -16,9 +16,10 @@ def cmd(args):
 def main():
 	print "";
 	print "Starting Build";
-
+	print "";
 
 	source_file_path = "../../src/";
+	final_minimized_build_location = "../../build/flory.min.js"
 	final_build_location = "../../build/flory.js"
 	compiler_jar_location = "compiler/compiler.jar";
 
@@ -27,24 +28,23 @@ def main():
 
 	source_order = open("source_order.cfg","r");
 
-	tmp_combined_source_file_name = "tmp.js"
-	tmp_combined_source_file = open(tmp_combined_source_file_name,"w");  
-
+	final_build_location_file = open(final_build_location,"w");  
+	print "    Appending sources to " + final_build_location;
 	for line in source_order:
 		if(line == '\n'):
 			continue;
 		path = source_file_path + line.rstrip();
-		print "    Appending source from: " + path;
+		print "        Appending source from: " + path;
 		with open(path) as f:
-			tmp_combined_source_file.write(f.read());
-		tmp_combined_source_file.write("\n\n");
- 	tmp_combined_source_file.close();
+			final_build_location_file.write(f.read());
+		final_build_location_file.write("\n");
+ 	final_build_location_file.close();
 
 
 	print "";
-	print "Compiling sources to " + final_build_location;
+	print "Compiling " + final_build_location +  " into " + final_minimized_build_location;
 
-	command = "java -jar " + compiler_jar_location + " " + tmp_combined_source_file_name + " --js_output_file " + final_build_location;
+	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --js_output_file " + final_minimized_build_location;
 	print "    " + command;
 	
 	java_output = cmd(command);
@@ -61,7 +61,6 @@ def main():
 
 
 	print "Cleaning up";
-	os.system("rm " + tmp_combined_source_file_name);
 	print ""
 	print "Done";
 	print "";
