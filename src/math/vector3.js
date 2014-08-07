@@ -42,6 +42,9 @@ Flory.Vector3.prototype = {
 		
 		return this;
 	},
+	mult : function(num){
+		return new Flory.Vector3(this.x*num, this.y*num,this.z*num);
+	},
 	
 	dot : function(a){
 		return this.x * a.x + this.y * a.y + this.z * a.z;

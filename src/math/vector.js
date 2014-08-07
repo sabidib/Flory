@@ -15,7 +15,7 @@ Flory.Vector = function(vec){
 
 
 
-Flory.Vector3.prototype = {
+Flory.Vector.prototype = {
 	constructor : Flory.Vector,
 
 	//** Mandatory for all vector classes **//
@@ -42,6 +42,13 @@ Flory.Vector3.prototype = {
 		}
 
 		return this;
+	},
+	mult : function(num){
+		components = [];
+		for(var i = 0, len = this.components.length; i <len; i++){
+			components[i] = num*this.components[i];
+		}
+		return new Flory.Vector(components);
 	},
 	
 	dot : function(a){
@@ -89,7 +96,7 @@ Flory.Vector3.prototype = {
 		return Math.sqrt(sum);
 	},
 
-	distance : function(a){
+	distanceToSq : function(a){
 
 		var sum = 0;
 

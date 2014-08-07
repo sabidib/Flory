@@ -3,8 +3,6 @@
  */
 
 
-
-
 Flory.Monomer3D = function(radius,position,velocity,acceleration){
     this.radius = (radius == undefined ? radius : Flory.Monomer3D.defaultRadius);
     if(position == undefined){
@@ -39,6 +37,7 @@ Flory.Monomer3D.prototype = {
     update : function(){
         this.velocity.add(this.acceleration.scale(Flory.timestep));
         this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
+        return this;
     },
     incrementX : function(amount){
         this.position.x += amount;

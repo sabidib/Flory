@@ -37,6 +37,9 @@ Flory.Vector2.prototype = {
 		
 		return this;
 	},
+	mult : function(num){
+		return new Flory.Vector2(this.x*num, this.y*num);
+	},
 	dot : function(a){
 		return this.x * a.x + this.y * a.y ;
 	},

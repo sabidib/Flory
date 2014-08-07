@@ -35,6 +35,7 @@ Flory.Monomer.prototype = {
     update : function(){
         this.velocity.add(this.acceleration.scale(Flory.timestep));
         this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
+        return this;
     },
 
     /**

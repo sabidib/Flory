@@ -2,7 +2,9 @@
  * 	@author sabidib 
  */
 
-var Flory = { VERSION : '0.01' };
+var Flory = { VERSION : '0.01',
+			  timestep: 0.01 };
+
 /**
  * @author sabidib
  */
@@ -38,6 +40,17 @@ Flory.Vector3.prototype = {
 		this.z -= a.z;
 
 		return this;
+	},
+
+	scale : function(num){
+		this.x *= num;
+		this.y *= num;
+		this.z *= num;
+		
+		return this;
+	},
+	mult : function(num){
+		return new Flory.Vector3(this.x*num, this.y*num,this.z*num);
 	},
 	
 	dot : function(a){
@@ -97,7 +110,15 @@ Flory.Vector2.prototype = {
 
 		return this;
 	},
-	
+	scale : function(num){
+		this.x *= num;
+		this.y *= num;
+		
+		return this;
+	},
+	mult : function(num){
+		return new Flory.Vector2(this.x*num, this.y*num);
+	},
 	dot : function(a){
 		return this.x * a.x + this.y * a.y ;
 	},
@@ -139,7 +160,7 @@ Flory.Vector = function(vec){
 
 
 
-Flory.Vector3.prototype = {
+Flory.Vector.prototype = {
 	constructor : Flory.Vector,
 
 	//** Mandatory for all vector classes **//
@@ -158,6 +179,21 @@ Flory.Vector3.prototype = {
 			this.components[i] -= a[i]; 
 		}
 		return this;
+	},
+	
+	scale : function(num){
+		for(var i = 0, len = this.components.length; i <len; i++){
+			this.components[i] *= num;
+		}
+
+		return this;
+	},
+	mult : function(num){
+		components = [];
+		for(var i = 0, len = this.components.length; i <len; i++){
+			components[i] = num*this.components[i];
+		}
+		return new Flory.Vector(components);
 	},
 	
 	dot : function(a){
@@ -205,7 +241,7 @@ Flory.Vector3.prototype = {
 		return Math.sqrt(sum);
 	},
 
-	distance : function(a){
+	distanceToSq : function(a){
 
 		var sum = 0;
 
@@ -426,17 +462,41 @@ Flory.RandomGen.prototype.genrand_res53 = function() {
  */
 
 
-Flory.Monomer2D = function(radius,position){
+Flory.Monomer2D = function(radius,position,velocity,acceleration){
     this.radius = (radius == undefined ? radius : Flory.Monomer2D.defaultRadius);
-    if(position.x == undefined && position.y == undefined){
-        this.position = new Flory.Vector2(position[0],position[1]);    
-    } else {
-        this.position = new Flory.Vector2(position.x, position.y);        
+    if(position == undefined){
+        this.position = new Flory.Vector2(0,0);
+    } else if(position instanceof Array){
+        this.position = new Flory.Vector2(position[0],position[1]);
+    } else if(position.x != undefined && position.y != undefined){
+        this.position = new Flory.Vector2(position.x,position.y);
     }
+
+    if(velocity == undefined){
+        this.velocity = new Flory.Vector2(0,0);
+    } else if(velocity instanceof Array){
+        this.velocity = new Flory.Vector2(velocity[0],velocity[1]);
+    } else if(velocity.x != undefined && velocity.y != undefined){
+        this.velocity = new Flory.Vector2(velocity.x,velocity.y);
+    }
+
+    if(acceleration == undefined){
+        this.acceleration = new Flory.Vector2(0,0);
+    } else if(acceleration instanceof Array){
+        this.acceleration = new Flory.Vector2(acceleration[0],acceleration[1]);
+    } else if(acceleration.x != undefined && acceleration.y != undefined){
+        this.acceleration = new Flory.Vector2(acceleration.x,acceleration.y);
+    }
+
 }
 
 
 Flory.Monomer2D.prototype = {
+    update : function(){
+        this.velocity.add(this.acceleration.mult(Flory.timestep));
+        this.position.add(this.velocity.mult(Flory.timestep*0.5));
+        return this;
+    },
     incrementX : function(amount){
         this.position.x += amount;
         return this;
@@ -465,17 +525,42 @@ Flory.Monomer2D.defaultRadius = 1;
  */
 
 
-Flory.Monomer3D = function(radius,position){
+Flory.Monomer3D = function(radius,position,velocity,acceleration){
     this.radius = (radius == undefined ? radius : Flory.Monomer3D.defaultRadius);
-    if(position.x == undefined && position.y == undefined  && position.z == undefined){
-        this.position = new Flory.Vector3(position[0],position[1],position[2]);    
-    } else {
-        this.position = new Flory.Vector3(position.x, position.y, position.z);        
+    if(position == undefined){
+        this.position = new Flory.Vector3(0,0);
+    } else if(position instanceof Array){
+        this.position = new Flory.Vector3(position[0],position[1]);
+    } else if(position.x != undefined && position.y != undefined && position.z != undefined){
+        this.position = new Flory.Vector3(position.x,position.y);
     }
+
+    if(velocity == undefined){
+        this.velocity = new Flory.Vector3(0,0);
+    } else if(velocity instanceof Array){
+        this.velocity = new Flory.Vector3(velocity[0],velocity[1]);
+    } else if(velocity.x != undefined && velocity.y != undefined && velocity.z != undefined){
+        this.velocity = new Flory.Vector3(velocity.x,velocity.y);
+    }
+
+    if(acceleration == undefined){
+        this.acceleration = new Flory.Vector3(0,0);
+    } else if(acceleration instanceof Array){
+        this.acceleration = new Flory.Vector3(acceleration[0],acceleration[1]);
+    } else if(acceleration.x != undefined && acceleration.y != undefined && acceleration.z != undefined){
+        this.acceleration = new Flory.Vector3(acceleration.x,acceleration.y);
+    }
+
 }
 
 
+
 Flory.Monomer3D.prototype = {
+    update : function(){
+        this.velocity.add(this.acceleration.scale(Flory.timestep));
+        this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
+        return this;
+    },
     incrementX : function(amount){
         this.position.x += amount;
         return this;
@@ -508,17 +593,41 @@ Flory.Monomer3D.defaultRadius = 1;
  */
 
 
-Flory.Monomer = function(radius,position){
+Flory.Monomer = function(radius,position,velocity,acceleration){
     this.radius = (radius == undefined ? radius : Flory.Monomer.defaultRadius);
-    if(position.components == undefined){
+    if(position.components == undefined && position instanceof Array){
         this.position = new Flory.Vector(position);    
     } else {
         this.position = position.clone();        
     }
+
+    if(velocity.components == undefined && velocity instanceof Array){
+        this.velocity = new Flory.Vector(velocity);
+    } else {
+        this.velocity = velocity.clone();
+    }
+
+    if(acceleration.components == undefined && acceleration instanceof Array){
+        this.acceleration = new Flory.Vector(acceleration);
+    } else {
+        this.acceleration = acceleration.clone();
+    }
+
 }
 
 
-Flory.Monomer3D.prototype = {
+
+
+
+Flory.Monomer.prototype = {
+
+
+    update : function(){
+        this.velocity.add(this.acceleration.scale(Flory.timestep));
+        this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
+        return this;
+    },
+
     /**
      * Given the dimension index, will increment
      * the component by amount
@@ -545,3 +654,217 @@ Flory.Monomer3D.prototype = {
 
 
 Flory.Monomer.defaultRadius = 1;
+/**
+ * @author sabidib
+ */
+
+/**
+ * Creates a field where a vector is associated with an approximate position.
+ * @param {Array} data Each element of the data array must be an object containing
+ *                     a |position| and a |vector| property. 
+ */
+Flory.Field = function(data){
+	this.data = [];
+	for( var i = 0, len = data.length; i < len;i++){
+		this.data[i] = {}
+
+		if(data[i].position == undefined){
+			this.data[i].position = new Flory.Vector(data[i][0]); 		
+		} else if(data[i].position instanceof Array){
+			this.data[i].position = new Flory.Vector(data[i].position);
+		} else if(data[i].position.components != undefined){
+			this.data[i].position = data[i].position.clone();
+		}
+
+
+
+		if(data[i].vector == undefined){
+			this.data[i].vector = new Flory.Vector(data[i][1]); 		
+		} else if(data[i].vector instanceof Array){
+			this.data[i].vector = new Flory.Vector(data[i].vector);
+		} else if(data[i].vector.components != undefined){
+			this.data[i].vector = data[i].vector.clone();
+		}
+
+
+	}
+}
+
+
+Flory.Field.prototype = {
+	constructor : Flory.Field,
+	//TODO: OPTIMIZE THIS... it is currently O(n)
+	/**
+	 * Returns the force at the given position
+	 * by finding the closest point to the given position and returning
+	 * the associated vector
+	 * 
+	 * @param  {Vector} position 
+	 * @return {Vector}		The force at the given position          
+	 */
+	getForce : function(position){
+		var closest = 0;
+		var index_of_closest = 0;
+		for( var i = 0, len = this.data.length; i < len ; i++){
+			var cur_dist = this.data[i].position.distanceToSq(position);
+			if(cur_dist < closest){
+				index_of_closest = i;
+				closest = cur_dist;
+			}
+		}
+		return this.data[index_of_closest].vector;
+	},	
+
+	scale : function(num){
+		for( var i =0, len = this.data.length; i < len; i++){
+			this.data[i].vector.scale(num);
+		}
+	},
+
+	clone : function(){
+		return new Flory.Field(this.data);
+	}
+}
+/**
+ * @author sabidib
+ */
+
+/**
+ * Creates a field where a vector is associated with an approximate position.
+ * @param {Array} data Each element of the data array must be an object containing
+ *                     a |position| and a |vector| property. 
+ */
+Flory.Field2D = function(data){
+	this.data = [];
+	for( var i = 0, len = data.length; i < len;i++){
+		this.data[i] = {}
+
+		if(data[i].position == undefined){
+			this.data[i].position = new Flory.Vector2(data[i][0][0],data[i][0][1]); 		
+		} else if(data[i].position instanceof Array){
+			this.data[i].position = new Flory.Vector2(data[i].position[0] , data[i].position[1]);
+		} else if(data[i].position.x != undefined && data[i].position.y != undefined){
+			this.data[i].position = data[i].position.clone();
+		}
+
+		if(data[i].vector == undefined){
+			this.data[i].vector = new Flory.Vector2(data[i][1][0],data[i][1][1]); 		
+		} else if(data[i].vector instanceof Array){
+			this.data[i].vector = new Flory.Vector2(data[i].vector[0] , data[i].vector[1]);
+		} else if(data[i].vector.x != undefined && data[i].vector.y != undefined){
+			this.data[i].vector = data[i].vector.clone();
+		}
+
+	}
+}
+
+
+Flory.Field2D.prototype = {
+	constructor : Flory.Field2D,
+	//TODO: OPTIMIZE THIS... it is currently O(n)
+	/**
+	 * Returns the force at the given position
+	 * by finding the closest point to the given position and returning
+	 * the associated vector
+	 * 
+	 * @param  {Vector2} position 
+	 * @return {Vector2}		The force at the given position          
+	 */
+	getForce : function(position){
+		var closest = 0;
+		var index_of_closest = 0;
+		for( var i = 0, len = this.data.length; i < len ; i++){
+			var cur_dist = this.data[i].position.distanceToSq(position);
+			if(cur_dist < closest){
+				index_of_closest = i;
+				closest = cur_dist;
+			}
+		}
+		return this.data[index_of_closest].vector;
+	},	
+
+	scale : function(num){
+		for( var i =0, len = this.data.length; i < len; i++){
+			this.data[i].vector.scale(num);
+		}
+	},
+
+	clone : function(){
+		return new Flory.Field2D(this.data);
+	}
+}
+
+
+
+
+
+
+/**
+ * @author sabidib
+ */
+
+/**
+ * Creates a field where a vector is associated with an approximate position.
+ * @param {Array} data Each element of the data array must be an object containing
+ *                     a |position| and a |vector| property. 
+ */
+Flory.Field3D = function(data){
+	this.data = [];
+	for( var i = 0 ,len = data.length; i < len;i++){
+		this.data[i] = {}
+
+		if(data[i].position == undefined){
+			this.data[i].position = new Flory.Vector3(data[i][0][0],data[i][0][1],data[i][0][2]); 		
+		} else if(data[i].position instanceof Array){
+			this.data[i].position = new Flory.Vector3(data[i].position[0] , data[i].position[1],data[i].position[2]);
+		} else if(data[i].position.x != undefined && data[i].position.y != undefined && data[i].position.z != undefined){
+			this.data[i].position = data[i].position.clone();
+		}
+
+		if(data[i].vector == undefined){
+			this.data[i].vector = new Flory.Vector3(data[i][1][0],data[i][1][1],data[i][1][2]); 		
+		} else if(data[i].vector instanceof Array){
+			this.data[i].vector = new Flory.Vector3(data[i].vector[0] , data[i].vector[1],data[i].vector[2]);
+		} else if(data[i].vector.x != undefined && data[i].vector.y != undefined && data[i].postiion.z != undefined){
+			this.data[i].vector = data[i].vector.clone();
+		}
+
+	}
+}
+
+
+Flory.Field3D.prototype = {
+	constructor : Flory.Field3D,
+	//TODO: OPTIMIZE THIS... it is currently O(n)
+	/**
+	 * Returns the force at the given position
+	 * by finding the closest point to the given position and returning
+	 * the associated vector
+	 * 
+	 * @param  {Vector3} position 
+	 * @return {Vector3}		The force at the given position          
+	 */
+	getForce : function(position){
+		var closest = 0;
+		var index_of_closest = 0;
+		for( var i = 0, len = this.data.length; i < len ; i++){
+			var cur_dist = this.data[i].position.distanceToSq(position);
+			if(cur_dist < closest){
+				index_of_closest = i;
+				closest = cur_dist;
+			}
+		}
+		return this.data[index_of_closest].vector;
+	},	
+
+	scale : function(num){
+		for( var i =0, len = this.data.length; i < len; i++){
+			this.data[i].vector.scale(num);
+		}
+	},
+
+	clone : function(){
+		return new Flory.Field3D(this.data);
+	}
+}
+
