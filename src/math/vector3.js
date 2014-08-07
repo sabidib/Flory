@@ -34,6 +34,14 @@ Flory.Vector3.prototype = {
 
 		return this;
 	},
+
+	scale : function(num){
+		this.x *= num;
+		this.y *= num;
+		this.z *= num;
+		
+		return this;
+	},
 	
 	dot : function(a){
 		return this.x * a.x + this.y * a.y + this.z * a.z;

@@ -31,7 +31,12 @@ Flory.Vector2.prototype = {
 
 		return this;
 	},
-	
+	scale : function(num){
+		this.x *= num;
+		this.y *= num;
+		
+		return this;
+	},
 	dot : function(a){
 		return this.x * a.x + this.y * a.y ;
 	},

@@ -36,6 +36,14 @@ Flory.Vector3.prototype = {
 		return this;
 	},
 	
+	scale : function(num){
+		for(var i = 0, len = this.components.length; i <len; i++){
+			this.components[i] *= num;
+		}
+
+		return this;
+	},
+	
 	dot : function(a){
 		if(a.length != b.length){
 			console.log("Flory.vector.dot(a) can only accept a vector of the same dimension as the object.")
