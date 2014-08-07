@@ -3,8 +3,12 @@
  */
 
 
-Flory.Monomer2D = function(radius,position,velocity,acceleration){
-    this.radius = (radius == undefined ? radius : Flory.Monomer2D.defaultRadius);
+Flory.Monomer2D = function(radius,charge,position,velocity,acceleration){
+    this.radius = (radius != undefined ? radius : Flory.Monomer2D.defaultRadius);
+    this.charge = (charge != undefined ? charge : 0);
+
+    Flory.Entity.call(this);
+
     if(position == undefined){
         this.position = new Flory.Vector2(0,0);
     } else if(position instanceof Array){
@@ -31,32 +35,33 @@ Flory.Monomer2D = function(radius,position,velocity,acceleration){
 
 }
 
+Flory.Monomer2D.prototype = Object.create( Flory.Entity.prototype);
 
-Flory.Monomer2D.prototype = {
-    update : function(){
+
+Flory.Monomer2D.prototype.update = function(){
         this.velocity.add(this.acceleration.mult(Flory.timestep));
         this.position.add(this.velocity.mult(Flory.timestep*0.5));
         return this;
-    },
-    incrementX : function(amount){
+    };
+Flory.Monomer2D.prototype.incrementX = function(amount){
         this.position.x += amount;
         return this;
-    },
-    incrementY : function(amount){
+    };
+
+Flory.Monomer2D.prototype.incrementY =  function(amount){
         this.position.y += amount;
         return this;
-    },
-    distanceTo : function(a){
+    };
+Flory.Monomer2D.prototype.distanceTo =  function(a){
         return this.position.distanceTo(a.position);
-    },
-    distanceToSq : function(a){
+    };
+Flory.Monomer2D.prototype.distanceToSq = function(a){
         return this.position.distanceToSq(a.position);
-    },
-    clone : function(){
+    };
+Flory.Monomer2D.prototype.clone = function(){
         return new Flory.Monomer2D(this.radius,this.position);
-    }
+    };
 
-}
 
 
 

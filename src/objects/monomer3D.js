@@ -3,8 +3,12 @@
  */
 
 
-Flory.Monomer3D = function(radius,position,velocity,acceleration){
-    this.radius = (radius == undefined ? radius : Flory.Monomer3D.defaultRadius);
+Flory.Monomer3D = function(radius,charge,position,velocity,acceleration){
+    this.radius = (radius !== undefined ? radius : Flory.Monomer3D.defaultRadius);
+    this.charge = (charge !== undefined ? charge : 0);
+
+    Flory.Entity.call(this);
+
     if(position == undefined){
         this.position = new Flory.Vector3(0,0);
     } else if(position instanceof Array){
@@ -31,37 +35,41 @@ Flory.Monomer3D = function(radius,position,velocity,acceleration){
 
 }
 
+Flory.Monomer3D.prototype = Object.create(Flory.Entity.prototype);
 
 
-Flory.Monomer3D.prototype = {
-    update : function(){
+Flory.Monomer3D.prototype.update = function(){
         this.velocity.add(this.acceleration.scale(Flory.timestep));
         this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
         return this;
-    },
-    incrementX : function(amount){
+    };
+
+Flory.Monomer3D.prototype.incrementX = function(amount){
         this.position.x += amount;
         return this;
-    },
-    incrementY : function(amount){
+    };
+
+Flory.Monomer3D.prototype.incrementY =  function(amount){
         this.position.y += amount;
         return this;
-    },
-    incrementZ : function(amount){
+    };
+
+Flory.Monomer3D.prototype.incrementZ =  function(amount){
         this.position.z += amount;
         return this;
-    },
-    distanceTo : function(a){
-        return this.position.distanceTo(a.position);
-    },
-    distanceToSq : function(a){
-        return this.position.distanceToSq(a.position);
-    },
-    clone : function(){
-        return new Flory.Monomer3D(this.radius,this.position);
-    }
+    };
 
-}
+Flory.Monomer3D.prototype.distanceTo = function(a){
+        return this.position.distanceTo(a.position);
+    };
+
+Flory.Monomer3D.prototype.distanceToSq = function(a){
+        return this.position.distanceToSq(a.position);
+    };
+
+Flory.Monomer3D.prototype.clone = function(){
+        return new Flory.Monomer3D(this.radius,this.position);
+    };
 
 
 
