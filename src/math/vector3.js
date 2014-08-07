@@ -48,11 +48,11 @@ Flory.Vector3.prototype = {
 	},
 	
 	distanceTo : function(a){
-		return Math.sqrt((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y) + (a.y - this.y)*(a.y - this.y)); 
+		return Math.sqrt((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y) + (a.z - this.z)*(a.z - this.z)); 
 	},
 
 	distanceToSq : function(a){
-		return ((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y) + (a.y - this.y)*(a.y - this.y)); 
+		return ((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y) + (a.z - this.z)*(a.z - this.z)); 
 	},
 
 	clone : function(){
