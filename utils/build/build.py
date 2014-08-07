@@ -5,8 +5,6 @@ import os;
 import subprocess;
 
 
-
-
 source_file_path = "../../src/";
 final_build_location = "../../build/flory.js"
 compiler_jar_location = "compiler/compiler.jar";
@@ -16,10 +14,6 @@ def cmd(args):
 	proc = subprocess.Popen(args,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True);
 	out,err = proc.communicate();
 	return [out,err];
-
-
-
-
 
 
 def main():
@@ -33,6 +27,8 @@ def main():
 	tmp_combined_source_file = open(tmp_combined_source_file_name,"w");  
 
 	for line in source_order:
+		if(line == '\n'):
+			continue;
 		path = source_file_path + line.rstrip();
 		print "    Appending source from: " + path;
 		with open(path) as f:
