@@ -5,9 +5,6 @@ import os;
 import subprocess;
 
 
-source_file_path = "../../src/";
-final_build_location = "../../build/flory.js"
-compiler_jar_location = "compiler/compiler.jar";
 
 
 def cmd(args):
@@ -15,10 +12,17 @@ def cmd(args):
 	out,err = proc.communicate();
 	return [out,err];
 
-
+#TODO: Add commandline args for compiling different parts
 def main():
 	print "";
 	print "Starting Build";
+
+
+	source_file_path = "../../src/";
+	final_build_location = "../../build/flory.js"
+	compiler_jar_location = "compiler/compiler.jar";
+
+
 	print "Loading source file order from source_order.cfg";
 
 	source_order = open("source_order.cfg","r");
