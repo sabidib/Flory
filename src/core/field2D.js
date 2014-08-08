@@ -8,6 +8,8 @@
  *                     a |position| and a |vector| property. 
  */
 Flory.Field2D = function(data){
+	Flory.Entity.call(this);
+
 	this.data = [];
 	for( var i = 0, len = data.length; i < len;i++){
 		this.data[i] = {}
@@ -29,11 +31,15 @@ Flory.Field2D = function(data){
 		}
 
 	}
-}
+};
 
 
-Flory.Field2D.prototype = {
-	constructor : Flory.Field2D,
+Flory.Field2D.prototype = Object.create(Flory.Entity.prototype);
+
+
+Flory.Field2D.prototype.constructor = Flory.Field2D;
+
+
 	//TODO: OPTIMIZE THIS... it is currently O(n)
 	/**
 	 * Returns the force at the given position
@@ -43,7 +49,7 @@ Flory.Field2D.prototype = {
 	 * @param  {Vector2} position 
 	 * @return {Vector2}		The force at the given position          
 	 */
-	getForce : function(position){
+Flory.Field2D.prototype.getForce = function(position,data){
 		var closest = 0;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
@@ -54,15 +60,14 @@ Flory.Field2D.prototype = {
 			}
 		}
 		return this.data[index_of_closest].vector;
-	},	
+	};
 
-	scale : function(num){
+Flory.Field2D.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
 			this.data[i].vector.scale(num);
 		}
-	},
+	};
 
-	clone : function(){
+Flory.Field2D.prototype.clone = function(){
 		return new Flory.Field2D(this.data);
 	}
-}

@@ -8,6 +8,7 @@
  *                     a |position| and a |vector| property. 
  */
 Flory.Field = function(data){
+	Flory.Entity.call(this);
 	this.data = [];
 	for( var i = 0, len = data.length; i < len;i++){
 		this.data[i] = {}
@@ -32,11 +33,13 @@ Flory.Field = function(data){
 
 
 	}
-}
+};
+
+Flory.Field.prototype = Object.create(Flory.Entity.prototype);
 
 
-Flory.Field.prototype = {
-	constructor : Flory.Field,
+Flory.Field.prototype.constructor = Flory.Field;
+
 	//TODO: OPTIMIZE THIS... it is currently O(n)
 	/**
 	 * Returns the force at the given position
@@ -46,7 +49,8 @@ Flory.Field.prototype = {
 	 * @param  {Vector} position 
 	 * @return {Vector}		The force at the given position          
 	 */
-	getForce : function(position){
+
+Flory.Field.prototype.getForce = function(position,data){
 		var closest = 0;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
@@ -57,15 +61,14 @@ Flory.Field.prototype = {
 			}
 		}
 		return this.data[index_of_closest].vector;
-	},	
+	};
 
-	scale : function(num){
+Flory.Field.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
 			this.data[i].vector.scale(num);
 		}
-	},
+	};
 
-	clone : function(){
+Flory.Field.prototype.clone = function(){
 		return new Flory.Field(this.data);
 	}
-}

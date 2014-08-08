@@ -31,7 +31,7 @@ Flory.Monomer = function(radius,charge,position,velocity,acceleration){
 }
 
 
-Flory.Nonomer.prototype = Object.create(Flory.Entity.prototype);
+Flory.Monomer.prototype = Object.create(Flory.Entity.prototype);
 
 
 Flory.Monomer.prototype.update = function(){

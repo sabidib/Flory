@@ -12,24 +12,48 @@ var Flory = { VERSION : '0.01',
 Flory.Entity = function(){
 	this.id = Flory.Entity.entityIDCount++;
 	this.name = '';
-	this.position = {};
-	this.velocity = {};
-	this.acceleration = {};
-	this.charge = 0;
 }
 
 Flory.Entity.prototype = {
-	update : function(){
-
+	update : function(data){
+		return undefined;
 	}
 }
 
 
-
-
-
-
 Flory.Entity.entityIDCount = 0;
+
+
+
+/**
+ * @author sabidib
+ */
+
+Flory.Environment = function(){
+	this.entities = [];
+}
+
+
+Flory.Environment.prototype = {
+
+	constuctor : Flory.Environment,
+
+	add : function(entity){
+		if(this.id == entity.id ){
+			console.log("Flory: Can't add an entity to itself.");
+		} else {
+			for(var i = 0, len = this.entities.length; i  < len ; i++){
+				if(this.entities[i].id === entity.id){
+					console.log("Flory : Can't add an entity twice to the same enviroment.");
+					return undefined;
+				}
+			}
+			this.entities.push(entity);	
+		}
+	}	
+}
+
+
 
 
 
@@ -43,6 +67,7 @@ Flory.Entity.entityIDCount = 0;
  *                     a |position| and a |vector| property. 
  */
 Flory.Field = function(data){
+	Flory.Entity.call(this);
 	this.data = [];
 	for( var i = 0, len = data.length; i < len;i++){
 		this.data[i] = {}
@@ -67,11 +92,13 @@ Flory.Field = function(data){
 
 
 	}
-}
+};
+
+Flory.Field.prototype = Object.create(Flory.Entity.prototype);
 
 
-Flory.Field.prototype = {
-	constructor : Flory.Field,
+Flory.Field.prototype.constructor = Flory.Field;
+
 	//TODO: OPTIMIZE THIS... it is currently O(n)
 	/**
 	 * Returns the force at the given position
@@ -81,7 +108,8 @@ Flory.Field.prototype = {
 	 * @param  {Vector} position 
 	 * @return {Vector}		The force at the given position          
 	 */
-	getForce : function(position){
+
+Flory.Field.prototype.getForce = function(position,data){
 		var closest = 0;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
@@ -92,18 +120,18 @@ Flory.Field.prototype = {
 			}
 		}
 		return this.data[index_of_closest].vector;
-	},	
+	};
 
-	scale : function(num){
+Flory.Field.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
 			this.data[i].vector.scale(num);
 		}
-	},
+	};
 
-	clone : function(){
+Flory.Field.prototype.clone = function(){
 		return new Flory.Field(this.data);
 	}
-}
+
 /**
  * @author sabidib
  */
@@ -114,6 +142,8 @@ Flory.Field.prototype = {
  *                     a |position| and a |vector| property. 
  */
 Flory.Field2D = function(data){
+	Flory.Entity.call(this);
+
 	this.data = [];
 	for( var i = 0, len = data.length; i < len;i++){
 		this.data[i] = {}
@@ -135,11 +165,15 @@ Flory.Field2D = function(data){
 		}
 
 	}
-}
+};
 
 
-Flory.Field2D.prototype = {
-	constructor : Flory.Field2D,
+Flory.Field2D.prototype = Object.create(Flory.Entity.prototype);
+
+
+Flory.Field2D.prototype.constructor = Flory.Field2D;
+
+
 	//TODO: OPTIMIZE THIS... it is currently O(n)
 	/**
 	 * Returns the force at the given position
@@ -149,7 +183,7 @@ Flory.Field2D.prototype = {
 	 * @param  {Vector2} position 
 	 * @return {Vector2}		The force at the given position          
 	 */
-	getForce : function(position){
+Flory.Field2D.prototype.getForce = function(position,data){
 		var closest = 0;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
@@ -160,18 +194,17 @@ Flory.Field2D.prototype = {
 			}
 		}
 		return this.data[index_of_closest].vector;
-	},	
+	};
 
-	scale : function(num){
+Flory.Field2D.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
 			this.data[i].vector.scale(num);
 		}
-	},
+	};
 
-	clone : function(){
+Flory.Field2D.prototype.clone = function(){
 		return new Flory.Field2D(this.data);
 	}
-}
 /**
  * @author sabidib
  */
@@ -182,6 +215,8 @@ Flory.Field2D.prototype = {
  *                     a |position| and a |vector| property. 
  */
 Flory.Field3D = function(data){
+	Flory.Entity.call(this);
+	
 	this.data = [];
 	for( var i = 0 ,len = data.length; i < len;i++){
 		this.data[i] = {}
@@ -203,11 +238,14 @@ Flory.Field3D = function(data){
 		}
 
 	}
-}
+};
 
 
-Flory.Field3D.prototype = {
-	constructor : Flory.Field3D,
+Flory.Field3D.prototype = Object.create(Flory.Entity.prototype);
+
+Flory.Field3D.prototype.constructor = Flory.Field3D;
+
+
 	//TODO: OPTIMIZE THIS... it is currently O(n)
 	/**
 	 * Returns the force at the given position
@@ -217,7 +255,7 @@ Flory.Field3D.prototype = {
 	 * @param  {Vector3} position 
 	 * @return {Vector3}		The force at the given position          
 	 */
-	getForce : function(position){
+Flory.Field3D.prototype.getForce = function(position,data){
 		var closest = 0;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
@@ -228,18 +266,18 @@ Flory.Field3D.prototype = {
 			}
 		}
 		return this.data[index_of_closest].vector;
-	},	
+	};
 
-	scale : function(num){
+
+Flory.Field3D.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
 			this.data[i].vector.scale(num);
 		}
-	},
+	};
 
-	clone : function(){
+Flory.Field3D.prototype.clone = function(){
 		return new Flory.Field3D(this.data);
-	}
-}
+	};
 
 /**
  * @author sabidib
@@ -870,7 +908,7 @@ Flory.Monomer = function(radius,charge,position,velocity,acceleration){
 }
 
 
-Flory.Nonomer.prototype = Object.create(Flory.Entity.prototype);
+Flory.Monomer.prototype = Object.create(Flory.Entity.prototype);
 
 
 Flory.Monomer.prototype.update = function(){
