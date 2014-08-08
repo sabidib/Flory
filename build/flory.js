@@ -12,8 +12,17 @@ var Flory = { VERSION : '0.01',
 Flory.Entity = function(){
 	this.id = Flory.Entity.entityIDCount++;
 	this.name = '';
+	this.position = {};
+	this.velocity = {};
+	this.acceleration = {};
+	this.charge = 0;
 }
 
+Flory.Entity.prototype = {
+	update : function(){
+
+	}
+}
 
 
 
@@ -690,10 +699,10 @@ Flory.RandomGen.prototype.genrand_res53 = function() {
 
 
 Flory.Monomer2D = function(radius,charge,position,velocity,acceleration){
-    this.radius = (radius != undefined ? radius : Flory.Monomer2D.defaultRadius);
-    this.charge = (charge != undefined ? charge : 0);
 
     Flory.Entity.call(this);
+    this.radius = (radius != undefined ? radius : Flory.Monomer2D.defaultRadius);
+    this.charge = (charge != undefined ? charge : 0);
 
     if(position == undefined){
         this.position = new Flory.Vector2(0,0);
@@ -758,10 +767,10 @@ Flory.Monomer2D.defaultRadius = 1;
 
 
 Flory.Monomer3D = function(radius,charge,position,velocity,acceleration){
+    Flory.Entity.call(this);
     this.radius = (radius !== undefined ? radius : Flory.Monomer3D.defaultRadius);
     this.charge = (charge !== undefined ? charge : 0);
 
-    Flory.Entity.call(this);
 
     if(position == undefined){
         this.position = new Flory.Vector3(0,0);
@@ -834,10 +843,11 @@ Flory.Monomer3D.defaultRadius = 1;
 
 
 Flory.Monomer = function(radius,charge,position,velocity,acceleration){
+    Flory.Entity.call(this);
+    
     this.radius = (radius != undefined ? radius : Flory.Monomer.defaultRadius);
     this.charge = (charge != undefined ? charge : 0);
     
-    Flory.Entity.call(this);
 
     if(position.components == undefined && position instanceof Array){
         this.position = new Flory.Vector(position);    

@@ -49,23 +49,21 @@ def main():
 	
 	java_output = cmd(command);
 	
-	if(java_output[1] != ""):
+	if(java_output[1] != "" or java_output[0] != ""):
 		print ""
 		print "Error :"
 		print ""
 		print  java_output[1];
-		sys.exit();
-
-	if(java_output[0] != ""):
-		print "    " + java_output[0];
+		print "";
+		print  java_output[0];
+		sys.exit(1);
 
 
 	print "Cleaning up";
 	print ""
 	print "Done";
 	print "";
-
-
+	sys.exit(0);
 
 
 if __name__ == "__main__":
