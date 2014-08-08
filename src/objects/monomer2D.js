@@ -3,11 +3,33 @@
  */
 
 
-Flory.Monomer2D = function(radius,charge,position,velocity,acceleration){
+/**
+ * Creates a 2D Monomer
+ * @param {[Float]} radius     [The radius of the Monomer]
+ * @param {[Float]} charge     [The charge of the Monomer, default 0]
+ * @param {[Float]} mass       [The mass of the Monomer, default 0]
+ * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
+ */
 
+Flory.Monomer2D = function(radius,charge,mass,kinematics){
     Flory.Entity.call(this);
+
+
+    var position = undefined;
+    var velocity = undefined;
+    var acceleration = undefined;
+    var force = undefined;
+    
+    if(kinematics != undefined){
+        position = kinematics.position;
+        velocity = kinematics.velocity;
+        acceleration = kinematics.acceleration;
+        force = kinematics.force;
+    }
+
     this.radius = (radius != undefined ? radius : Flory.Monomer2D.defaultRadius);
     this.charge = (charge != undefined ? charge : 0);
+    this.mass = (mass != undefined ? mass : 0);
 
     if(position == undefined){
         this.position = new Flory.Vector2(0,0);
@@ -33,16 +55,20 @@ Flory.Monomer2D = function(radius,charge,position,velocity,acceleration){
         this.acceleration = new Flory.Vector2(acceleration.x,acceleration.y);
     }
 
+
+    if(force == undefined){
+        this.force = new Flory.Vector2(0,0);
+    } else if(force instanceof Array){
+        this.force = new Flory.Vector2(force[0],force[1]);
+    } else if(force.x != undefined && force.y != undefined){
+        this.force = new Flory.Vector2(force.x,force.y);
+    }
+
 }
 
 Flory.Monomer2D.prototype = Object.create( Flory.Entity.prototype);
 
 
-Flory.Monomer2D.prototype.update = function(){
-        this.velocity.add(this.acceleration.mult(Flory.timestep));
-        this.position.add(this.velocity.mult(Flory.timestep*0.5));
-        return this;
-    };
 Flory.Monomer2D.prototype.incrementX = function(amount){
         this.position.x += amount;
         return this;

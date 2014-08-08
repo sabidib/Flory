@@ -47,21 +47,37 @@ Flory.Field.prototype.constructor = Flory.Field;
 	 * the associated vector
 	 * 
 	 * @param  {Vector} position 
+	 * @param  {Object} data  General data to be passed and used by sub classes.
 	 * @return {Vector}		The force at the given position          
 	 */
 
 Flory.Field.prototype.getForce = function(position,data){
-		var closest = 0;
+		var closest = Infinity;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
 			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist < closest){
+			if(cur_dist <= closest ){
 				index_of_closest = i;
 				closest = cur_dist;
 			}
 		}
 		return this.data[index_of_closest].vector;
 	};
+
+/**
+ * Combines @field with the object. This is done by merging the
+ * data and summing the vectors at points in common.
+ * @param  {Field} field 
+ * @return {this}
+ */
+Flory.Field.prototype.combine = function(field){
+
+
+
+
+
+
+}
 
 Flory.Field.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){

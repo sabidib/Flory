@@ -54,13 +54,30 @@ Flory.Field2D.prototype.getForce = function(position,data){
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
 			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist < closest){
+			if(cur_dist <= closest){
 				index_of_closest = i;
 				closest = cur_dist;
 			}
 		}
 		return this.data[index_of_closest].vector;
 	};
+
+
+/**
+ * Combines @field with the object. This is done by merging the
+ * data and summing the vectors at points in common.
+ * @param  {Field2D} field 
+ * @return {this}
+ */
+Flory.Field2D.prototype.combine = function(field){
+	
+
+
+
+
+
+}
+
 
 Flory.Field2D.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){

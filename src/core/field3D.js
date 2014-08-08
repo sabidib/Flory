@@ -53,13 +53,29 @@ Flory.Field3D.prototype.getForce = function(position,data){
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
 			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist < closest){
+			if(cur_dist <= closest){
 				index_of_closest = i;
 				closest = cur_dist;
 			}
 		}
 		return this.data[index_of_closest].vector;
 	};
+
+
+/**
+ * Combines @field with the object. This is done by merging the
+ * data and summing the vectors at points in common.
+ * @param  {Field3D} field 
+ * @return {this}
+ */
+Flory.Field3D.prototype.combine = function(field){
+	
+
+
+
+
+
+}
 
 
 Flory.Field3D.prototype.scale = function(num){

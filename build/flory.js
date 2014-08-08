@@ -106,21 +106,37 @@ Flory.Field.prototype.constructor = Flory.Field;
 	 * the associated vector
 	 * 
 	 * @param  {Vector} position 
+	 * @param  {Object} data  General data to be passed and used by sub classes.
 	 * @return {Vector}		The force at the given position          
 	 */
 
 Flory.Field.prototype.getForce = function(position,data){
-		var closest = 0;
+		var closest = Infinity;
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
 			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist < closest){
+			if(cur_dist <= closest ){
 				index_of_closest = i;
 				closest = cur_dist;
 			}
 		}
 		return this.data[index_of_closest].vector;
 	};
+
+/**
+ * Combines @field with the object. This is done by merging the
+ * data and summing the vectors at points in common.
+ * @param  {Field} field 
+ * @return {this}
+ */
+Flory.Field.prototype.combine = function(field){
+
+
+
+
+
+
+}
 
 Flory.Field.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
@@ -188,13 +204,30 @@ Flory.Field2D.prototype.getForce = function(position,data){
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
 			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist < closest){
+			if(cur_dist <= closest){
 				index_of_closest = i;
 				closest = cur_dist;
 			}
 		}
 		return this.data[index_of_closest].vector;
 	};
+
+
+/**
+ * Combines @field with the object. This is done by merging the
+ * data and summing the vectors at points in common.
+ * @param  {Field2D} field 
+ * @return {this}
+ */
+Flory.Field2D.prototype.combine = function(field){
+	
+
+
+
+
+
+}
+
 
 Flory.Field2D.prototype.scale = function(num){
 		for( var i =0, len = this.data.length; i < len; i++){
@@ -260,13 +293,29 @@ Flory.Field3D.prototype.getForce = function(position,data){
 		var index_of_closest = 0;
 		for( var i = 0, len = this.data.length; i < len ; i++){
 			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist < closest){
+			if(cur_dist <= closest){
 				index_of_closest = i;
 				closest = cur_dist;
 			}
 		}
 		return this.data[index_of_closest].vector;
 	};
+
+
+/**
+ * Combines @field with the object. This is done by merging the
+ * data and summing the vectors at points in common.
+ * @param  {Field3D} field 
+ * @return {this}
+ */
+Flory.Field3D.prototype.combine = function(field){
+	
+
+
+
+
+
+}
 
 
 Flory.Field3D.prototype.scale = function(num){
@@ -429,7 +478,11 @@ Flory.Vector2.prototype = {
  * @param {Array} vec An array of number values that represent each component of the vector
  */
 Flory.Vector = function(vec){
-	this.components = vec;
+	if(vec == undefined){
+		this.components = []
+	} else {
+		this.components = vec;
+	}
 }
 
 
@@ -442,15 +495,37 @@ Flory.Vector.prototype = {
 		return this.components.length;
 	},
 	add : function(a){
-		for(var i = 0,len = this.a.length;i < len; i++){
-			this.components[i] += a[i]; 
+		if(a.components.length > this.components.length){
+			var i = 0;
+			for(len = this.components.length;i < len; i++){
+				this.components[i] += a.components[i]; 
+			}
+			for(len = a.components.length; i < len;i++){
+				this.components[i] = 0;
+				this.components[i] += a.components[i]; 
+			}
+		} else {
+			for(var i = 0,len = a.components.length;i < len; i++){
+				this.components[i] += a.components[i]; 
+			}
 		}
 		return this;
 	},
 
 	sub : function(a){
-		for(var i = 0,len = this.a.length;i < len; i++){
-			this.components[i] -= a[i]; 
+		if(a.components.length > this.components.length){
+			var i = 0;
+			for(len = this.components.length;i < len; i++){
+				this.components[i] -= a.components[i]; 
+			}
+			for(len = a.components.length; i < len;i++){
+				this.components[i] = 0;
+				this.components[i] -= a.components[i]; 
+			}
+		} else {
+			for(var i = 0,len = a.components.length;i < len; i++){
+				this.components[i] -= a.components[i]; 
+			}
 		}
 		return this;
 	},
@@ -459,7 +534,6 @@ Flory.Vector.prototype = {
 		for(var i = 0, len = this.components.length; i <len; i++){
 			this.components[i] *= num;
 		}
-
 		return this;
 	},
 	mult : function(num){
@@ -471,13 +545,13 @@ Flory.Vector.prototype = {
 	},
 	
 	dot : function(a){
-		if(a.length != b.length){
+		if(a.components.length != this.components.length){
 			console.log("Flory.vector.dot(a) can only accept a vector of the same dimension as the object.")
 			return undefined;
 		}
 		var sum = 0;
-		for(var i = 0,len = this.a.length;i < len; i++){
-			sum += this.components[i] *a[i]; 
+		for(var i = 0,len = a.components.length;i < len; i++){
+			sum += this.components[i] *a.components[i]; 
 		}
 		return sum;
 	},
@@ -503,35 +577,58 @@ Flory.Vector.prototype = {
 	
 	distanceTo : function(a){
 		var sum = 0;
-
-		for(var i = 0,len = this.a.length;i < len; i++){
-			sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+		var i = 0;
+		if(a.components.length > this.components.length){
+			for(var len = this.components.length;i < len; i++){
+				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+			}
+			for(var len = a.components.length;i<len2;i++){
+				sum += (0 - a.components[i])*(0 - a.components[i]);
+			}
+		} else if(a.components.length < this.components.length){
+			for(var len = a.components.length;i < len; i++){
+				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+			}
+			for(var len = this.components.length;i<len2;i++){
+			sum  += (this.components[i] - 0)*(this.components[i] - 0); 
+			}
+		} else {
+			for(len = a.components.length;i < len; i++){
+				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+			}
 		}
-
-		for(var i = 0,len = this.components.length,len2 = this.components.length-this.a.length; len2 < len;i++){
-			sum += this.components[i+len]*this.components[i+len];
-		}
-
 		return Math.sqrt(sum);
 	},
 
 	distanceToSq : function(a){
 
 		var sum = 0;
-
-		for(var i = 0,len = this.a.length;i < len; i++){
-			sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-		}
-
-		for(var i = 0,len = this.components.length,len2 = this.components.length-this.a.length; len2 < len;i++){
-			sum += this.components[i+len]*this.components[i+len];
+		var i = 0;
+		if(a.components.length > this.components.length){
+			for(var len = this.components.length;i < len; i++){
+				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+			}
+			for(var len = a.components.length;i<len2;i++){
+				sum += (0 - a.components[i])*(0 - a.components[i]);
+			}
+		} else if(a.components.length < this.components.length){
+			for(var len = a.components.length;i < len; i++){
+				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+			}
+			for(var len = this.components.length;i<len2;i++){
+			sum  += (this.components[i] - 0)*(this.components[i] - 0); 
+			}
+		} else {
+			for(len = a.components.length;i < len; i++){
+				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
+			}
 		}
 
 		return sum;
 	},
 
 	clone : function(){
-		return new Flory.Vector(this.x,this.y,this.z);
+		return new Flory.Vector(this.components);
 	}
 };
 
@@ -736,11 +833,72 @@ Flory.RandomGen.prototype.genrand_res53 = function() {
  */
 
 
-Flory.Monomer2D = function(radius,charge,position,velocity,acceleration){
+Flory.Newtonian = function(){
+	Flory.Environment.call(this);
+}
 
+
+Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
+
+
+Flory.Newtonian.prototype.update = function(additional){
+	for(var i = 0, len = this.entities.length;i < len;i++){
+		var entity = this.entities[i];
+		var tmp = new Flory.Vector();
+		if(entity instanceof Flory.Monomer){
+			for(var j = 0, len = this.entities.length;j < len;j++){
+				var entity2 = this.entities[j];
+				if(entity2 instanceof Flory.Field){
+					var field = entity2;
+					tmp.add(field.getForce(entity.position));
+				}
+			}
+			entity.force = tmp.clone();
+		}
+	}
+	for(var i = 0 , len = this.entities.length; i < len; i++){
+		var entity = this.entities[i];
+		if(entity instanceof Flory.Monomer){
+			entity.acceleration = entity.force.mult(1.0/entity.mass);
+			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
+			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
+		}
+	}
+	return this;
+}
+
+/**
+ * @author sabidib
+ */
+
+
+/**
+ * Creates a 2D Monomer
+ * @param {[Float]} radius     [The radius of the Monomer]
+ * @param {[Float]} charge     [The charge of the Monomer, default 0]
+ * @param {[Float]} mass       [The mass of the Monomer, default 0]
+ * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
+ */
+
+Flory.Monomer2D = function(radius,charge,mass,kinematics){
     Flory.Entity.call(this);
+
+
+    var position = undefined;
+    var velocity = undefined;
+    var acceleration = undefined;
+    var force = undefined;
+    
+    if(kinematics != undefined){
+        position = kinematics.position;
+        velocity = kinematics.velocity;
+        acceleration = kinematics.acceleration;
+        force = kinematics.force;
+    }
+
     this.radius = (radius != undefined ? radius : Flory.Monomer2D.defaultRadius);
     this.charge = (charge != undefined ? charge : 0);
+    this.mass = (mass != undefined ? mass : 0);
 
     if(position == undefined){
         this.position = new Flory.Vector2(0,0);
@@ -766,16 +924,20 @@ Flory.Monomer2D = function(radius,charge,position,velocity,acceleration){
         this.acceleration = new Flory.Vector2(acceleration.x,acceleration.y);
     }
 
+
+    if(force == undefined){
+        this.force = new Flory.Vector2(0,0);
+    } else if(force instanceof Array){
+        this.force = new Flory.Vector2(force[0],force[1]);
+    } else if(force.x != undefined && force.y != undefined){
+        this.force = new Flory.Vector2(force.x,force.y);
+    }
+
 }
 
 Flory.Monomer2D.prototype = Object.create( Flory.Entity.prototype);
 
 
-Flory.Monomer2D.prototype.update = function(){
-        this.velocity.add(this.acceleration.mult(Flory.timestep));
-        this.position.add(this.velocity.mult(Flory.timestep*0.5));
-        return this;
-    };
 Flory.Monomer2D.prototype.incrementX = function(amount){
         this.position.x += amount;
         return this;
@@ -803,11 +965,32 @@ Flory.Monomer2D.defaultRadius = 1;
  * @author sabidib
  */
 
-
-Flory.Monomer3D = function(radius,charge,position,velocity,acceleration){
+/**
+ * Creates a 3D Monomer
+ * @param {[Float]} radius     [The radius of the Monomer]
+ * @param {[Float]} charge     [The charge of the Monomer, default 0]
+ * @param {[Float]} mass       [The mass of the Monomer, default 0]
+ * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
+ */
+Flory.Monomer3D = function(radius,charge,mass,kinematics) {
     Flory.Entity.call(this);
+
+
+    var position = undefined;
+    var velocity = undefined;
+    var acceleration = undefined;
+    var force = undefined;
+    
+    if(kinematics != undefined){
+        position = kinematics.position;
+        velocity = kinematics.velocity;
+        acceleration = kinematics.acceleration;
+        force = kinematics.force;
+    }
+    
     this.radius = (radius !== undefined ? radius : Flory.Monomer3D.defaultRadius);
     this.charge = (charge !== undefined ? charge : 0);
+    this.mass = (mass != undefined ? mass : 0);
 
 
     if(position == undefined){
@@ -834,16 +1017,20 @@ Flory.Monomer3D = function(radius,charge,position,velocity,acceleration){
         this.acceleration = new Flory.Vector3(acceleration.x,acceleration.y);
     }
 
+
+    if(force == undefined){
+        this.force = new Flory.Vector3(0,0);
+    } else if(force instanceof Array){
+        this.force = new Flory.Vector3(force[0],force[1]);
+    } else if(force.x != undefined && force.y != undefined && force.z != undefined){
+        this.force = new Flory.Vector3(force.x,force.y);
+    }
+
 };
 
 Flory.Monomer3D.prototype = Object.create(Flory.Entity.prototype);
 
 
-Flory.Monomer3D.prototype.update = function(){
-        this.velocity.add(this.acceleration.scale(Flory.timestep));
-        this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
-        return this;
-    };
 
 Flory.Monomer3D.prototype.incrementX = function(amount){
         this.position.x += amount;
@@ -880,12 +1067,44 @@ Flory.Monomer3D.defaultRadius = 1;
  */
 
 
-Flory.Monomer = function(radius,charge,position,velocity,acceleration){
+/**
+ * Creates  an arbitrary dimension Monomer. The dimension is defined by the
+ * number of components in kinematics.position.
+ * @param {[Float]} radius     [The radius of the Monomer]
+ * @param {[Float]} charge     [The charge of the Monomer, default 0]
+ * @param {[Float]} mass       [The mass of the Monomer, default 0]
+ * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
+ */
+
+Flory.Monomer = function(radius,charge,mass,kinematics){
+    if(kinematics == undefined){
+        console.log("Flory: Flory.Monomer needs at least the kinematics.position to know what the dimension of the monomer is.");
+        return undefined;
+    }
+    if(kinematics.position == undefined){
+        console.log("Flory: Flory.Monomer needs at least the kinematics.position to know what the dimension of the monomer is.");
+        return undefined;
+    }
+
     Flory.Entity.call(this);
+
+    
+    var position = undefined;
+    var velocity = undefined;
+    var acceleration = undefined;
+    var force = undefined;
+    
+    if(kinematics != undefined){
+        position = kinematics.position;
+        velocity = kinematics.velocity;
+        acceleration = kinematics.acceleration;
+        force = kinematics.force;
+    }
+
     
     this.radius = (radius != undefined ? radius : Flory.Monomer.defaultRadius);
     this.charge = (charge != undefined ? charge : 0);
-    
+    this.mass = (mass != undefined ? mass : 0);
 
     if(position.components == undefined && position instanceof Array){
         this.position = new Flory.Vector(position);    
@@ -893,29 +1112,35 @@ Flory.Monomer = function(radius,charge,position,velocity,acceleration){
         this.position = position.clone();        
     }
 
-    if(velocity.components == undefined && velocity instanceof Array){
+    if(velocity == undefined){
+        this.velocity = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
+    }else if(velocity.components == undefined && velocity instanceof Array){
         this.velocity = new Flory.Vector(velocity);
     } else {
         this.velocity = velocity.clone();
     }
 
-    if(acceleration.components == undefined && acceleration instanceof Array){
+    if(acceleration == undefined){
+        this.acceleration = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
+    }else if(acceleration.components == undefined && acceleration instanceof Array){
         this.acceleration = new Flory.Vector(acceleration);
     } else {
         this.acceleration = acceleration.clone();
     }
 
+    if(force == undefined){
+        this.force = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
+    } else if(force.components == undefined && force instanceof Array){
+        this.force = new Flory.Vector(force);
+    } else {
+        this.force = force.clone();
+    }
+
+
 }
 
 
 Flory.Monomer.prototype = Object.create(Flory.Entity.prototype);
-
-
-Flory.Monomer.prototype.update = function(){
-        this.velocity.add(this.acceleration.scale(Flory.timestep));
-        this.position.add(this.velocity.scale(Flory.timestep).scale(0.5));
-        return this;
-    };
 
     /**
      * Given the dimension index, will increment
