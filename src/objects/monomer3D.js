@@ -4,10 +4,10 @@
 
 
 Flory.Monomer3D = function(radius,charge,position,velocity,acceleration){
+    Flory.Entity.call(this);
     this.radius = (radius !== undefined ? radius : Flory.Monomer3D.defaultRadius);
     this.charge = (charge !== undefined ? charge : 0);
 
-    Flory.Entity.call(this);
 
     if(position == undefined){
         this.position = new Flory.Vector3(0,0);
