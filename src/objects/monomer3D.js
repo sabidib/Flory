@@ -33,7 +33,7 @@ Flory.Monomer3D = function(radius,charge,position,velocity,acceleration){
         this.acceleration = new Flory.Vector3(acceleration.x,acceleration.y);
     }
 
-}
+};
 
 Flory.Monomer3D.prototype = Object.create(Flory.Entity.prototype);
 

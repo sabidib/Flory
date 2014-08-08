@@ -6,7 +6,6 @@ import subprocess;
 
 
 
-
 def cmd(args):
 	proc = subprocess.Popen(args,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True);
 	out,err = proc.communicate();
@@ -52,8 +51,8 @@ def main():
 	if(java_output[1] != "" or java_output[0] != ""):
 		print ""
 		print "Error :"
-		print ""
-		print  java_output[1];
+		print "";
+		sys.stderr.write(java_output[1] + '\n');
 		print "";
 		print  java_output[0];
 		sys.exit(1);
