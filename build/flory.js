@@ -833,82 +833,6 @@ Flory.RandomGen.prototype.genrand_res53 = function() {
  */
 
 
-Flory.Newtonian = function(){
-	Flory.Environment.call(this);
-}
-
-
-Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
-
-
-Flory.Newtonian.prototype.update = function(additional){
-	for(var i = 0, len = this.entities.length;i < len;i++){
-		var entity = this.entities[i];
-		var tmp = new Flory.Vector();
-		if(entity instanceof Flory.Monomer){
-			for(var j = 0, len = this.entities.length;j < len;j++){
-				var entity2 = this.entities[j];
-				if(entity2 instanceof Flory.Field){
-					var field = entity2;
-					tmp.add(field.getForce(entity.position));
-				}
-			}
-			entity.force = tmp.clone();
-		}
-	}
-	for(var i = 0 , len = this.entities.length; i < len; i++){
-		var entity = this.entities[i];
-		if(entity instanceof Flory.Monomer){
-			entity.acceleration = entity.force.mult(1.0/entity.mass);
-			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
-			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
-		}
-	}
-	return this;
-}
-
-/**
- * @author sabidib
- */
-
-Flory.ContinuousField = function(field_function){
-	Flory.Field.call(this,[]);
-	this.scaler = 1;
-	this.field_function = (field_function != undefined) ? field_function : function(){};
-}
-
-
-Flory.ContinuousField.prototype = Object.create(Flory.Field.prototype);
-
-
-Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;
-
-Flory.ContinuousField.prototype.getForce = function(position){
-	return this.field_function(position).mult(this.scaler);
-}
-
-Flory.ContinuousField.prototype.scale =function(num){
-	if(typeof num === "number"){
-		this.scaler = num;		
-	}
-	return this;
-}
-
-
-Flory.ContinuousField.prototype.clone = function(){
-	return new Flory.ContinuousField(this.field_function);
-}
-
-
-
-
-
-
-/**
- * @author sabidib
- */
-
-
 /**
  * Creates a 2D Monomer
  * @param {[Float]} radius     [The radius of the Monomer]
@@ -1207,3 +1131,84 @@ Flory.Monomer.prototype.clone = function(){
 
 
 Flory.Monomer.defaultRadius = 1;
+/**
+ * @author sabidib
+ */
+
+
+Flory.Newtonian = function(){
+	Flory.Environment.call(this);
+}
+
+
+Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
+
+
+Flory.Newtonian.prototype.update = function(additional){
+	for(var i = 0, len = this.entities.length;i < len;i++){
+		var entity = this.entities[i];
+		var tmp = new Flory.Vector();
+		if(entity instanceof Flory.Monomer){
+			for(var j = 0, len = this.entities.length;j < len;j++){
+				var entity2 = this.entities[j];
+				if(entity2 instanceof Flory.Field){
+					var field = entity2;
+					tmp.add(field.getForce(entity.position));
+				}
+			}
+			entity.force = tmp.clone();
+		}
+	}
+	for(var i = 0 , len = this.entities.length; i < len; i++){
+		var entity = this.entities[i];
+		if(entity instanceof Flory.Monomer){
+			entity.acceleration = entity.force.mult(1.0/entity.mass);
+			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
+			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
+		}
+	}
+	return this;
+}
+
+/**
+ * @author sabidib
+ */
+
+
+Flory.RandomWalk = function(seed,step_size){
+	Flory.Environment.call(this);
+	this.randomGen = new Flory.RandomGen(seed);
+	this.step_size = (step_size != undefined) ? step_size : 1;
+}
+
+
+Flory.RandomWalk.prototype = Object.create(Flory.Environment.prototype);
+
+Flory.RandomWalk.prototype.constructor = Flory.RandomWalk;
+
+Flory.RandomWalk.prototype.update = function(additional){
+	for( var i = 0, len = this.entities.length;i<len;i++){
+		var entity = this.entities[i];
+		if(entity instanceof Flory.Monomer){
+			var number_of_dimensions = entity.position.dimension();
+			var dimension_increment = (1.0/number_of_dimensions);
+			var dimension_to_choose = 0;
+			var rnum = this.randomGen.random();
+			rnum -= dimension_increment;
+			while(rnum > 0){
+				rnum -= dimension_increment;
+				dimension_to_choose++;
+			}
+			//Choose the direction of movement in the dimension
+			rnum = this.randomGen.random();
+			if(rnum < 0.5){
+				entity.position.components[dimension_to_choose]++;
+			} else {
+				entity.position.components[dimension_to_choose]--;
+			} 
+		}
+	}
+	return this;
+}
+
+

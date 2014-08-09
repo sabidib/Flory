@@ -25,7 +25,6 @@ Flory.ContinuousField.prototype.scale =function(num){
 	return this;
 }
 
-
 Flory.ContinuousField.prototype.clone = function(){
 	return new Flory.ContinuousField(this.field_function);
 }
