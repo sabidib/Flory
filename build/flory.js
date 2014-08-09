@@ -80,8 +80,6 @@ Flory.Field = function(data){
 			this.data[i].position = data[i].position.clone();
 		}
 
-
-
 		if(data[i].vector == undefined){
 			this.data[i].vector = new Flory.Vector(data[i][1]); 		
 		} else if(data[i].vector instanceof Array){
@@ -631,7 +629,9 @@ Flory.Vector.prototype = {
 		return new Flory.Vector(this.components);
 	}
 };
-
+/**
+ * @author Sean McCullough (banksean@gmail.com)
+ */
 /*
   I've wrapped Makoto Matsumoto and Takuji Nishimura's code in a namespace
   so it's better encapsulated. Now you can have multiple random number generators
@@ -866,6 +866,43 @@ Flory.Newtonian.prototype.update = function(additional){
 	}
 	return this;
 }
+
+/**
+ * @author sabidib
+ */
+
+Flory.ContinuousField = function(field_function){
+	Flory.Field.call(this,[]);
+	this.scaler = 1;
+	this.field_function = (field_function != undefined) ? field_function : function(){};
+}
+
+
+Flory.ContinuousField.prototype = Object.create(Flory.Field.prototype);
+
+
+Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;
+
+Flory.ContinuousField.prototype.getForce = function(position){
+	return this.field_function(position).mult(this.scaler);
+}
+
+Flory.ContinuousField.prototype.scale =function(num){
+	if(typeof num === "number"){
+		this.scaler = num;		
+	}
+	return this;
+}
+
+
+Flory.ContinuousField.prototype.clone = function(){
+	return new Flory.ContinuousField(this.field_function);
+}
+
+
+
+
+
 
 /**
  * @author sabidib

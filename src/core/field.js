@@ -21,8 +21,6 @@ Flory.Field = function(data){
 			this.data[i].position = data[i].position.clone();
 		}
 
-
-
 		if(data[i].vector == undefined){
 			this.data[i].vector = new Flory.Vector(data[i][1]); 		
 		} else if(data[i].vector instanceof Array){
