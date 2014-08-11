@@ -2,6 +2,7 @@
  * @author sabidib
  */
 
+/** @constructor */
 Flory.Entity = function(){
 	this.id = Flory.Entity.entityIDCount++;
 	this.name = '';

@@ -3,6 +3,7 @@
  */
 
 
+/** @constructor */
 Flory.RandomWalk = function(seed,step_size){
 	Flory.Environment.call(this);
 	this.randomGen = new Flory.RandomGen(seed);

@@ -4,6 +4,7 @@
 
 /**
  * Creates a field where a vector is associated with an approximate position.
+ * @constructor 
  * @param {Array} data Each element of the data array must be an object containing
  *                     a |position| and a |vector| property. 
  */

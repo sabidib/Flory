@@ -3,12 +3,16 @@
  */
 
 
+/** @constructor */
 Flory.Newtonian = function(){
 	Flory.Environment.call(this);
 }
 
 
 Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
+
+
+Flory.Newtonian.constructor = Flory.Newtonian;
 
 
 Flory.Newtonian.prototype.update = function(additional){
@@ -21,7 +25,7 @@ Flory.Newtonian.prototype.update = function(additional){
 				if(entity2 instanceof Flory.Field){
 					var field = entity2;
 					tmp.add(field.getForce(entity.position));
-				}
+				} 
 			}
 			entity.force = tmp.clone();
 		}

@@ -2,6 +2,7 @@
  * @author sabidib
  */
 
+/** @constructor */
 Flory.Environment = function(){
 	this.entities = [];
 }
@@ -23,7 +24,11 @@ Flory.Environment.prototype = {
 			}
 			this.entities.push(entity);	
 		}
-	}	
+		return this;
+	},
+	update : function(data){
+
+	}
 }
 
 

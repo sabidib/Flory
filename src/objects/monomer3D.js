@@ -4,6 +4,7 @@
 
 /**
  * Creates a 3D Monomer
+ * @constructor
  * @param {[Float]} radius     [The radius of the Monomer]
  * @param {[Float]} charge     [The charge of the Monomer, default 0]
  * @param {[Float]} mass       [The mass of the Monomer, default 0]

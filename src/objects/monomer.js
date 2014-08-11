@@ -6,6 +6,7 @@
 /**
  * Creates  an arbitrary dimension Monomer. The dimension is defined by the
  * number of components in kinematics.position.
+ * @constructor
  * @param {[Float]} radius     [The radius of the Monomer]
  * @param {[Float]} charge     [The charge of the Monomer, default 0]
  * @param {[Float]} mass       [The mass of the Monomer, default 0]
@@ -82,7 +83,7 @@ Flory.Monomer.prototype = Object.create(Flory.Entity.prototype);
      * Given the dimension index, will increment
      * the component by amount
      * @param  {Integer} dimension the dimension to increment.
-     * @param  {Double} amount    the amount to increment the dimension by [-inf,+inf];
+     * @param  {Float} amount    the amount to increment the dimension by [-inf,+inf];
      * @return {Flory.Monomer}      returns itself.
      */
 Flory.Monomer.prototype.incrementDimension = function(dimension,amount){

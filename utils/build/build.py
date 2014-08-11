@@ -43,7 +43,7 @@ def main():
 	print "";
 	print "Compiling " + final_build_location +  " into " + final_minimized_build_location;
 
-	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --js_output_file " + final_minimized_build_location;
+	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+  " --js_output_file " + final_minimized_build_location;
 	print "    " + command;
 	
 	java_output = cmd(command);

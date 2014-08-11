@@ -7,11 +7,14 @@
  * in the Flory.Vector.componenets variable.
  * The drawback is that some of the calculations take a little longer and is only compatible
  * with other Flory.Vector objects.
+ * @constructor
  * @param {Array} vec An array of number values that represent each component of the vector
  */
 Flory.Vector = function(vec){
 	if(vec == undefined){
 		this.components = []
+	} else if(typeof vec == "number"){
+		this.components = [].slice.apply(new Uint8Array(vec));
 	} else {
 		this.components = vec;
 	}
@@ -160,6 +163,6 @@ Flory.Vector.prototype = {
 	},
 
 	clone : function(){
-		return new Flory.Vector(this.components);
+		return new Flory.Vector(this.components.slice(0));
 	}
 };

@@ -2,6 +2,7 @@
  * @author sabidib
  */
 
+/** @constructor */
 Flory.Vector2 = function(x,y){
 	this.x = (x === undefined) ? 0 : x;
 	this.y = (y === undefined) ? 0 : y;

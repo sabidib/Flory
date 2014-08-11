@@ -2,6 +2,7 @@
  * @author sabidib
  */
 
+/** @constructor */
 Flory.ContinuousField = function(field_function){
 	Flory.Field.call(this,[]);
 	this.scaler = 1;
