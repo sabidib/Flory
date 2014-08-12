@@ -35,7 +35,7 @@ Flory.LennardJones.prototype.update = function(additional){
 					}
 
 					var sigma_over_r = (this.sigma/r_mag);
-					var force = r.scale((24*this.epsilon/(r_mag*r_mag))*(2*Math.pow(sigma_over_r,12) - Math.pow(sigma_over_r,6)));
+					var force = r.scale((-24*this.epsilon/(r_mag*r_mag))*(2*Math.pow(sigma_over_r,12) - Math.pow(sigma_over_r,6)));
 					tmp.add(force);
 				} 
 			}
@@ -48,6 +48,12 @@ Flory.LennardJones.prototype.update = function(additional){
 			entity.acceleration = entity.force.mult(1.0/entity.mass);
 			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
 			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
+			if(this.visualization){
+				this.renderer.updateRenderablePosition(this.entities[i]);
+			}
+		}
+		if(this.visualization){
+			this.renderer.render();
 		}
 	}
 	return this;

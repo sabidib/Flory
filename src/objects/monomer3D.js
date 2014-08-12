@@ -97,6 +97,22 @@ Flory.Monomer3D.prototype.clone = function(){
         return new Flory.Monomer3D(this.radius,this.position);
     };
 
+Flory.Monomer3D.prototype.prepareRenderable = function(settings){
+    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
+    this.geometry = new THREE.SphereGeometry(this.radius,segments,segments);
+    color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+    
+    if(settings == undefined){
+        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});
+    } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
+        this.material = settings.material;
+    } else {
+        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+    }
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    return this;
+};
+
 
 
 Flory.Monomer3D.defaultRadius = 1;

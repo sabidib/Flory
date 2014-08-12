@@ -6,13 +6,16 @@ import subprocess;
 
 
 
+
 def cmd(args):
 	proc = subprocess.Popen(args,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True);
 	out,err = proc.communicate();
 	return [out,err];
 
 #TODO: Add commandline args for compiling different parts
-def main():
+def main(argv):
+
+
 	print "";
 	print "Starting Build";
 	print "";
@@ -43,16 +46,18 @@ def main():
 	print "";
 	print "Compiling " + final_build_location +  " into " + final_minimized_build_location;
 
-	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+  " --js_output_file " + final_minimized_build_location;
+	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_minimized_build_location;
 	print "    " + command;
 	
 	java_output = cmd(command);
 	
-	if(java_output[1] != "" or java_output[0] != ""):
+	if(java_output[1] != ""):
 		print ""
 		print "Error :"
 		print "";
 		sys.stderr.write(java_output[1] + '\n');
+		print "Cleaning up";
+		open(final_build_location,"w").close();
 		print "";
 		print  java_output[0];
 		sys.exit(1);
@@ -66,4 +71,4 @@ def main():
 
 
 if __name__ == "__main__":
-	main();
+	main(sys.argv[1:]);

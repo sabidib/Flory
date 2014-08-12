@@ -24,7 +24,6 @@ Flory.Monomer = function(radius,charge,mass,kinematics){
     }
 
     Flory.Entity.call(this);
-
     
     var position = undefined;
     var velocity = undefined;
@@ -37,7 +36,6 @@ Flory.Monomer = function(radius,charge,mass,kinematics){
         acceleration = kinematics.acceleration;
         force = kinematics.force;
     }
-
     
     this.radius = (radius != undefined ? radius : Flory.Monomer.defaultRadius);
     this.charge = (charge != undefined ? charge : 0);
@@ -72,8 +70,6 @@ Flory.Monomer = function(radius,charge,mass,kinematics){
     } else {
         this.force = force.clone();
     }
-
-
 }
 
 
@@ -102,6 +98,28 @@ Flory.Monomer.prototype.distanceToSq =  function(a){
 Flory.Monomer.prototype.clone = function(){
         return new Flory.Monomer3D(this.radius,this.position);
     };
+Flory.Monomer.prototype.prepareRenderable = function(settings){
+    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
+
+    var dim = this.position.dimension();
+    if(dim >= 3){
+        this.geometry = new THREE.SphereGeometry(this.radius,segments,segments);
+    } else {
+        this.geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
+    }
+
+    color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+    
+    if(settings == undefined){
+        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});
+    } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
+        this.material = settings.material;
+    } else {
+        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+    }
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    return this;
+};
 
 
 
