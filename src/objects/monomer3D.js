@@ -100,7 +100,7 @@ Flory.Monomer3D.prototype.clone = function(){
 Flory.Monomer3D.prototype.prepareRenderable = function(settings){
     var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
     this.geometry = new THREE.SphereGeometry(this.radius,segments,segments);
-    color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
     
     if(settings == undefined){
         this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});

@@ -35,7 +35,15 @@ Flory.RandomWalk.prototype.update = function(additional){
 			} else {
 				entity.position.components[dimension_to_choose]--;
 			} 
+
+			if(this.visualization){
+				this.renderer.updateRenderablePosition(this.entities[i]);
+			}
 		}
+	}
+
+	if(this.visualization){
+		this.renderer.render();
 	}
 	return this;
 }

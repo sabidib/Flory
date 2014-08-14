@@ -7148,7 +7148,7 @@ THREE.EventDispatcher.prototype = {
 
 THREE.Object3D = function () {
 
-	this.id = THREE.Object3DIdCount ++;
+	this.id = Flory.Entity.entityIDCount++;
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';

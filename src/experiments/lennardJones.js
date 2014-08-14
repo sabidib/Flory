@@ -8,12 +8,27 @@ Flory.LennardJones = function(epsilon,sigma){
 	Flory.Environment.call(this);
 	this.epsilon = (epsilon != undefined) ? epsilon : Flory.LennardJones.default_epsilon;
 	this.sigma = (sigma != undefined) ? sigma  : Flory.LennardJones.default_sigma;
+	this.data.rendererType = Flory.Environment.RendererType.PointCloud;
 }
 
 
 Flory.LennardJones.prototype = Object.create(Flory.Environment.prototype);
 
 Flory.LennardJones.prototype.constructor = Flory.LennardJones;
+
+Flory.LennardJones.prototype.addedEntity = function(entity){
+	if(entity instanceof Flory.Monomer){
+		entity.data.last_position = entity.position.clone();
+		if(this.visualization){			
+			this.renderer.updatePointList(this.entities);
+		}
+	}
+}
+
+Flory.LennardJones.prototype.setUpVisualization = function(){
+	this.renderer.updatePointList(this.entities);
+}
+
 
 Flory.LennardJones.prototype.update = function(additional){
 	for(var i = 0, len = this.entities.length;i < len;i++){
@@ -48,17 +63,15 @@ Flory.LennardJones.prototype.update = function(additional){
 			entity.acceleration = entity.force.mult(1.0/entity.mass);
 			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
 			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
-			if(this.visualization){
-				this.renderer.updateRenderablePosition(this.entities[i]);
-			}
-		}
-		if(this.visualization){
-			this.renderer.render();
-		}
+		}	
+	}	
+
+	if(this.visualization){
+		this.renderer.updatePointPositions(this.entities);
+		this.renderer.render();
 	}
+
 	return this;
-
-
 }
 
 

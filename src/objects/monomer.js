@@ -98,27 +98,42 @@ Flory.Monomer.prototype.distanceToSq =  function(a){
 Flory.Monomer.prototype.clone = function(){
         return new Flory.Monomer3D(this.radius,this.position);
     };
-Flory.Monomer.prototype.prepareRenderable = function(settings){
-    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
-
-    var dim = this.position.dimension();
-    if(dim >= 3){
-        this.geometry = new THREE.SphereGeometry(this.radius,segments,segments);
-    } else {
-        this.geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
-    }
-
-    color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
     
-    if(settings == undefined){
-        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});
-    } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
-        this.material = settings.material;
-    } else {
-        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+Flory.Monomer.prototype.prepareRenderable = function(settings){
+    var simple_render = false;
+    if(settings != undefined){
+        simple_render = (settings.simple_render == undefined) ? false : settings.simple_render;
     }
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+    if(simple_render){
+
+
+    } else {
+        var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
+
+        var dim = this.position.dimension();
+        if(dim >= 3){
+            this.geometry = new THREE.SphereGeometry(this.radius,segments,segments);
+        } else {
+            this.geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
+        }
+
+        var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+        
+        if(settings == undefined){
+            this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});
+        } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
+            this.material = settings.material;
+        } else {
+            this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+        }
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+    }
+
     return this;
+
+
+
 };
 
 

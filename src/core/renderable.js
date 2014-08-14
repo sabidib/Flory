@@ -2,6 +2,7 @@
  * @author sabidib
  */
 
+/** @constructor */
 Flory.Renderable = function(){
 	this.mesh = {};
 	this.geometry = {};

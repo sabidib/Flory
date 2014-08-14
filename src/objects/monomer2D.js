@@ -95,7 +95,7 @@ Flory.Monomer2D.prototype.clone = function(){
 Flory.Monomer2D.prototype.prepareRenderable = function(settings){
     var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
     this.geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
-    color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
     
     if(settings == undefined){
         this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});

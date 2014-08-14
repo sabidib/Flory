@@ -3,8 +3,10 @@
 import sys;
 import os;
 import subprocess;
+import simplejson as json;
+from optparse import OptionParser;
 
-
+compiler_jar_location = "compiler/compiler.jar";
 
 
 def cmd(args):
@@ -12,9 +14,57 @@ def cmd(args):
 	out,err = proc.communicate();
 	return [out,err];
 
+def compileDemos(minify):
+	print "Loading demo file location from demo_info.cfg";
+	with open('demo_info.cfg','r') as f:
+		data = json.load(f);
+
+	build_file_path = "../../build/";
+	root = "../../"
+	for demo in data:
+		final_build_location = build_file_path + "demo/"+demo['name'] +"/" + demo['name'] + ".js";
+		final_build_location_minimized = build_file_path + "demo/"+demo['name'] +"/" + demo['name'] + ".min.js";
+		final_build_location_file = open(final_build_location,"w");
+
+		for script in demo['scripts']:
+			script_location = root+script;
+			with open(script_location) as f:
+				final_build_location_file.write(f.read());
+			final_build_location_file.write("\n");
+
+		final_build_location_file.close();
+		command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level ADVANCED_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_build_location_minimized;
+		print "    " + command;
+		
+		if(minify):
+			java_output = cmd(command);
+			
+			if(java_output[1] != ""):
+				print ""
+				print "Error :"
+				print "";
+				sys.stderr.write(java_output[1] + '\n');
+				print "Cleaning up";
+				print "";
+				print  java_output[0];
+				sys.exit(1);
+
+
+def parseArgs(argv):
+	parser = OptionParser();
+	parser.add_option("-m", "--minify", action="store_true", default=False, dest="minify",help="minify the output");
+	options,args = parser.parse_args(argv);
+	return options;
+
+
+
+
 #TODO: Add commandline args for compiling different parts
 def main(argv):
-
+	options = parseArgs(argv);
+	
+	minify = options.minify;
+	print minify;
 
 	print "";
 	print "Starting Build";
@@ -48,20 +98,24 @@ def main(argv):
 
 	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_minimized_build_location;
 	print "    " + command;
-	
-	java_output = cmd(command);
-	
-	if(java_output[1] != ""):
-		print ""
-		print "Error :"
-		print "";
-		sys.stderr.write(java_output[1] + '\n');
-		print "Cleaning up";
-		open(final_build_location,"w").close();
-		print "";
-		print  java_output[0];
-		sys.exit(1);
+	if(minify):
+		java_output = cmd(command);
+		
+		if(java_output[1] != ""):
+			print ""
+			print "Error :"
+			print "";
+			sys.stderr.write(java_output[1] + '\n');
+			print "Cleaning up";
+			open(final_build_location,"w").close();
+			print "";
+			print  java_output[0];
+			sys.exit(1);
 
+
+	print ""
+	print "Compiling Demos"
+	compileDemos(minify = minify);
 
 	print "Cleaning up";
 	print ""

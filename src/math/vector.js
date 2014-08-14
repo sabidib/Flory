@@ -72,7 +72,7 @@ Flory.Vector.prototype = {
 		return this;
 	},
 	mult : function(num){
-		components = [];
+		var components = [];
 		for(var i = 0, len = this.components.length; i <len; i++){
 			components[i] = num*this.components[i];
 		}
@@ -102,11 +102,13 @@ Flory.Vector.prototype = {
 	},
 
 	lengthSq : function(){
+
 		var sum = 0;
 
 		for(var i = 0,len = this.components.length;i < len; i++){
 			sum  += this.components[i]*this.components[i]; 
 		}
+
 		return sum;
 	},
 	
