@@ -60,7 +60,16 @@ Flory.Vector2.prototype = {
 	distanceToSq : function(a){
 		return ((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y)); 
 	},
-
+	zero : function(){
+		this.x = 0;
+		this.y = 0;
+		return this;
+	},
+	negate : function(){
+		this.x = -this.x;
+		this.y = -this.y;
+		return this;
+	},
 	clone : function(){
 		return new Flory.Vector2(this.x,this.y);
 	}

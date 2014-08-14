@@ -163,7 +163,18 @@ Flory.Vector.prototype = {
 
 		return sum;
 	},
-
+	zero : function(){
+		for(var i = 0, len = this.components.length; i < len;i++){
+			this.components[i] = 0;
+		}
+		return this;
+	},
+	negate : function(){
+		for(var i = 0, len = this.components.length; i < len;i++){
+			this.components[i] = -this.components[i];
+		}
+		return this;		
+	},
 	clone : function(){
 		return new Flory.Vector(this.components.slice(0));
 	}

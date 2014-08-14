@@ -66,7 +66,19 @@ Flory.Vector3.prototype = {
 	distanceToSq : function(a){
 		return ((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y) + (a.z - this.z)*(a.z - this.z)); 
 	},
-
+	
+	zero : function(){
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		return this;
+	},
+	negate : function(){
+		this.x = -this.x;
+		this.y = -this.y;
+		this.z = -this.z;
+		return this;
+	},
 	clone : function(){
 		return new Flory.Vector3(this.x,this.y,this.z);
 	}
