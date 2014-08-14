@@ -33,15 +33,11 @@ Flory.LennardJones.prototype.setUpVisualization = function(){
 Flory.LennardJones.prototype.update = function(additional){
 	for(var i = 0, len = this.entities.length;i < len;i++){
 		var entity = this.entities[i];
-		var tmp = new Flory.Vector(this.entities[i].position.dimension());
+		entity.force.zero();
 		if(entity instanceof Flory.Monomer){
-			for(var j = 0, len = this.entities.length;j < len;j++){
+			for(var j = 0, len = this.entities.length;j < i;j++){
 				var entity2 = this.entities[j];
 				if(entity2 instanceof Flory.Monomer){
-					if(entity2.id == entity.id){
-						continue;
-					}
-
 					var r = entity2.position.clone().sub(entity.position);
 					var r_mag = r.length();
 
@@ -51,10 +47,10 @@ Flory.LennardJones.prototype.update = function(additional){
 
 					var sigma_over_r = (this.sigma/r_mag);
 					var force = r.scale((-24*this.epsilon/(r_mag*r_mag))*(2*Math.pow(sigma_over_r,12) - Math.pow(sigma_over_r,6)));
-					tmp.add(force);
+					entity.force.add(force);
+					entity2.force.add(force.negate());
 				} 
 			}
-			entity.force = tmp.clone();
 		}
 	}
 	for(var i = 0 , len = this.entities.length; i < len; i++){
