@@ -36936,7 +36936,7 @@ Flory.Renderer.ShaderTypes = {}
  * @author sabidib
  */
 
-
+/** @constructor */
 Flory.PointCloudRenderer = function(){
 	Flory.Renderer.call(this);
 	this.data.particles = new THREE.Geometry();
@@ -37597,9 +37597,9 @@ function getRandomVector(max_x,max_y){
 
 
 
-var number_of_monomers = 300;
+var number_of_monomers = 5000;
 var spread = 0.5;
-var radius = 0.5;
+var radius = 1;
 var random = new Flory.RandomGen();
 
 var max_x = 50;
@@ -37611,7 +37611,6 @@ var ticks_per_frame = 1;
 var monomers = [];
 
 var sigma = Math.pow(0.5,(1.0/6.0));
-console.log(sigma);
 var epsilon  = 1;
 
 var lennard = new Flory.LennardJones(epsilon,sigma);
@@ -37629,20 +37628,20 @@ function getNonOverlappingMonomer(monomersGiven){
 
 
 
-// for(var i = 0; i < number_of_monomers;i++){
-// 	for(var j = 0; j < number_of_monomers;j++){
-// 		monomers.push(new Flory.Monomer(radius, 0, 1, {position : [i,j]}));	
-// 	}		
-// }
-
 for(var i = 0; i < number_of_monomers;i++){
-	monomers.push(getNonOverlappingMonomer(monomers));
+	for(var j = 0; j < number_of_monomers;j++){
+		monomers.push(new Flory.Monomer(radius, 0, 1, {position : [i,j]}));	
+	}		
+}
+
+for(var i = 0; i < number_of_monomers*number_of_monomers;i++){
+	//monomers.push(getNonOverlappingMonomer(monomers));
 	lennard.add(monomers[i]);	
 }
 
 
 
-lennard.enableVisualization();
+//lennard.enableVisualization();
 
 var k = 0;
 var fps = 0;

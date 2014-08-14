@@ -33,7 +33,7 @@ def compileDemos(minify):
 			final_build_location_file.write("\n");
 
 		final_build_location_file.close();
-		command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level ADVANCED_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_build_location_minimized;
+		command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_build_location_minimized;
 		print "    " + command;
 		
 		if(minify):

@@ -36936,7 +36936,7 @@ Flory.Renderer.ShaderTypes = {}
  * @author sabidib
  */
 
-
+/** @constructor */
 Flory.PointCloudRenderer = function(){
 	Flory.Renderer.call(this);
 	this.data.particles = new THREE.Geometry();
