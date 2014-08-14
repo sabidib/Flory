@@ -99,10 +99,6 @@ Flory.Monomer.prototype.clone = function(){
         return new Flory.Monomer3D(this.radius,this.position);
     };
     
-Flory.Monomer.prototype.prepareRenderable = function(settings){
-
-
-};
 
 
 
