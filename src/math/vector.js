@@ -119,14 +119,14 @@ Flory.Vector.prototype = {
 			for(var len = this.components.length;i < len; i++){
 				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
 			}
-			for(var len = a.components.length;i<len2;i++){
+			for(var len2 = a.components.length;i<len2;i++){
 				sum += (0 - a.components[i])*(0 - a.components[i]);
 			}
 		} else if(a.components.length < this.components.length){
 			for(var len = a.components.length;i < len; i++){
 				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
 			}
-			for(var len = this.components.length;i<len2;i++){
+			for(var len2 = this.components.length;i<len2;i++){
 			sum  += (this.components[i] - 0)*(this.components[i] - 0); 
 			}
 		} else {
@@ -145,14 +145,14 @@ Flory.Vector.prototype = {
 			for(var len = this.components.length;i < len; i++){
 				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
 			}
-			for(var len = a.components.length;i<len2;i++){
+			for(var len2 = a.components.length;i<len2;i++){
 				sum += (0 - a.components[i])*(0 - a.components[i]);
 			}
 		} else if(a.components.length < this.components.length){
 			for(var len = a.components.length;i < len; i++){
 				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
 			}
-			for(var len = this.components.length;i<len2;i++){
+			for(var len2 = this.components.length;i<len2;i++){
 			sum  += (this.components[i] - 0)*(this.components[i] - 0); 
 			}
 		} else {

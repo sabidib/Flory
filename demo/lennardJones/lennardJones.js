@@ -6,9 +6,9 @@ function getRandomVector(max_x,max_y){
 
 
 
-var number_of_monomers = 5000;
+var number_of_monomers = 5;
 var spread = 0.5;
-var radius = 1;
+var radius = 5;
 var random = new Flory.RandomGen();
 
 var max_x = 50;
@@ -39,18 +39,20 @@ function getNonOverlappingMonomer(monomersGiven){
 
 for(var i = 0; i < number_of_monomers;i++){
 	for(var j = 0; j < number_of_monomers;j++){
-		monomers.push(new Flory.Monomer(radius, 0, 1, {position : [i,j]}));	
+		for(var k = 0; k < number_of_monomers;k++){
+			monomers.push(new Flory.Monomer(radius, 0, 1, {position : [i,j,k]}));	
+		}
 	}		
 }
 
-for(var i = 0; i < number_of_monomers*number_of_monomers;i++){
+for(var i = 0; i < number_of_monomers*number_of_monomers*number_of_monomers;i++){
 	//monomers.push(getNonOverlappingMonomer(monomers));
 	lennard.add(monomers[i]);	
 }
 
 
 
-//lennard.enableVisualization();
+lennard.enableVisualization();
 
 var k = 0;
 var fps = 0;

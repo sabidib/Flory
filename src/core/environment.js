@@ -7,7 +7,7 @@ Flory.Environment = function(){
 	this.entities = [];
 	this.renderer = {};
 	this.data  = {};
-	this.data.rendererType = "default";
+	this.data.rendererType = Flory.Environment.RendererType.Default;
 	this.visualization = false;
 }
 
@@ -30,6 +30,18 @@ Flory.Environment.prototype = {
 		}
 		return this;
 	},
+	remove : function(entity){
+		for(var i = 0, len = this.entities.length; i  < len ; i++){
+			if(this.entities[i].id === entity.id){
+				this.entities.splice(i);
+				this.removedEntity(entity,entity.id,i);
+			}
+		}
+		return this;
+	},
+	removedEntity: function(entity,id,index){
+
+	},
 	addedEntity : function(){
 
 	},
@@ -43,7 +55,7 @@ Flory.Environment.prototype = {
 			this.renderer = new Flory.PointCloudRenderer();
 		}
 		this.visualization = true;
-		this.setUpVisualization();
+		this.setUpVisualization(data);
 		return this;
 	},
 	disableVisualization : function(){ 
@@ -51,11 +63,16 @@ Flory.Environment.prototype = {
 		var elem = this.renderer.renderer.domElement;
 		elem.parentElement.removeChild(elem);
 		this.visualization = false;
+		this.disabledVisualization();
 		return this;
 	},
 	setUpVisualization : function(){
 
 	},
+	disabledVisualization: function(){
+
+	}
+
 }
 
 
