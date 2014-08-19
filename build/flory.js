@@ -73,7 +73,19 @@ Flory.Vector3.prototype = {
 	distanceToSq : function(a){
 		return ((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y) + (a.z - this.z)*(a.z - this.z)); 
 	},
-
+	
+	zero : function(){
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		return this;
+	},
+	negate : function(){
+		this.x = -this.x;
+		this.y = -this.y;
+		this.z = -this.z;
+		return this;
+	},
 	clone : function(){
 		return new Flory.Vector3(this.x,this.y,this.z);
 	}
@@ -140,7 +152,16 @@ Flory.Vector2.prototype = {
 	distanceToSq : function(a){
 		return ((a.x - this.x)*(a.x - this.x) + (a.y - this.y)*(a.y - this.y)); 
 	},
-
+	zero : function(){
+		this.x = 0;
+		this.y = 0;
+		return this;
+	},
+	negate : function(){
+		this.x = -this.x;
+		this.y = -this.y;
+		return this;
+	},
 	clone : function(){
 		return new Flory.Vector2(this.x,this.y);
 	}
@@ -310,7 +331,18 @@ Flory.Vector.prototype = {
 
 		return sum;
 	},
-
+	zero : function(){
+		for(var i = 0, len = this.components.length; i < len;i++){
+			this.components[i] = 0;
+		}
+		return this;
+	},
+	negate : function(){
+		for(var i = 0, len = this.components.length; i < len;i++){
+			this.components[i] = -this.components[i];
+		}
+		return this;		
+	},
 	clone : function(){
 		return new Flory.Vector(this.components.slice(0));
 	}
@@ -615,10 +647,6 @@ Flory.Entity = function(){
 }
 
 Flory.Entity.prototype = Object.create(Flory.Renderable.prototype);
-
-Flory.Entity.prototype.update = function(data){
-		return undefined;
-	}
 
 Flory.Entity.entityIDCount = 0;
 
@@ -37510,14 +37538,13 @@ Flory.Renderer = function(scene,camera,renderables){
 	}
 
 	this.scene = (scene === undefined)? new THREE.Scene() : scene;
-	this.camera = (camera === undefined)? new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000) : camera;
+	this.camera = (camera === undefined)? new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000) : camera;
 	this.camera.position.set(0,0,100);
 	this.camera.up = new THREE.Vector3(0,0,1);
 	this.camera.lookAt(this.scene.position);	
 	this.scene.add(this.camera);
 	this.renderables = (renderables === undefined) ? {} : renderables;
   	var controls = new THREE.OrbitControls( this.camera );
-  	controls.addEventListener( 'change', this.render );
 }
 
 
@@ -37748,23 +37775,6 @@ Flory.Monomer2D.prototype.clone = function(){
     return new Flory.Monomer2D(this.radius,this.position);
 };
 
-Flory.Monomer2D.prototype.prepareRenderable = function(settings){
-    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
-    this.geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
-    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
-    
-    if(settings == undefined){
-        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});
-    } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
-        this.material = settings.material;
-    } else {
-        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
-    }
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    return this;
-};
-
-
 Flory.Monomer2D.defaultRadius = 1;
 /**
  * @author sabidib
@@ -37864,23 +37874,6 @@ Flory.Monomer3D.prototype.distanceToSq = function(a){
 Flory.Monomer3D.prototype.clone = function(){
         return new Flory.Monomer3D(this.radius,this.position);
     };
-
-Flory.Monomer3D.prototype.prepareRenderable = function(settings){
-    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
-    this.geometry = new THREE.SphereGeometry(this.radius,segments,segments);
-    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
-    
-    if(settings == undefined){
-        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});
-    } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
-        this.material = settings.material;
-    } else {
-        this.material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
-    }
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    return this;
-};
-
 
 
 Flory.Monomer3D.defaultRadius = 1;
@@ -37985,15 +37978,75 @@ Flory.Monomer.prototype.clone = function(){
         return new Flory.Monomer3D(this.radius,this.position);
     };
     
-Flory.Monomer.prototype.prepareRenderable = function(settings){
-
-
-};
 
 
 
 
 Flory.Monomer.defaultRadius = 1;
+/**
+ * @author sabidib
+ */
+
+
+Flory.Box2D = function(x,y,width,height,name){
+	Flory.Entity.call(this);
+	this.name = (name == undefined ? "Box2D" : name);
+	this.x = (x == undefined ? 0 : x);
+	this.y = (y == undefined ? 0 : y);
+	this.width = (width == undefined ? 0 : width);
+	this.height = (height == undefined ? 0 :height);
+}
+
+Flory.Box2D.prototype = Object.create(Flory.Entity);
+
+Flory.Box2D.prototype.contructor = Flory.Box2D;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @author sabidib
+ */
+
+
+Flory.Box3D = function(x,y,z,width,height,length,name){
+	Flory.Entity.call(this);
+	this.name = (name == undefined ? "Box3D" : name);
+	this.x = (x == undefined ? 0 : x);
+	this.y = (y == undefined ? 0 : y);
+	this.z = (y == undefined ? 0 : z);
+	this.width = (width == undefined ? 0 : width);
+	this.height = (height == undefined ? 0 :height);
+	this.length = (length == undefined ? 0 :length);
+}
+
+Flory.Box3D.prototype = Object.create(Flory.Entity);
+
+Flory.Box3D.prototype.contructor = Flory.Box3D;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * @author sabidib
  */
@@ -38015,6 +38068,7 @@ Flory.Newtonian.prototype.addedEntity = function(entity){
 	if(this.visualization){
 		if(entity instanceof Flory.Monomer || entity instanceof Flory.Monomer2D || entity instanceof Flory.Monomer3D){
 		    this.meshes.push(this.generateMonomerMesh(entity));
+			this.addRenderable(entity);
 		}
 	}
 	return this;
@@ -38128,6 +38182,67 @@ Flory.RandomWalk.prototype = Object.create(Flory.Environment.prototype);
 
 Flory.RandomWalk.prototype.constructor = Flory.RandomWalk;
 
+Flory.RandomWalk.prototype.removedEntity = function(entity,id,index){
+	if(this.visualization){
+		this.renderer.removeRenderable(id);
+	}
+}
+
+Flory.RandomWalk.prototype.addedEntity = function(entity){
+	if(this.visualization){	
+		entity.mesh = this.generateMonomerMesh(entity,this.data.visualization_data);
+		this.renderer.addRenderable(entity);
+	}
+	return this;
+}
+
+
+Flory.RandomWalk.prototype.generateMonomerMesh = function(entity,settings){
+
+	if(entity instanceof Flory.Monomer || entity instanceof Flory.Monomer2D || entity instanceof Flory.Monomer3D){
+		var material = {};
+		var geometry = {};
+
+        var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
+
+        var dim = entity.position.dimension();
+        if(dim >= 3){
+            geometry = new THREE.SphereGeometry(entity.radius,segments,segments);
+        } else {
+            geometry = new THREE.CircleGeometry(entity.radius, segments, 0, 2*3.14159265359);
+        }
+
+        var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+        
+        if(settings == undefined){
+            material = new THREE.MeshBasicMaterial({color : color_of_mesh});
+        } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
+            material = settings.material;
+        } else {
+            material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+        }
+        return new THREE.Mesh(geometry, material); 
+	} else {	
+		return undefined;
+	}
+}
+
+Flory.RandomWalk.prototype.setUpVisualization = function(data){
+	this.data.visualization_data = data;
+	for(var i = 0; i  < this.entities.length; i++){
+		this.entities[i].mesh = this.generateMonomerMesh(this.entities[i],data);
+		this.renderer.addRenderable(this.entities[i]);
+	}
+}
+
+Flory.RandomWalk.prototype.disabledVisualization = function(){
+	for(var i = 0; i  < this.entities.length; i++){
+		this.renderer.removeRenderable(this.entity[i]);
+	}
+	this.data.visualization_data = undefined;
+	delete this.data.visualization_data;
+}
+
 Flory.RandomWalk.prototype.update = function(additional){
 	for( var i = 0, len = this.entities.length;i<len;i++){
 		var entity = this.entities[i];
@@ -38197,15 +38312,11 @@ Flory.LennardJones.prototype.setUpVisualization = function(){
 Flory.LennardJones.prototype.update = function(additional){
 	for(var i = 0, len = this.entities.length;i < len;i++){
 		var entity = this.entities[i];
-		var tmp = new Flory.Vector(this.entities[i].position.dimension());
+		entity.force.zero();
 		if(entity instanceof Flory.Monomer){
-			for(var j = 0, len = this.entities.length;j < len;j++){
+			for(var j = 0, len = this.entities.length;j < i;j++){
 				var entity2 = this.entities[j];
 				if(entity2 instanceof Flory.Monomer){
-					if(entity2.id == entity.id){
-						continue;
-					}
-
 					var r = entity2.position.clone().sub(entity.position);
 					var r_mag = r.length();
 
@@ -38215,10 +38326,10 @@ Flory.LennardJones.prototype.update = function(additional){
 
 					var sigma_over_r = (this.sigma/r_mag);
 					var force = r.scale((-24*this.epsilon/(r_mag*r_mag))*(2*Math.pow(sigma_over_r,12) - Math.pow(sigma_over_r,6)));
-					tmp.add(force);
+					entity.force.add(force);
+					entity2.force.add(force.negate());
 				} 
 			}
-			entity.force = tmp.clone();
 		}
 	}
 	for(var i = 0 , len = this.entities.length; i < len; i++){

@@ -16,7 +16,7 @@ Flory.Renderer = function(scene,camera,renderables){
 	}
 
 	this.scene = (scene === undefined)? new THREE.Scene() : scene;
-	this.camera = (camera === undefined)? new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000) : camera;
+	this.camera = (camera === undefined)? new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000) : camera;
 	this.camera.position.set(0,0,100);
 	this.camera.up = new THREE.Vector3(0,0,1);
 	this.camera.lookAt(this.scene.position);	

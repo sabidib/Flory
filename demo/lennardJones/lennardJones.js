@@ -6,7 +6,7 @@ function getRandomVector(max_x,max_y){
 
 
 
-var number_of_monomers = 5;
+var number_of_monomers = 6;
 var spread = 0.5;
 var radius = 5;
 var random = new Flory.RandomGen();

@@ -19,6 +19,7 @@ Flory.Newtonian.prototype.addedEntity = function(entity){
 	if(this.visualization){
 		if(entity instanceof Flory.Monomer || entity instanceof Flory.Monomer2D || entity instanceof Flory.Monomer3D){
 		    this.meshes.push(this.generateMonomerMesh(entity));
+			this.addRenderable(entity);
 		}
 	}
 	return this;
