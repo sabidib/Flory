@@ -53,6 +53,7 @@ def compileDemos(minify):
 def parseArgs(argv):
 	parser = OptionParser();
 	parser.add_option("-m", "--minify", action="store_true", default=False, dest="minify",help="minify the output");
+	parser.add_option("-d", "--demo", action="store_true", default=False, dest="demos",help="build the demos");
 	options,args = parser.parse_args(argv);
 	return options;
 
@@ -61,10 +62,11 @@ def parseArgs(argv):
 
 #TODO: Add commandline args for compiling different parts
 def main(argv):
+	os.chdir(os.path.dirname(sys.argv[0]))
 	options = parseArgs(argv);
 	
 	minify = options.minify;
-	print minify;
+	demos = options.demos;
 
 	print "";
 	print "Starting Build";
@@ -114,8 +116,10 @@ def main(argv):
 
 
 	print ""
-	print "Compiling Demos"
-	compileDemos(minify = minify);
+	if(demos):
+		print "Compiling Demos"
+		compileDemos(minify = minify);
+	
 
 	print "Cleaning up";
 	print ""
