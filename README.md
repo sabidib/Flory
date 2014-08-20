@@ -26,8 +26,3 @@ The future?
 Things to be added over the next few weeks:
   * Simple data collection and processing.
   * On the fly experiment customization menu.
-
-<<<<<<< HEAD
-=======
-
->>>>>>> b80ed1328b4e1e1765c3e620b98e126568a68a61
