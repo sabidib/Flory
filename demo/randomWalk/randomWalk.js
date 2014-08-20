@@ -4,10 +4,10 @@
 settings = {
 	visualization : {
 		frames_per_second : 60,
-		ticks_per_frame : 1
+		ticks_per_frame : 100
 	},
 	experiment : {
-		number_of_monomers : 100,
+		number_of_monomers : 1000,
 		radius_of_monomers : 1,
 		mass_of_monomers : 1,
 		charge_of_monomers :0,
@@ -54,5 +54,6 @@ randomWalk.enableVisualization({segments : 20, color : 0x00FF00});
 
 var k = 0;
 var fps = 0;
-setInterval(function(){randomWalk.update();k++},1000/30);
+var viz = settings.visualization;
+setInterval(function(){randomWalk.update({ "number_of_steps" : viz.ticks_per_frame});k++},1000/viz.frames_per_second);
 setInterval(function(){fps = k;k=0;},1000);

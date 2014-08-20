@@ -40,16 +40,16 @@ Flory.Field.prototype = Object.create(Flory.Entity.prototype);
 Flory.Field.prototype.constructor = Flory.Field;
 
 	//TODO: OPTIMIZE THIS... it is currently O(n)
-	/**
-	 * Returns the force at the given position
-	 * by finding the closest point to the given position and returning
-	 * the associated vector
-	 * 
-	 * @param  {Vector} position 
-	 * @param  {Object} data  General data to be passed and used by sub classes.
-	 * @return {Vector}		The force at the given position          
-	 */
 
+/**
+ * Returns the force at the given position
+ * by finding the closest point to the given position and returning
+ * the associated vector
+ * 
+ * @param  {Vector} position 
+ * @param  {Object} data  General data to be passed and used by sub classes.
+ * @return {Vector}		The force at the given position          
+ */
 Flory.Field.prototype.getForce = function(position,data){
 		var closest = Infinity;
 		var index_of_closest = 0;

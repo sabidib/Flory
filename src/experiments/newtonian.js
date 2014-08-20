@@ -83,11 +83,12 @@ Flory.Newtonian.prototype.setUpVisualization = function(data){
 }
 
 Flory.Newtonian.prototype.update = function(additional){
-	for(var i = 0, len = this.entities.length;i < len;i++){
+	var len = this.entities.length;
+	for(var i = 0;i < len;i++){
 		var entity = this.entities[i];
 		var tmp = new Flory.Vector();
 		if(entity instanceof Flory.Monomer){
-			for(var j = 0, len = this.entities.length;j < len;j++){
+			for(var j = 0;j < len;j++){
 				var entity2 = this.entities[j];
 				if(entity2 instanceof Flory.Field){
 					var field = entity2;

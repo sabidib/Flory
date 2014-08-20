@@ -70,11 +70,6 @@ Flory.Field3D.prototype.getForce = function(position,data){
  * @return {this}
  */
 Flory.Field3D.prototype.combine = function(field){
-	
-
-
-
-
 
 }
 

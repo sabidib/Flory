@@ -77,28 +77,42 @@ Flory.RandomWalk.prototype.disabledVisualization = function(){
 }
 
 Flory.RandomWalk.prototype.update = function(additional){
-	for( var i = 0, len = this.entities.length;i<len;i++){
-		var entity = this.entities[i];
-		if(entity instanceof Flory.Monomer){
-			var number_of_dimensions = entity.position.dimension();
-			var dimension_increment = (1.0/number_of_dimensions);
-			var dimension_to_choose = 0;
-			var rnum = this.randomGen.random();
-			rnum -= dimension_increment;
-			while(rnum > 0){
-				rnum -= dimension_increment;
-				dimension_to_choose++;
-			}
-			//Choose the direction of movement in the dimension
-			rnum = this.randomGen.random();
-			if(rnum < 0.5){
-				entity.position.components[dimension_to_choose]++;
-			} else {
-				entity.position.components[dimension_to_choose]--;
-			} 
+	var len = this.entities.length;
+	var entity;
+	var number_of_dimensions;
+	var dimension_increment;
+	var dimension_to_choose;
+	var rnum;
+	var number_of_steps = 1;
 
-			if(this.visualization){
-				this.renderer.updateRenderablePosition(this.entities[i]);
+	if(additional.number_of_steps != undefined){
+		number_of_steps = additional.number_of_steps;
+	}
+
+	for(var k = 0; k < number_of_steps;k++){
+		for( var i = 0;i<len;i++){
+			entity = this.entities[i];
+			if(entity instanceof Flory.Monomer){
+				number_of_dimensions = entity.position.dimension();
+				dimension_increment = (1.0/number_of_dimensions);
+				dimension_to_choose = 0;
+				rnum = this.randomGen.random();
+				rnum -= dimension_increment;
+				while(rnum > 0){
+					rnum -= dimension_increment;
+					dimension_to_choose++;
+				}
+				//Choose the direction of movement in the dimension
+				rnum = this.randomGen.random();
+				if(rnum < 0.5){
+					entity.position.components[dimension_to_choose]++;
+				} else {
+					entity.position.components[dimension_to_choose]--;
+				} 
+
+				if(this.visualization){
+					this.renderer.updateRenderablePosition(this.entities[i]);
+				}
 			}
 		}
 	}
