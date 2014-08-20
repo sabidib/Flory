@@ -11,7 +11,7 @@
  * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
  */
 Flory.Monomer3D = function(radius,charge,mass,kinematics) {
-    Flory.Entity.call(this);
+    Flory.Particle.call(this);
 
 
     var position = undefined;
@@ -66,7 +66,7 @@ Flory.Monomer3D = function(radius,charge,mass,kinematics) {
 
 };
 
-Flory.Monomer3D.prototype = Object.create(Flory.Entity.prototype);
+Flory.Monomer3D.prototype = Object.create(Flory.Particle.prototype);
 
 
 

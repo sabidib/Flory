@@ -23,7 +23,7 @@ Flory.Monomer = function(radius,charge,mass,kinematics){
         return undefined;
     }
 
-    Flory.Entity.call(this);
+    Flory.Particle.call(this);
     
     var position = undefined;
     var velocity = undefined;
@@ -73,7 +73,7 @@ Flory.Monomer = function(radius,charge,mass,kinematics){
 }
 
 
-Flory.Monomer.prototype = Object.create(Flory.Entity.prototype);
+Flory.Monomer.prototype = Object.create(Flory.Particle.prototype);
 
     /**
      * Given the dimension index, will increment
