@@ -19,11 +19,16 @@ Check it out:
 ```
 http://127.0.0.1:8888/demo/
 ```
-To modify the demos open up the `demo/` folder and modify the .js files.
+
+=======
+To modify the demos check out
+```
+demo/
+```
+and modify the .js files.
 
 The future?
 -----
 Things to be added over the next few weeks:
   * Simple data collection and processing.
   * On the fly experiment customization menu.
-
