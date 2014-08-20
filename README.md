@@ -9,7 +9,7 @@ Open your trusty terminal to install and build Flory:
 mkdir flory
 git clone git://github.com/sabidib/flory flory
 cd flory
-/utils/build/build.py -m -d
+utils/build/build.py -m -d
 ```
 Start a local webserver to access the demos, a python webserver will do:
 ```sh
