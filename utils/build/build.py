@@ -78,14 +78,14 @@ def main(argv):
 
 	print "Loading source file order from source_order.cfg";
 
-	source_order = open("source_order.cfg","r");
+	with open('source_order.cfg','r') as f:
+		data = json.load(f);
 
 	final_build_location_file = open(final_build_location,"w");  
 	print "    Appending sources to " + final_build_location;
-	for line in source_order:
-		if(line == '\n'):
-			continue;
-		path = source_file_path + line.rstrip();
+	for file_name in data:
+		path = source_file_path + file_name.rstrip();
+		
 		print "        Appending source from: " + path;
 		with open(path) as f:
 			final_build_location_file.write(f.read());
