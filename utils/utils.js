@@ -69,7 +69,7 @@ function getNonOverlappingMonomer(monomersGiven,radius,mass,charge,min_distance_
 		//If count goes over 1million there probably is not enough room....
 		count++;
 	}
-	if(count > (1000000-5){
+	if(count > (1000000-5) ){
 		console.log("Flory: can't place a monomer that does not overlap with another. Tried 1million times...")
 		return undefined;
 	}

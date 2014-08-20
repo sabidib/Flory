@@ -38405,55 +38405,64 @@ Flory.Newtonian2D.prototype.update = function(additional){
 };
 
 
-function getRandomVector(max_x,max_y){
-		var x = random.random()*max_x*(0.5 - random.random());
-		var y = random.random()*max_y*(0.5 - random.random());
-		return  new Flory.Vector([x,y]);
-	}
+/**
+ * @author sabidib
+ */
+
+/**
+ * A demo for experiment/lennardJones.js .
+ * 
+ * Generates a cube made of monomers with a given side length.
+ * 
+ * The interaction between the monomers is given by the lennard jones potential
+ * and its parameters \sigma and \epsilon.
+ * 
+ */
 
 
 
-var number_of_monomers = 6;
-var spread = 0.5;
-var radius = 5;
 var random = new Flory.RandomGen();
 
-var max_x = 50;
-var max_y = 50;
-
-var frames_per_second = 60;
-var ticks_per_frame = 1;
-
-var monomers = [];
-
-var sigma = Math.pow(0.5,(1.0/6.0));
-var epsilon  = 1;
-
-var lennard = new Flory.LennardJones(epsilon,sigma);
-
-
-function getNonOverlappingMonomer(monomersGiven){
-	var vec = getRandomVector(100,100);
-	for(var j = 0; j < monomersGiven.length;j++){
-		if(monomersGiven[j].position.distanceToSq(vec) <= (radius*radius+4)){
-			getNonOverlappingMonomer(monomersGiven);
-		}
+settings = {
+	visualization : {
+		frames_per_second : 60,
+		ticks_per_frame : 1
+	},
+	experiment : {
+		side_length_of_cube : 6,
+		radius_of_monomers : 5,
+		mass_of_monomers : 1,
+		min_starting_distance_apart : 3,
+		starting_max_x : 50,
+		starting_max_y : 50,
+		starting_max_z : 50,
+		sigma : Math.pow(0.5,(1.0/6.0)),
+		epsilon : 1
 	}
-	return new Flory.Monomer(radius, 0, 1, {position : vec});
 }
 
 
 
-for(var i = 0; i < number_of_monomers;i++){
-	for(var j = 0; j < number_of_monomers;j++){
-		for(var k = 0; k < number_of_monomers;k++){
-			monomers.push(new Flory.Monomer(radius, 0, 1, {position : [i,j,k]}));	
+var exp = settings.experiment;
+
+var number_of_monomers = exp.side_length_of_cube*exp.side_length_of_cube*exp.side_length_of_cube;
+var monomers = [];
+
+var lennard = new Flory.LennardJones(exp.epsilon,exp.sigma);
+
+
+
+
+for(var i = 0; i < exp.side_length_of_cube;i++){
+	for(var j = 0; j < exp.side_length_of_cube;j++){
+		for(var k = 0; k < exp.side_length_of_cube;k++){
+			monomers.push(new Flory.Monomer(exp.radius_of_monomers, 0, exp.mass_of_monomers, {position : [i*exp.min_starting_distance_apart,j*exp.min_starting_distance_apart,k*exp.min_starting_distance_apart]}));	
 		}
 	}		
 }
 
-for(var i = 0; i < number_of_monomers*number_of_monomers*number_of_monomers;i++){
-	//monomers.push(getNonOverlappingMonomer(monomers));
+
+for(var i = 0; i < number_of_monomers;i++){
 	lennard.add(monomers[i]);	
 }
 

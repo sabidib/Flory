@@ -23,9 +23,9 @@ settings = {
 	},
 	experiment : {
 		side_length_of_cube : 6,
-		hollow : false,
 		radius_of_monomers : 5,
-		min_starting_distance_apart : 2,
+		mass_of_monomers : 1,
+		min_starting_distance_apart : 3,
 		starting_max_x : 50,
 		starting_max_y : 50,
 		starting_max_z : 50,
@@ -34,18 +34,22 @@ settings = {
 	}
 }
 
-var number_of_monomers = side_length_of_cube*side_length_of_cube*side_length_of_cube;
+
+
+var exp = settings.experiment;
+
+var number_of_monomers = exp.side_length_of_cube*exp.side_length_of_cube*exp.side_length_of_cube;
 var monomers = [];
 
-var lennard = new Flory.LennardJones(settings.experiment.epsilon,settings.experiment.sigma);
+var lennard = new Flory.LennardJones(exp.epsilon,exp.sigma);
 
 
 
 
-for(var i = 0; i < side_length_of_cube;i++){
-	for(var j = 0; j < side_length_of_cube;j++){
-		for(var k = 0; k < side_length_of_cube;k++){
-			monomers.push(new Flory.Monomer(radius, 0, 1, {position : [i*min_starting_distance_apart,j*min_starting_distance_apart,k*min_starting_distance_apart]}));	
+for(var i = 0; i < exp.side_length_of_cube;i++){
+	for(var j = 0; j < exp.side_length_of_cube;j++){
+		for(var k = 0; k < exp.side_length_of_cube;k++){
+			monomers.push(new Flory.Monomer(exp.radius_of_monomers, 0, exp.mass_of_monomers, {position : [i*exp.min_starting_distance_apart,j*exp.min_starting_distance_apart,k*exp.min_starting_distance_apart]}));	
 		}
 	}		
 }
