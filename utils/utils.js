@@ -1,12 +1,24 @@
 /**
  * @author sabidib
 */
+
 Flory._random = new Flory.RandomGen();
 
 
 /**
  * Provides various utility functions for demos.
  */
+
+
+
+
+/**
+ * Function
+ * Returns a random number (0,1).
+ * @return {[Float]} a random number (0,1)
+ */
+Flory.rand = Flory._random.random;
+
 
 /**
  * Provides a Flory.Vector object with the dimension equal
@@ -18,7 +30,7 @@ Flory._random = new Flory.RandomGen();
  * @param  {[Float]} max_z 
  * @return {[Flory.Vector]}    
  */
-function getRandomVector(max_x,max_y,max_z){
+Flory.getRandomVector = function(max_x,max_y,max_z){
 
 	var x = Flory._random.random()*max_x*(0.5 - random.random());
 	var y = Flory._random.random()*max_y*(0.5 - random.random());
@@ -36,7 +48,7 @@ function getRandomVector(max_x,max_y,max_z){
 
 }
 
- /**
+/**
  * Given an array of monomers, the function will return
  * a Flory.Monomer object in the same dimension as the max dimensions given
  * that does not overlap with another monomer based on the radius of the monomers.
@@ -50,7 +62,7 @@ function getRandomVector(max_x,max_y,max_z){
  * @param  {[Float]} max_z_dim          		[]
  * @return {[Flory.Monomer]}                    []
  */
-function getNonOverlappingMonomer(monomersGiven,radius,mass,charge,min_distance_apart,max_x_dim,max_y_dim,max_z_dim){
+Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_distance_apart,max_x_dim,max_y_dim,max_z_dim){
 	var vec = {};
 	var count = 0;
 	while(count < 1000000){
