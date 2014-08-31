@@ -87,3 +87,18 @@ Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_d
 	}
 	return new Flory.Monomer(radius, charge, mass, {position : vec});
 }
+
+
+Flory.generateGUID = function() {
+  
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+               .toString(16)
+               .substring(1);
+  }
+
+  	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+           s4() + '-' + s4() + s4() + s4();
+  
+  
+}

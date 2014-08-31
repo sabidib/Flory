@@ -22,7 +22,8 @@ Flory.Renderer = function(scene,camera,renderables){
 	this.camera.lookAt(this.scene.position);	
 	this.scene.add(this.camera);
 	this.renderables = (renderables === undefined) ? {} : renderables;
-  	var controls = new THREE.OrbitControls( this.camera );
+  	var controls = new THREE.OrbitControls(this.camera,this.renderer.domElement);
+  	controls.addEventListener( 'change', function(){this.render} );
 }
 
 

@@ -48,7 +48,7 @@ Flory.Vector3.prototype = {
 	},
 	
 	dot : function(a){
-		return this.x * a.x + this.y * a.y + this.z * a.z;
+		return (this.x * a.x + this.y * a.y + this.z * a.z);
 	},
 
 	length : function(){
@@ -56,7 +56,7 @@ Flory.Vector3.prototype = {
 	},
 
 	lengthSq : function(){
-		return this.x*this.x + this.y*this.y + this.z*this.z;
+		return (this.x*this.x + this.y*this.y + this.z*this.z);
 	},
 	
 	distanceTo : function(a){
