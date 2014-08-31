@@ -3,8 +3,12 @@
  */
 
 
-#options  {
+#option-menu  {
 	position : absolute;
+	background-color: rgb(150,150,150);
+	width : auto;
+	height :auto;
 	z-index: 5;
 } 
+
 
