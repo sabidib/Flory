@@ -22,10 +22,10 @@ settings = {
 		ticks_per_frame : 1
 	},
 	experiment : {
-		side_length_of_cube : 6,
-		radius_of_monomers : 5,
+		side_length_of_cube : 9,
+		radius_of_monomers : 1,
 		mass_of_monomers : 1,
-		min_starting_distance_apart : 3,
+		min_starting_distance_apart : 1,
 		starting_max_x : 50,
 		starting_max_y : 50,
 		starting_max_z : 50,

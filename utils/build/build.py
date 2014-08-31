@@ -7,7 +7,7 @@ import simplejson as json;
 from optparse import OptionParser;
 
 compiler_jar_location = "compiler/compiler.jar";
-
+divider_string = "-"*(int(60));
 
 def cmd(args):
 	proc = subprocess.Popen(args,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True);
@@ -15,6 +15,7 @@ def cmd(args):
 	return [out,err];
 
 def compileDemos(minify):
+	print "";
 	print "Loading demo file location from demo_info.cfg";
 	with open('demo_info.cfg','r') as f:
 		data = json.load(f);
@@ -31,8 +32,9 @@ def compileDemos(minify):
 			with open(script_location) as f:
 				final_build_location_file.write(f.read());
 			final_build_location_file.write("\n");
-
 		final_build_location_file.close();
+
+		
 		command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_build_location_minimized;
 		print "    " + command;
 		
@@ -48,36 +50,16 @@ def compileDemos(minify):
 				print "";
 				print  java_output[0];
 				sys.exit(1);
-
-
-def parseArgs(argv):
-	parser = OptionParser();
-	parser.add_option("-m", "--minify", action="store_true", default=False, dest="minify",help="minify the output");
-	parser.add_option("-d", "--demo", action="store_true", default=False, dest="demos",help="build the demos");
-	options,args = parser.parse_args(argv);
-	return options;
-
-
-
-
-#TODO: Add commandline args for compiling different parts
-def main(argv):
-	os.chdir(os.path.dirname(sys.argv[0]))
-	options = parseArgs(argv);
-	
-	minify = options.minify;
-	demos = options.demos;
-
-	print "";
-	print "Starting Build";
 	print "";
 
+
+def compileBaseSource(minify):
 	source_file_path = "../../src/";
 	final_minimized_build_location = "../../build/flory.min.js"
 	final_build_location = "../../build/flory.js"
 	compiler_jar_location = "compiler/compiler.jar";
 
-
+	print "";
 	print "Loading source file order from source_order.cfg";
 
 	with open('source_order.cfg','r') as f:
@@ -113,19 +95,81 @@ def main(argv):
 			print "";
 			print  java_output[0];
 			sys.exit(1);
-
-
 	print ""
+
+
+def parseArgs(argv):
+	parser = OptionParser();
+	parser.add_option("-m", "--minify", action="store_true", default=False, dest="minify",help="minify the output.");
+	parser.add_option("-d", "--demo", action="store_true", default=False, dest="demos",help="build the demos.");
+	parser.add_option("-n", "--no_source", action="store_false", default=True, dest="base",help="do not build the base source file.");
+	options,args = parser.parse_args(argv);
+	return options;
+
+
+
+
+
+
+def main(argv):
+	os.chdir(os.path.dirname(sys.argv[0]))
+	options = parseArgs(argv);
+	
+	base = options.base;
+	minify = options.minify;
+	demos = options.demos;
+
+	if(base is False and demos is True):
+		print "";
+		print "The base source needs to be built to build the demos, remove the -n argument to build base source files."
+		print "Proceeding without building base source files."
+
+	#
+	##
+	###
+	# Starting Build
+	###
+	##
+	#
+
+	print "";
+	print "Starting Build";
+	print "";
+
+	print divider_string
+	##################################################
+	################# Base Source ####################
+	if(base):
+		print "Compiling Source"
+		compileBaseSource(minify = minify);
+
+
+	print divider_string
+
+	##################################################
+	################# Demo Source ####################
 	if(demos):
 		print "Compiling Demos"
 		compileDemos(minify = minify);
 	
+	print divider_string
+
+	##################################################
+
 
 	print "Cleaning up";
 	print ""
 	print "Done";
 	print "";
 	sys.exit(0);
+
+	#
+	##
+	###
+	# Ending Build
+	###
+	##
+	#
 
 
 if __name__ == "__main__":
