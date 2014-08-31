@@ -38709,9 +38709,9 @@ Flory.Options.prototype = {
 		h += "<div class='option'>"
 			if(has_text_box){
 				h += "<input class='text-box-above-slider' id='"+text_box_id+"' type='number' name='"+name+"' min='"+min+"' max='"+max+"' value='"+value+"'>"
-				h += "<input class='range-slider-with-text-box' id='"+input_id+"' type='range' value='"+value+"'' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
+				h += "<input class='range-slider-with-text-box' id='"+input_id+"' type='range' data-key='"+name+"' value='"+value+"'' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
 			} else {
-				h += "<input class='range-slider' id='"+input_id+"' type='range' value='"+value+"'' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
+				h += "<input class='range-slider' id='"+input_id+"' type='range' value='"+value+"'' data-key='"+name+"' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
 			}
 
 		h += "</div>"
