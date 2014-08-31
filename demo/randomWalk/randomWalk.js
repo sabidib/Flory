@@ -31,12 +31,24 @@ settings = {
    	       	slider : true,
            	has_text_box : true,
            	step : 0.01
+		},
+		{
+			name : "test",
+			type : "string",
+			value : "Test string",
+			editable : true
+		},
+		{
+			name : "checkbox",
+			type : "checkbox",
+			value : true,
+			editable : true,
 		}
 	] 
 }
 
 
-var randomWalk = new Flory.Options(settings,"options");
+var random_walk_options = new Flory.Options(settings,"options");
 
 
 var random = new Flory.RandomGen();
@@ -46,14 +58,6 @@ var randomWalk = new Flory.RandomWalk(1);
 
 
 var exp = settings.experiment;
-
-
-
-
-
-
-
-
 
 
 for(var i = 0; i < exp.number_of_monomers;i++){
@@ -89,16 +93,25 @@ var total_steps = 0;
 var viz = settings.visualization;
 var m = setInterval(
 	function(){
-		if(total_steps < viz.number_of_steps){
+
+		if(random_walk_options.getValue("checkbox")){
 			randomWalk.update({
 				 "number_of_steps" : viz.ticks_per_frame
 				});
-			total_steps += viz.ticks_per_frame;
-			k++;
 		} else {
-			randomWalk.renderer.render();
-			k++;
-		}	
+		
+				randomWalk.renderer.render();
+				// if(total_steps < viz.number_of_steps){
+				// 	randomWalk.update({
+				// 		 "number_of_steps" : viz.ticks_per_frame
+				// 		});
+				// 	total_steps += viz.ticks_per_frame;
+				// 	k++;
+				// } else {
+				// 	randomWalk.renderer.render();
+				// 	k++;
+				// }	
+		}
 
 	}
 	,

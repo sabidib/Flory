@@ -15,13 +15,25 @@
  * 		{
  * 		name : "Radius"
  * 		type : "float,
- *  	value : 5.0
+ *  	value : 5.0,
+ *  	label : "radius",
  *  	editable : true,
  *  	min : 0.1 ,
  *  	max : 10,
  *  	slider : true
  *   ]    
  * }
+ * The name variable must be unique.
+ *
+ * 
+ * Valid options for the "type" parameter are :
+ * 		[
+ * 			"integer",
+ * 			"float",
+ * 			"number",
+ * 			"string",
+ * 			"checkbox"
+ * 		]
  *
  * m = new Flory.Options(opt,"html_id");
  * m.update();
@@ -49,24 +61,26 @@ Flory.Options.prototype = {
 
 
 		var h = "";
-		h += "<div id='border'>";
+		h += "<div id='option-menu'>";
 
 
 		for(var i = 0, len = json.options.length; i < len;i++){
 			
 			var opt = json.options[i];
 			
-			if(opt.type == "float" || opt.type == "integer"){
+			if(opt.type == "float" || opt.type == "integer" || opt.type == "number"){
 				if(opt.slider){						
-					var result = this.generateRangeSlider(opt.value,opt.min,opt.max,opt.name,opt.step,opt.has_text_box,opt.text_box_is_editable);
+					var result = this.generateRangeSlider(opt.value,opt.min,opt.max,opt.name,opt.label,opt.step,opt.has_text_box,opt.text_box_is_editable);
+					var number_slider_id = result.input_id;
+					var number_text_box_id = result.text_box_id;
 					if(opt.has_text_box){
 						listeners.push(
 							function(){
-								$("#"+result.input_id).on("input",function(){
-									 $("#"+result.text_box_id).val(this.value);
+								$("#"+number_slider_id).on("input",function(){
+									 $("#"+number_text_box_id).val(this.value);
 								});
-								$("#"+result.text_box_id).on("change",function(){
-									$("#"+result.input_id).val(this.value);
+								$("#"+number_text_box_id).on("change",function(){
+									$("#"+number_slider_id).val(this.value);
 								});
 							}
 						);
@@ -75,18 +89,24 @@ Flory.Options.prototype = {
 
 					h += result.html;
 				} else {
-					result = this.generateTextBox(opt.value,opt.name);
+					result = this.generateTextBox(opt.value,opt.name,opt.label);
 					h += result.html;
 				}
+			} else if(opt.type == "string" ){
+				var result = this.generateTextBox(opt.value,opt.name,"text",opt.label);
+				h += result.html;
+			} else if(opt.type == "checkbox"){
+				var result = this.generateCheckBox(opt.value,opt.name,opt.label);
+				h+= result.html;
 			}
-
-
 
 		}
 
 		h += "</div>";		
 
 		html_handle.html(h);
+		html_handle.draggable();
+
 		for(var i = 0; i < listeners.length;i++){
 			listeners[i]();
 		}
@@ -94,22 +114,31 @@ Flory.Options.prototype = {
 	} ,
 
 
-	generateTextBox : function(value,name,type){
+	generateTextBox : function(value,name,type,label){
 		var h = "";
+		if(label == undefined){
+			label = name;
+		}
+
 		var text_box_id = Flory.generateGUID();
 		h += "<div class='option'>";
+		h += "<label for='"+name+"'>"+label+"</label>"
 		var input_type = type != undefined ? type : '';
-		h += "<input class='text-box' type='"+input_type+"' id='"+text_box_id+"' name='"+name+"' value='"+value+"' "; 
+		h += "<input class='text-box' type='"+input_type+"' data-key='"+name+"' id='"+text_box_id+"' name='"+name+"' value='"+value+"' "; 
 		h += "</div>";
 		return {"html" : h, "text_box_id" : text_box_id};
 
 	},
 
-	generateRangeSlider : function(value,min,max,name,step,has_text_box,text_box_is_editable){
+	generateRangeSlider : function(value,min,max,name,label,step,has_text_box,text_box_is_editable){
 		var h = "";
+		if(label == undefined){
+			label = name;
+		}
 		var input_id = Flory.generateGUID();
 		var text_box_id = Flory.generateGUID();
 		h += "<div class='option'>"
+		h += "<label for='"+name+"'>"+label+"</label>"
 			if(has_text_box){
 				h += "<input class='text-box-above-slider' id='"+text_box_id+"' type='number' name='"+name+"' min='"+min+"' max='"+max+"' value='"+value+"'>"
 				h += "<input class='range-slider-with-text-box' id='"+input_id+"' type='range' data-key='"+name+"' value='"+value+"'' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
@@ -121,20 +150,43 @@ Flory.Options.prototype = {
 		return {"html" : h, "input_id" : input_id,"text_box_id" : text_box_id};
 	},
 
+	generateCheckBox : function(checked,name,label){
+		var h = "";
+
+		if(label == undefined){
+			label = name;
+		}
+
+		var check_box_id = Flory.generateGUID();
+		h += "<div class='option'>"
+		h += "<label for='"+name+"'>"+label+"</label>"
+
+		h += "<input class='checkbox' name='"+name+"' data-key='"+name+"' id='"+check_box_id+"' type='checkbox' value='i-am-a-check-box-causing-errors' ";
+		if(checked){
+			h += "checked"
+		}
+		h += ">"
+		h += "</div>";
+
+		return {"html" : h , "check_box_id" : check_box_id }
+	},
+
 	update : function(){
 
 
 	},
 
 	updateValue : function(key,value){
-
-
-
+		$("[name='"+key+"']").val(value).change();
 	},
 
 	getValue : function(key){
-
-
+		var k =  $("[name='"+key+"'").val();
+		if(k == "i-am-a-check-box-causing-errors"){
+			return $("[name='"+key+"']").is(':checked');
+		} else {
+			return k;
+		}
 	},
 
 	getValues : function(){
