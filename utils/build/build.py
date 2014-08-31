@@ -151,8 +151,7 @@ def main(argv):
 	if(demos):
 		print "Compiling Demos"
 		compileDemos(minify = minify);
-	
-	print divider_string
+		print divider_string
 
 	##################################################
 
