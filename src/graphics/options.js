@@ -32,9 +32,14 @@
  * 			"float",
  * 			"number",
  * 			"string",
- * 			"checkbox"
+ * 			"checkbox",
+ * 			"button"
  * 		]
  *
+ *For the "button" type a function placed in the "calback"
+ *variable can be set that will be called when the button is pressed.
+ *
+ * 
  * m = new Flory.Options(opt,"html_id");
  * m.update();
  * var json_of_values = m.getValues();
@@ -43,11 +48,11 @@
  */
 
 
-Flory.Options = function(object,html_id_handle){
+Flory.Options = function(object,html_id_handle,draggable){
 	this.data = {};
 	this.json = object;
 	this.html_handle = $("#"+html_id_handle);
-	this.generateAndPlace(object,this.html_handle);
+	this.generateAndPlace(object,this.html_handle,draggable);
 }
 
 
@@ -55,7 +60,7 @@ Flory.Options = function(object,html_id_handle){
 Flory.Options.prototype = {
 	constructor : Flory.Options,
 
-	generateAndPlace: function(json,html_handle){
+	generateAndPlace: function(json,html_handle,draggable){
 
 		var listeners = [];
 
@@ -98,6 +103,18 @@ Flory.Options.prototype = {
 			} else if(opt.type == "checkbox"){
 				var result = this.generateCheckBox(opt.value,opt.name,opt.label);
 				h+= result.html;
+			} else if(opt.type == "button"){
+				var result = this.generateButton(opt.value,opt.name,opt.label);
+                var callback = opt.callback;
+                var button_id = result.button_id;
+                if(callback){
+                    listeners.push(function(){
+                        $("#"+button_id).on("click",function(){
+                            callback(button_id);                            
+                        });
+                    });
+                }
+                h += result.html;
 			}
 
 		}
@@ -105,14 +122,29 @@ Flory.Options.prototype = {
 		h += "</div>";		
 
 		html_handle.html(h);
-		html_handle.draggable();
+        if(draggable){
+            html_handle.draggable();
+        }
 
 		for(var i = 0; i < listeners.length;i++){
 			listeners[i]();
 		}
 		
 	} ,
+	generateButton : function(value,name,label){
+		var h  = "";
+		if(label == undefined){
+			label = name;
+		}
 
+		var button_id = Flory.generateGUID();
+		h += "<div class='option'>";
+		h += "<label for='"+name+"'>" +label+ "</label>";
+        h += "<button class='button' id='"+button_id+"'>" + value + "</button>";   
+        h += "</div>";
+
+        return {"html" : h, "button_id" : button_id}
+	},
 
 	generateTextBox : function(value,name,type,label){
 		var h = "";
@@ -124,7 +156,7 @@ Flory.Options.prototype = {
 		h += "<div class='option'>";
 		h += "<label for='"+name+"'>"+label+"</label>"
 		var input_type = type != undefined ? type : '';
-		h += "<input class='text-box' type='"+input_type+"' data-key='"+name+"' id='"+text_box_id+"' name='"+name+"' value='"+value+"' "; 
+		h += "<input class='text-box' type='"+input_type+"' data-key='"+name+"' id='"+text_box_id+"' name='"+name+"' value='"+value+"'> "; 
 		h += "</div>";
 		return {"html" : h, "text_box_id" : text_box_id};
 
