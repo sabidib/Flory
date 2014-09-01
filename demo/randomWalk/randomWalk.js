@@ -43,6 +43,14 @@ settings = {
 			type : "checkbox",
 			value : true,
 			editable : true,
+		},
+		{
+			name : "button",
+			type : "button",
+			value : "This is a button",
+			callback : function(){
+
+			}
 		}
 	] 
 }
@@ -96,7 +104,7 @@ var m = setInterval(
 
 		if(random_walk_options.getValue("checkbox")){
 			randomWalk.update({
-				 "number_of_steps" : viz.ticks_per_frame
+				 "number_of_steps" : random_walk_options.getValue("radius")
 				});
 		} else {
 		
