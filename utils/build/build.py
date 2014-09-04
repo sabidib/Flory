@@ -35,7 +35,7 @@ def compileDemos(minify):
 		final_build_location_file.close();
 
 		
-		command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_build_location_minimized;
+		command = "java -jar " + compiler_jar_location + " " + final_build_location + " --warning_level=QUIET --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_build_location_minimized;
 		print "    " + command;
 		
 		if(minify):
@@ -80,7 +80,7 @@ def compileBaseSource(minify):
 	print "";
 	print "Compiling " + final_build_location +  " into " + final_minimized_build_location;
 
-	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_minimized_build_location;
+	command = "java -jar " + compiler_jar_location + " " + final_build_location + " --warning_level=QUIET --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_minimized_build_location;
 	print "    " + command;
 	if(minify):
 		java_output = cmd(command);

@@ -48,11 +48,11 @@
  */
 
 
-Flory.Options = function(object,html_id_handle,draggable){
+Flory.Options = function(object,html_id_handle){
 	this.data = {};
 	this.json = object;
 	this.html_handle = $("#"+html_id_handle);
-	this.generateAndPlace(object,this.html_handle,draggable);
+	this.generateAndPlace(object,this.html_handle);
 }
 
 
@@ -60,7 +60,7 @@ Flory.Options = function(object,html_id_handle,draggable){
 Flory.Options.prototype = {
 	constructor : Flory.Options,
 
-	generateAndPlace: function(json,html_handle,draggable){
+	generateAndPlace: function(json,html_handle){
 
 		var listeners = [];
 
@@ -88,8 +88,7 @@ Flory.Options.prototype = {
 									$("#"+number_slider_id).val(this.value);
 								});
 							}
-						);
-					
+						); 
 					}
 
 					h += result.html;
@@ -122,9 +121,6 @@ Flory.Options.prototype = {
 		h += "</div>";		
 
 		html_handle.html(h);
-        if(draggable){
-            html_handle.draggable();
-        }
 
 		for(var i = 0; i < listeners.length;i++){
 			listeners[i]();
