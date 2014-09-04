@@ -68,6 +68,10 @@ var randomWalk = new Flory.RandomWalk(1);
 var exp = settings.experiment;
 
 
+
+
+
+
 for(var i = 0; i < exp.number_of_monomers;i++){
 	if(exp.start_at_position == undefined){
 		monomers.push(
@@ -99,26 +103,64 @@ var fps = 0;
 var msd = 0;
 var total_steps = 0;
 var viz = settings.visualization;
+
+
+
+var displays = 
+{
+	display :
+	[
+		{
+			name : "MSD",
+			label : "Mean^2 Displacement",
+			value : function(){
+				return calculator.meanSquareMonomerDisplacement(monomers);
+			}
+		},
+		{
+			name : "timesteps",
+			label : "Timestepping",
+			value : function(){
+				return total_steps;
+			}
+		},
+		{
+			name : "MD",
+			label : "Mean Displacement",
+			value : function(){
+				return calculator.meanMonomerDisplacement(monomers);
+			}
+		},
+		{
+			name : "MP",
+			label : "Mean Position",
+			value : function(){
+				return calculator.meanMonomerPosition(monomers);
+			}
+		}
+	]
+}
+
+
+var random_walk_display = new Flory.Display(displays,"stats")
+
+
+
+
 var m = setInterval(
 	function(){
+
+		random_walk_display.updateValues();
 
 		if(random_walk_options.getValue("checkbox")){
 			randomWalk.update({
 				 "number_of_steps" : random_walk_options.getValue("radius")
 				});
+			total_steps++;
+			k++;
+
 		} else {
-		
-				randomWalk.renderer.render();
-				// if(total_steps < viz.number_of_steps){
-				// 	randomWalk.update({
-				// 		 "number_of_steps" : viz.ticks_per_frame
-				// 		});
-				// 	total_steps += viz.ticks_per_frame;
-				// 	k++;
-				// } else {
-				// 	randomWalk.renderer.render();
-				// 	k++;
-				// }	
+			randomWalk.renderer.render();
 		}
 
 	}
