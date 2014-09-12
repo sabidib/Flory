@@ -7,7 +7,7 @@ Quick Start
 Open your trusty terminal to install and build Flory:
 ```sh
 mkdir flory
-git clone git://github.com/sabidib/flory flory
+git clone https://github.com/sabidib/flory.git
 cd flory
 utils/build/build.py -m -d
 ```
