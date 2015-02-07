@@ -15111,8 +15111,10 @@ Flory.Environment.prototype = {
 	},
 	disabledVisualization: function(){
 
+	},
+	resetEnvironment : function(){
+		
 	}
-
 }
 
 
@@ -52289,6 +52291,7 @@ Flory.Options = function(object,html_id_handle){
 	this.data = {};
 	this.json = object;
 	this.html_handle = $("#"+html_id_handle);
+	this.option_list = [];
 	this.generateAndPlace(object,this.html_handle);
 }
 
@@ -52309,6 +52312,10 @@ Flory.Options.prototype = {
 		for(var i = 0, len = json.options.length; i < len;i++){
 			
 			var opt = json.options[i];
+			var opt_to_push = {};
+
+			opt_to_push.name = opt.name;
+
 			
 			if(opt.type == "float" || opt.type == "integer" || opt.type == "number"){
 				if(opt.slider){						
@@ -52327,17 +52334,20 @@ Flory.Options.prototype = {
 							}
 						); 
 					}
-
+					opt_to_push.ids = {"number_slider_id" : number_slider_id , "number_text_box_id" : number_text_box_id};
 					h += result.html;
 				} else {
 					result = this.generateTextBox(opt.value,opt.name,opt.label);
+					opt_to_push.ids = {"text_box_id" : result.text_box_id };
 					h += result.html;
 				}
 			} else if(opt.type == "string" ){
 				var result = this.generateTextBox(opt.value,opt.name,"text",opt.label);
+				opt_to_push.ids = {"text_box_id" : result.text_box_id };
 				h += result.html;
 			} else if(opt.type == "checkbox"){
 				var result = this.generateCheckBox(opt.value,opt.name,opt.label);
+					opt_to_push.ids = {"check_box_id" : result.check_box_id };
 				h+= result.html;
 			} else if(opt.type == "button"){
 				var result = this.generateButton(opt.value,opt.name,opt.label);
@@ -52350,6 +52360,7 @@ Flory.Options.prototype = {
                         });
                     });
                 }
+				opt_to_push.ids = {"button_id" : result.button_id };
                 h += result.html;
 			}
 
@@ -52499,7 +52510,7 @@ Flory.Display.prototype = {
 
 	generateAndPlace : function(object,html_handle){
 		var listeners = []
-		var h = {};
+		var h = "";
 
 		h += "<div id='display-menu'>";
 		for(var  i = 0, len = this.json.display.length; i < len; i++){
@@ -52548,9 +52559,6 @@ Flory.Display.prototype = {
 	updateValue : function(name){
 		$("[data-key='"+name+"'").val(this.value_functions[name]());
 	}
-
-
-
 
 }
 
@@ -53155,6 +53163,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 		for( var i = 0;i<len;i++){
 			entity = this.entities[i];
 			if(entity instanceof Flory.Monomer){
+				prob_right = 0.5;
 				number_of_dimensions = entity.position.dimension();
 				dimension_increment = (1.0/number_of_dimensions);
 				dimension_to_choose = 0;
@@ -53166,7 +53175,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 				}
 				//Choose the direction of movement in the dimension
 				rnum = this.randomGen.random();
-				if(rnum < 0.5){
+				if(rnum < prob_right){
 					entity.position.components[dimension_to_choose]++;
 				} else {
 					entity.position.components[dimension_to_choose]--;
@@ -53184,6 +53193,14 @@ Flory.RandomWalk.prototype.update = function(additional){
 	}
 	return this;
 }
+
+
+
+Flory.RandomWalk.prototype.resetEnvironment = function(){
+	this.entities = [];
+	
+}
+
 
 
 /**
@@ -53383,7 +53400,7 @@ Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_d
 	var count = 0;
 	while(count < 1000000){
 		var position_overlaps = false;
-		var vec = getRandomVector(max_x_dim,max_y_dim,max_z_dim);
+		var vec = Flory.getRandomVector(max_x_dim,max_y_dim,max_z_dim);
 		for(var j = 0; j < monomersGiven.length;j++){
 			var total_min_distance_apart = (radius+monomersGiven[j].radius+min_distance_apart)*(radius+monomersGiven[j].radius+min_distance_apart);
 			if(monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart){
@@ -53419,9 +53436,6 @@ Flory.generateGUID = function() {
   
 }
 
-
-
-
 settings = {
 
 	visualization : {
@@ -53443,7 +53457,7 @@ settings = {
 	},
 	options : [
 		{
-			name : "radius",
+			name : "Time step",
 			type : "float",
 			value : 1.0,
 			editable : true,
@@ -53454,23 +53468,17 @@ settings = {
            	step : 0.01
 		},
 		{
-			name : "test",
-			type : "string",
-			value : "Test string",
-			editable : true
-		},
-		{
-			name : "checkbox",
+			name : "Run Simulation",
 			type : "checkbox",
 			value : true,
 			editable : true,
 		},
 		{
-			name : "button",
+			name : "",
 			type : "button",
-			value : "This is a button",
+			value : "Restart simulation",
 			callback : function(){
-
+				location.reload();
 			}
 		}
 	] 
@@ -53558,6 +53566,13 @@ var displays =
 			value : function(){
 				return calculator.meanMonomerPosition(monomers);
 			}
+		},
+		{
+			name : "FPS",
+			label : "fps",
+			value : function(){
+				return fps;
+			}
 		}
 	]
 }
@@ -53573,13 +53588,15 @@ var m = setInterval(
 
 		random_walk_display.updateValues();
 
-		if(random_walk_options.getValue("checkbox")){
+		if(random_walk_options.getValue("Run Simulation")){
 			randomWalk.update({
-				 "number_of_steps" : random_walk_options.getValue("radius")
+				 "number_of_steps" : random_walk_options.getValue("Time step")
 				});
 			total_steps++;
 			k++;
 
+		} else {
+			randomWalk.renderer.render();
 		}
 
 	}

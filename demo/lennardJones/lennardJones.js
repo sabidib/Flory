@@ -22,7 +22,7 @@ settings = {
 		ticks_per_frame : 1
 	},
 	experiment : {
-		side_length_of_cube : 9,
+		side_length_of_cube : 3,
 		radius_of_monomers : 1,
 		mass_of_monomers : 1,
 		min_starting_distance_apart : 1,
@@ -42,7 +42,6 @@ var number_of_monomers = exp.side_length_of_cube*exp.side_length_of_cube*exp.sid
 var monomers = [];
 
 var lennard = new Flory.LennardJones(exp.epsilon,exp.sigma);
-
 
 
 

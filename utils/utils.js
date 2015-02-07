@@ -67,7 +67,7 @@ Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_d
 	var count = 0;
 	while(count < 1000000){
 		var position_overlaps = false;
-		var vec = getRandomVector(max_x_dim,max_y_dim,max_z_dim);
+		var vec = Flory.getRandomVector(max_x_dim,max_y_dim,max_z_dim);
 		for(var j = 0; j < monomersGiven.length;j++){
 			var total_min_distance_apart = (radius+monomersGiven[j].radius+min_distance_apart)*(radius+monomersGiven[j].radius+min_distance_apart);
 			if(monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart){

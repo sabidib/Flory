@@ -93,6 +93,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 		for( var i = 0;i<len;i++){
 			entity = this.entities[i];
 			if(entity instanceof Flory.Monomer){
+				prob_right = 0.5;
 				number_of_dimensions = entity.position.dimension();
 				dimension_increment = (1.0/number_of_dimensions);
 				dimension_to_choose = 0;
@@ -104,7 +105,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 				}
 				//Choose the direction of movement in the dimension
 				rnum = this.randomGen.random();
-				if(rnum < 0.5){
+				if(rnum < prob_right){
 					entity.position.components[dimension_to_choose]++;
 				} else {
 					entity.position.components[dimension_to_choose]--;
@@ -122,4 +123,12 @@ Flory.RandomWalk.prototype.update = function(additional){
 	}
 	return this;
 }
+
+
+
+Flory.RandomWalk.prototype.resetEnvironment = function(){
+	this.entities = [];
+	
+}
+
 

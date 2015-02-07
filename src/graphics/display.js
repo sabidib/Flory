@@ -39,7 +39,7 @@ Flory.Display.prototype = {
 
 	generateAndPlace : function(object,html_handle){
 		var listeners = []
-		var h = {};
+		var h = "";
 
 		h += "<div id='display-menu'>";
 		for(var  i = 0, len = this.json.display.length; i < len; i++){
@@ -88,9 +88,6 @@ Flory.Display.prototype = {
 	updateValue : function(name){
 		$("[data-key='"+name+"'").val(this.value_functions[name]());
 	}
-
-
-
 
 }
 

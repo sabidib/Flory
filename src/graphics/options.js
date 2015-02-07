@@ -52,6 +52,7 @@ Flory.Options = function(object,html_id_handle){
 	this.data = {};
 	this.json = object;
 	this.html_handle = $("#"+html_id_handle);
+	this.option_list = [];
 	this.generateAndPlace(object,this.html_handle);
 }
 
@@ -72,6 +73,10 @@ Flory.Options.prototype = {
 		for(var i = 0, len = json.options.length; i < len;i++){
 			
 			var opt = json.options[i];
+			var opt_to_push = {};
+
+			opt_to_push.name = opt.name;
+
 			
 			if(opt.type == "float" || opt.type == "integer" || opt.type == "number"){
 				if(opt.slider){						
@@ -90,17 +95,20 @@ Flory.Options.prototype = {
 							}
 						); 
 					}
-
+					opt_to_push.ids = {"number_slider_id" : number_slider_id , "number_text_box_id" : number_text_box_id};
 					h += result.html;
 				} else {
 					result = this.generateTextBox(opt.value,opt.name,opt.label);
+					opt_to_push.ids = {"text_box_id" : result.text_box_id };
 					h += result.html;
 				}
 			} else if(opt.type == "string" ){
 				var result = this.generateTextBox(opt.value,opt.name,"text",opt.label);
+				opt_to_push.ids = {"text_box_id" : result.text_box_id };
 				h += result.html;
 			} else if(opt.type == "checkbox"){
 				var result = this.generateCheckBox(opt.value,opt.name,opt.label);
+					opt_to_push.ids = {"check_box_id" : result.check_box_id };
 				h+= result.html;
 			} else if(opt.type == "button"){
 				var result = this.generateButton(opt.value,opt.name,opt.label);
@@ -113,6 +121,7 @@ Flory.Options.prototype = {
                         });
                     });
                 }
+				opt_to_push.ids = {"button_id" : result.button_id };
                 h += result.html;
 			}
 

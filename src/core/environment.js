@@ -71,8 +71,10 @@ Flory.Environment.prototype = {
 	},
 	disabledVisualization: function(){
 
+	},
+	resetEnvironment : function(){
+		
 	}
-
 }
 
 
