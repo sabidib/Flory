@@ -5,14 +5,14 @@ settings = {
 		ticks_per_frame : 1
 	},
 	experiment : {
-		number_of_monomers : 10,
-		radius_of_monomers : 1,
+		number_of_monomers : 100,
+		radius_of_monomers : 0.1,
 		mass_of_monomers : 1,
 		charge_of_monomers :0,
 		min_starting_distance_apart : 3,
-		starting_max_x : 50,
-		starting_max_y : 50,
-		starting_max_z : 50,
+		starting_max_x : 1000,
+		starting_max_y : 1000,
+		starting_max_z : 1000,
 		field : [
 				{position: [0,0] , vector : [0,1]}
 			]
@@ -32,7 +32,7 @@ var field = new Flory.Field(exp.field);
 
 for(var i = 0; i < exp.number_of_monomers;i++){
 	monomers.push(
-			getNonOverlappingMonomer(monomers,
+			Flory.getNonOverlappingMonomer(monomers,
 									exp.radius_of_monomers,
 									exp.mass_of_monomers,
 									exp.charge_of_monomers,

@@ -1,6 +1,3 @@
-
-
-
 settings = {
 
 	visualization : {
@@ -22,7 +19,7 @@ settings = {
 	},
 	options : [
 		{
-			name : "radius",
+			name : "Time step",
 			type : "float",
 			value : 1.0,
 			editable : true,
@@ -33,23 +30,17 @@ settings = {
            	step : 0.01
 		},
 		{
-			name : "test",
-			type : "string",
-			value : "Test string",
-			editable : true
-		},
-		{
-			name : "checkbox",
+			name : "Run Simulation",
 			type : "checkbox",
 			value : true,
 			editable : true,
 		},
 		{
-			name : "button",
+			name : "",
 			type : "button",
-			value : "This is a button",
+			value : "Restart simulation",
 			callback : function(){
-
+				location.reload();
 			}
 		}
 	] 
@@ -137,6 +128,13 @@ var displays =
 			value : function(){
 				return calculator.meanMonomerPosition(monomers);
 			}
+		},
+		{
+			name : "FPS",
+			label : "fps",
+			value : function(){
+				return fps;
+			}
 		}
 	]
 }
@@ -152,9 +150,9 @@ var m = setInterval(
 
 		random_walk_display.updateValues();
 
-		if(random_walk_options.getValue("checkbox")){
+		if(random_walk_options.getValue("Run Simulation")){
 			randomWalk.update({
-				 "number_of_steps" : random_walk_options.getValue("radius")
+				 "number_of_steps" : random_walk_options.getValue("Time step")
 				});
 			total_steps++;
 			k++;
