@@ -23,8 +23,7 @@ http://127.0.0.1:8888/demo/
 To modify the demos open up the `demo/` folder and modify the .js files, then rebuild the app.
 
 ##Installation
-A webserver and the python package simplejson are required.
-
+Download the minified library and include it in your html. Alternatively, build it library yourself.
 
 ##Usage
 Most of the options are for build.py:
