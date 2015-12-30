@@ -22,7 +22,7 @@ Flory.Environment.prototype = {
 		} else {
 			for(var i = 0, len = this.entities.length; i  < len ; i++){
 				if(this.entities[i].id === entity.id){
-					console.log("Flory : Can't add an entity twice to the same enviroment.");
+					console.log("Flory : Can't add an entity twice to the same environment.");
 					return undefined;
 				}
 			}
@@ -37,7 +37,7 @@ Flory.Environment.prototype = {
 		} else {
 			for(var i = 0, len = this.entities.length; i  < len ; i++){
 				if(this.entities[i].id === entity1.id || this.entities[i].id === entity2.id ){
-					console.log("Flory : Can't add an entity twice to the same enviroment.");
+					console.log("Flory : Can't add an entity twice to the same environment.");
 					return undefined;
 				}
 			}
