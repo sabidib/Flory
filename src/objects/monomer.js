@@ -75,6 +75,15 @@ Flory.Monomer = function(radius,charge,mass,kinematics){
 
 Flory.Monomer.prototype = Object.create(Flory.Particle.prototype);
 
+
+
+Flory.Monomer.prototype.applyForce = function(force,time){
+    for(var i = 0; i < this.acceleration.components.length;i++){
+        this.acceleration.components[i] += (force.components[i]/this.mass)*time;
+    }
+}
+
+
     /**
      * Given the dimension index, will increment
      * the component by amount

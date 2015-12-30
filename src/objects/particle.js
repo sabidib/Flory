@@ -14,6 +14,7 @@ Flory.Particle = function(){
 }
 
 
+
 Flory.Particle.prototype = Object.create(Flory.Entity.prototype);
 
 

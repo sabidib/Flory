@@ -69,6 +69,13 @@ Flory.Monomer3D = function(radius,charge,mass,kinematics) {
 Flory.Monomer3D.prototype = Object.create(Flory.Particle.prototype);
 
 
+Flory.Monomer3D.prototype.applyForce = function(force,time){
+    acceleration.x += (force.x/this.mass)*time;
+    acceleration.y += (force.y/this.mass)*time;
+    acceleration.z += (force.z/this.mass)*time;
+}
+
+
 
 Flory.Monomer3D.prototype.incrementX = function(amount){
         this.position.x += amount;
