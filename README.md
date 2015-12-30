@@ -24,9 +24,10 @@ http://127.0.0.1:8888/demo/
 To modify the demos open up the `demo/` folder and modify the .js files, then rebuild the app.
 
 ##Installation
-Download the minified library and include it in your html. Alternatively, it library yourself.
+Download the [minified library](https://raw.githubusercontent.com/sabidib/Flory/master/build/flory.min.js) and include it in your html.
+Alternatively, [build it yourself](https://github.com/sabidib/Flory/wiki/Build-Flory).
 
-##Usage
+##Build Usage
 Most of the options are for build.py:
 
 build.py [options]
@@ -38,8 +39,3 @@ Options:
  - `-d, --demo`      build the demos.
  - `-n, --no_source`  do not build the base source file.
 
-The future?
------
-Things to be added over the next few weeks:
-  * Simple data collection and processing.
-  * On the fly experiment customization menu.
