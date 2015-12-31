@@ -9,11 +9,14 @@
  * @param {[Float]} charge     [The charge of the Monomer, default 0]
  * @param {[Float]} mass       [The mass of the Monomer, default 0]
  * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
+ * @param  {String} name        [The name of the entity]
+ * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float), 
+ * 'color'(hex) or 'material'(THREE.mesh). This is completely optional]
  */
-Flory.Monomer3D = function(radius,charge,mass,kinematics) {
-    Flory.Particle.call(this);
+Flory.Monomer3D = function(radius,charge,mass,kinematics,name,renderableSettings) {
+    Flory.Particle.call(this,name);
 
-
+    this.dimension = 3;
     var position = undefined;
     var velocity = undefined;
     var acceleration = undefined;
@@ -64,9 +67,35 @@ Flory.Monomer3D = function(radius,charge,mass,kinematics) {
         this.force = new Flory.Vector3(force.x,force.y);
     }
 
+
+    this.setDefaultMesh(renderableSettings);
+
 };
 
 Flory.Monomer3D.prototype = Object.create(Flory.Particle.prototype);
+
+Flory.Monomer3D.prototype.setDefaultMesh = function(settings) {
+    var material = {};
+    var geometry = {};
+
+    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
+
+    geometry = new THREE.SphereGeometry(this.radius,segments,segments);
+
+    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
+
+    if(settings == undefined){
+        material = new THREE.MeshBasicMaterial({color : color_of_mesh});
+    } else if(settings.material != undefined && settings.material instanceof THREE.Material){
+        material = settings.material;
+    } else {
+        material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+    }
+
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.geometry = geometry;
+    this.material = material;
+}
 
 
 Flory.Monomer3D.prototype.applyForce = function(force,time){
