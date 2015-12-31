@@ -3,7 +3,7 @@ Flory
 Flory lets both educators and students show simple and beautiful molecular dynamics simulations directly in a browser.
 
 
-Quick Start
+Demo
 ------------
 Open your trusty terminal to install and build Flory:
 ```sh
@@ -24,7 +24,7 @@ To modify the demos open up the `demo/` folder and modify the .js files, then re
 Download the [minified library](https://raw.githubusercontent.com/sabidib/Flory/master/build/flory.min.js) and include it in your html.
 Alternatively, [build it yourself](https://github.com/sabidib/Flory/wiki/Build-Flory).
 
-## Getting started
+##  Getting Started
 The goal of Flory is to provide a simple framework for designing educational molecular dynamic simulations in browser. At its base, Flory provides an `Flory.Environment` class that defines basic events that occur during a simulation and visualization. 
 
 ```Javascript
