@@ -1,3 +1,5 @@
+
+
 settings = {
 
 	visualization : {
@@ -151,14 +153,14 @@ var m = setInterval(
 		random_walk_display.updateValues();
 
 		if(random_walk_options.getValue("Run Simulation")){
-			randomWalk.update({
+			randomWalk.advance({
 				 "number_of_steps" : random_walk_options.getValue("Time step")
 				});
 			total_steps++;
 			k++;
 
 		} else {
-			randomWalk.renderer.render();
+			randomWalk.render();
 		}
 
 	}

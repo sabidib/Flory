@@ -103,6 +103,9 @@ def parseArgs(argv):
 	parser.add_option("-m", "--minify", action="store_true", default=False, dest="minify",help="minify the output.");
 	parser.add_option("-d", "--demo", action="store_true", default=False, dest="demos",help="build the demos.");
 	parser.add_option("-n", "--no_source", action="store_false", default=True, dest="base",help="do not build the base source file.");
+	parser.add_option("-q", "--quiet", action="store_true", default=False,dest="isQuiet",help="produces no output except for success or fail message.")
+	parser.add_option("-v", "--verbose", action="store_false", default=False,dest="isVerbose",help="produces more output information.")
+	parser.add_option("-i","--includes",metavar="relative path",dest="relativeIncludePath",help="produces a list of html includes for the javascripts relative to the given directory")
 	options,args = parser.parse_args(argv);
 	return options;
 
@@ -112,17 +115,36 @@ def parseArgs(argv):
 
 
 def main(argv):
-	os.chdir(os.path.dirname(sys.argv[0]))
 	options = parseArgs(argv);
 	
 	base = options.base;
 	minify = options.minify;
 	demos = options.demos;
+	isQuiet = options.isQuiet
+	isVerbose = options.isVerbose
+	relInclude = options.relativeIncludePath;
+	if(relInclude  != None):
+		
+		with open('source_order.cfg','r') as f:
+			data = json.load(f);
+		
+		for aFile in data:
+			res = os.path.relpath("src/"+aFile,relInclude);
+			print "<script src='"+res+"'> </script>"
+		
+		sys.exit(0)
+	
+	tempStdout = sys.stdout;
 
 	if(base is False and demos is True):
 		print "";
 		print "The base source needs to be built to build the demos, remove the -n argument to build base source files."
 		print "Proceeding without building base source files."
+
+	if(isQuiet):
+		f = open(os.devnull, 'w')
+		sys.stdout = f
+
 
 	#
 	##
@@ -160,6 +182,12 @@ def main(argv):
 	print ""
 	print "Done";
 	print "";
+	
+
+	if(isQuiet):
+		sys.stdout = tempStdout
+		print "Done.";
+
 	sys.exit(0);
 
 	#

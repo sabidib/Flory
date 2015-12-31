@@ -7147,8 +7147,8 @@ THREE.EventDispatcher.prototype = {
  */
 
 THREE.Object3D = function () {
-
-	this.id = Flory.Entity.entityIDCount++;
+	Flory.baseEntity.call(this);
+	
 	this.uuid = THREE.Math.generateUUID();
 
 	this.name = '';
@@ -7214,6 +7214,8 @@ THREE.Object3D = function () {
 };
 
 THREE.Object3D.DefaultUp = new THREE.Vector3( 0, 1, 0 );
+
+THREE.Object3D.prototype = Object.create(Flory.baseEntity.prototype);
 
 THREE.Object3D.prototype = {
 

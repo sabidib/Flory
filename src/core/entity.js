@@ -4,14 +4,11 @@
 
 /** @constructor */
 Flory.Entity = function(){
-	Flory.Renderable.call(this);
-	this.id = Flory.Entity.entityIDCount++;
-	this.name = '';
+	Flory.baseEntity.call(this);
 	this.data = {};
 }
 
-Flory.Entity.prototype = Object.create(Flory.Renderable.prototype);
+Flory.Entity.prototype = Object.create(Flory.baseEntity.prototype);
 
-Flory.Entity.entityIDCount = 0;
-
+Flory.Entity.prototype.constructor = Flory.Entity;
 
