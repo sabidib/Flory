@@ -1,0 +1,6 @@
+language: python
+os:
+  -linux
+  -osx
+script:
+  - ./build.sh -m -d;

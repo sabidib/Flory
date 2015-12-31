@@ -30,7 +30,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 	for(var k = 0; k < number_of_steps;k++){
 		for( var i = 0;i<len;i++){
 			entity = this.entities[i];
-			if(entity instanceof Flory.Monomer){
+			if(entity instanceof Flory.Particle){
 				number_of_dimensions = entity.position.dimension();
 				dimension_increment = (1.0/number_of_dimensions);
 				dimension_to_choose = 0;

@@ -48,7 +48,20 @@ var lennard = new Flory.LennardJones(exp.epsilon,exp.sigma);
 for(var i = 0; i < exp.side_length_of_cube;i++){
 	for(var j = 0; j < exp.side_length_of_cube;j++){
 		for(var k = 0; k < exp.side_length_of_cube;k++){
-			monomers.push(new Flory.Monomer(exp.radius_of_monomers, 0, exp.mass_of_monomers, {position : [i*exp.min_starting_distance_apart,j*exp.min_starting_distance_apart,k*exp.min_starting_distance_apart]}));	
+			monomers.push(new Flory.Monomer(
+			{
+				"radius":exp.radius_of_monomers,
+				"charge": 0,
+			 	"mass" : exp.mass_of_monomers,
+			 	"kinematics": {
+			 		position : [
+			 			i*exp.min_starting_distance_apart,
+			 			j*exp.min_starting_distance_apart,
+						k*exp.min_starting_distance_apart
+					]
+				}
+			}
+			));	
 		}
 	}		
 }

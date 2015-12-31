@@ -3,7 +3,8 @@
 import sys;
 import os;
 import subprocess;
-import simplejson as json;
+try: import simplejson as json
+except ImportError: import json 
 from optparse import OptionParser;
 
 compiler_jar_location = "compiler/compiler.jar";

@@ -82,7 +82,14 @@ for(var i = 0; i < exp.number_of_monomers;i++){
 		
 		var pos = new Flory.Vector(exp.start_at_position);
 
-		monomers.push(new Flory.Monomer(exp.radius_of_monomers,exp.charge_of_monomers,exp.mass_of_monomers,{position : pos }) );
+		monomers.push(new Flory.Monomer(
+		{
+			"radius":exp.radius_of_monomers,
+			"charge":exp.charge_of_monomers,
+			"mass":exp.mass_of_monomers,
+			"kinematics":{"position" : pos }
+		}
+		) );
 	}
 
 	randomWalk.add(monomers[i]);
