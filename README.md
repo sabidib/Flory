@@ -1,3 +1,4 @@
+![Build status](https://travis-ci.org/sabidib/Flory.svg)
 Flory
 ====
 Flory lets both educators and students show simple and beautiful molecular dynamics simulations directly in a browser.
