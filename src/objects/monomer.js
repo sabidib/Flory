@@ -16,28 +16,35 @@
  * 'color'(hex) or 'material'(THREE.mesh). This is completely optional]
  */
 
-Flory.Monomer = function(radius, charge, mass, kinematics,name,renderableSettings) {
-    if (kinematics == undefined) {
-        console.log("Flory: Flory.Monomer needs at least the kinematics.position to know what the dimension of the monomer is.");
+Flory.Monomer = function(options) {
+    var name = options.name;
+    if (options.kinematics == undefined && options.position === undefined) {
+        console.log("Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.");
         return undefined;
     }
-    if (kinematics.position == undefined) {
-        console.log("Flory: Flory.Monomer needs at least the kinematics.position to know what the dimension of the monomer is.");
+    if (options.kinematics !== undefined && options.kinematics.position === undefined ){
+        console.log("Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.");
         return undefined;
     }
 
     Flory.Particle.call(this,name);
 
-    var position = undefined;
-    var velocity = undefined;
-    var acceleration = undefined;
-    var force = undefined;
+    var radius = options.radius;
+    var charge = options.charge;
+    var mass = options.mass;
+    var kinematics = options.kinematics;
+    var renderableSettings = options.renderableSettings;
+
+    var position = options.position;
+    var velocity = options.velocity;
+    var acceleration = options.acceleration;
+    var force = options.force;
 
     if (kinematics != undefined) {
-        position = kinematics.position;
-        velocity = kinematics.velocity;
-        acceleration = kinematics.acceleration;
-        force = kinematics.force;
+        position = (position === undefined ? kinematics.position : position);
+        velocity = (velocity === undefined ? kinematics.velocity : velocity);
+        acceleration = (acceleration === undefined ? kinematics.acceleration : acceleration);
+        force = (force === undefined ? kinematics.force : force);
     }
 
     this.radius = (radius != undefined ? radius : Flory.Monomer.defaultRadius);
@@ -88,15 +95,12 @@ Flory.Monomer.prototype.setDefaultMesh = function(settings) {
     var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
 
     var dim = this.position.dimension();
-    console.log("segments",segments)
     if(dim >= 3){
         geometry = new THREE.SphereGeometry(this.radius,segments,segments);
     } else {
         geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
     }
-    console.log("this.radius",this.radius)
     var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
-    console.log("color_of_mesh",color_of_mesh)
     if(settings == undefined){
         material = new THREE.MeshBasicMaterial({color : color_of_mesh});
     } else if(settings.material != undefined && settings.material instanceof THREE.Material){
@@ -104,13 +108,10 @@ Flory.Monomer.prototype.setDefaultMesh = function(settings) {
     } else {
         material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
     }
-    
-    console.log("Geomtry is", geometry);
-    console.log("MATERIAL IS",material)
-    // this.geometry = geometry;
-    // this.material =  material;
+
+    this.geometry = geometry;
+    this.material =  material;
     this.mesh = new THREE.Mesh(geometry, material);
-    console.log("Mesh IS",this.mesh)
     return this;
 }
 

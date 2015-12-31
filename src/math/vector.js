@@ -10,172 +10,168 @@
  * @constructor
  * @param {Array} vec An array of number values that represent each component of the vector
  */
-Flory.Vector = function(vec){
-	if(vec == undefined){
-		this.components = []
-	} else if(typeof vec == "number"){
-		this.components = [].slice.apply(new Uint8Array(vec));
-	} else {
-		this.components = vec;
-	}
+Flory.Vector = function(vec) {
+    Flory.baseVector.call(this);
+    if (vec == undefined) {
+        this.components = []
+    } else if (typeof vec == "number") {
+        this.components = [].slice.apply(new Uint8Array(vec));
+    } else {
+        this.components = vec;
+    }
 }
 
 
+Flory.Vector.prototype = Object.create(Flory.baseVector.prototype);
 
-Flory.Vector.prototype = {
-	constructor : Flory.Vector,
+Flory.Vector.prototype.constructor = Flory.Vector
 
-	//** Mandatory for all vector classes **//
-	dimension : function(){
-		return this.components.length;
-	},
-	add : function(a){
-		if(a.components.length > this.components.length){
-			var i = 0;
-			for(len = this.components.length;i < len; i++){
-				this.components[i] += a.components[i]; 
-			}
-			for(len = a.components.length; i < len;i++){
-				this.components[i] = 0;
-				this.components[i] += a.components[i]; 
-			}
-		} else {
-			for(var i = 0,len = a.components.length;i < len; i++){
-				this.components[i] += a.components[i]; 
-			}
-		}
-		return this;
-	},
+Flory.Vector.prototype.add = function(a) {
+    if (a.components.length > this.components.length) {
+        var i = 0;
+        for (len = this.components.length; i < len; i++) {
+            this.components[i] += a.components[i];
+        }
+        for (len = a.components.length; i < len; i++) {
+            this.components[i] = 0;
+            this.components[i] += a.components[i];
+        }
+    } else {
+        for (var i = 0, len = a.components.length; i < len; i++) {
+            this.components[i] += a.components[i];
+        }
+    }
+    return this;
+}
 
-	sub : function(a){
-		if(a.components.length > this.components.length){
-			var i = 0;
-			for(len = this.components.length;i < len; i++){
-				this.components[i] -= a.components[i]; 
-			}
-			for(len = a.components.length; i < len;i++){
-				this.components[i] = 0;
-				this.components[i] -= a.components[i]; 
-			}
-		} else {
-			for(var i = 0,len = a.components.length;i < len; i++){
-				this.components[i] -= a.components[i]; 
-			}
-		}
-		return this;
-	},
-	
-	scale : function(num){
-		for(var i = 0, len = this.components.length; i <len; i++){
-			this.components[i] *= num;
-		}
-		return this;
-	},
-	mult : function(num){
-		var components = [];
-		for(var i = 0, len = this.components.length; i <len; i++){
-			components[i] = num*this.components[i];
-		}
-		return new Flory.Vector(components);
-	},
-	
-	dot : function(a){
-		if(a.components.length != this.components.length){
-			console.log("Flory.vector.dot(a) can only accept a vector of the same dimension as the object.")
-			return undefined;
-		}
-		var sum = 0;
-		for(var i = 0,len = a.components.length;i < len; i++){
-			sum += this.components[i] *a.components[i]; 
-		}
-		return sum;
-	},
+Flory.Vector.prototype.sub = function(a) {
+    if (a.components.length > this.components.length) {
+        var i = 0;
+        for (len = this.components.length; i < len; i++) {
+            this.components[i] -= a.components[i];
+        }
+        for (len = a.components.length; i < len; i++) {
+            this.components[i] = 0;
+            this.components[i] -= a.components[i];
+        }
+    } else {
+        for (var i = 0, len = a.components.length; i < len; i++) {
+            this.components[i] -= a.components[i];
+        }
+    }
+    return this;
+}
 
-	length : function(){
-		var sum = 0;
+Flory.Vector.prototype.scale = function(num) {
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        this.components[i] *= num;
+    }
+    return this;
+}
+Flory.Vector.prototype.mult = function(num) {
+    var components = [];
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        components[i] = num * this.components[i];
+    }
+    return new Flory.Vector(components);
+}
 
-		for(var i = 0,len = this.components.length;i < len; i++){
-			sum  += this.components[i]*this.components[i]; 
-		}
+Flory.Vector.prototype.dot = function(a) {
+    if (a.components.length != this.components.length) {
+        console.log("Flory.vector.dot(a) can only accept a vector of the same dimension as the object.")
+        return undefined;
+    }
+    var sum = 0;
+    for (var i = 0, len = a.components.length; i < len; i++) {
+        sum += this.components[i] * a.components[i];
+    }
+    return sum;
+}
 
-		return Math.sqrt(sum);
-	},
+Flory.Vector.prototype.length = function() {
+    var sum = 0;
 
-	lengthSq : function(){
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        sum += this.components[i] * this.components[i];
+    }
 
-		var sum = 0;
+    return Math.sqrt(sum);
+}
 
-		for(var i = 0,len = this.components.length;i < len; i++){
-			sum  += this.components[i]*this.components[i]; 
-		}
+Flory.Vector.prototype.lengthSq = function() {
 
-		return sum;
-	},
-	
-	distanceTo : function(a){
-		var sum = 0;
-		var i = 0;
-		if(a.components.length > this.components.length){
-			for(var len = this.components.length;i < len; i++){
-				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-			}
-			for(var len2 = a.components.length;i<len2;i++){
-				sum += (0 - a.components[i])*(0 - a.components[i]);
-			}
-		} else if(a.components.length < this.components.length){
-			for(var len = a.components.length;i < len; i++){
-				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-			}
-			for(var len2 = this.components.length;i<len2;i++){
-			sum  += (this.components[i] - 0)*(this.components[i] - 0); 
-			}
-		} else {
-			for(len = a.components.length;i < len; i++){
-				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-			}
-		}
-		return Math.sqrt(sum);
-	},
+    var sum = 0;
 
-	distanceToSq : function(a){
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        sum += this.components[i] * this.components[i];
+    }
 
-		var sum = 0;
-		var i = 0;
-		if(a.components.length > this.components.length){
-			for(var len = this.components.length;i < len; i++){
-				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-			}
-			for(var len2 = a.components.length;i<len2;i++){
-				sum += (0 - a.components[i])*(0 - a.components[i]);
-			}
-		} else if(a.components.length < this.components.length){
-			for(var len = a.components.length;i < len; i++){
-				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-			}
-			for(var len2 = this.components.length;i<len2;i++){
-			sum  += (this.components[i] - 0)*(this.components[i] - 0); 
-			}
-		} else {
-			for(len = a.components.length;i < len; i++){
-				sum  += (this.components[i] - a.components[i])*(this.components[i] - a.components[i]); 
-			}
-		}
+    return sum;
+}
 
-		return sum;
-	},
-	zero : function(){
-		for(var i = 0, len = this.components.length; i < len;i++){
-			this.components[i] = 0;
-		}
-		return this;
-	},
-	negate : function(){
-		for(var i = 0, len = this.components.length; i < len;i++){
-			this.components[i] = -this.components[i];
-		}
-		return this;		
-	},
-	clone : function(){
-		return new Flory.Vector(this.components.slice(0));
-	}
-};
+Flory.Vector.prototype.distanceTo = function(a) {
+    var sum = 0;
+    var i = 0;
+    if (a.components.length > this.components.length) {
+        for (var len = this.components.length; i < len; i++) {
+            sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+        }
+        for (var len2 = a.components.length; i < len2; i++) {
+            sum += (0 - a.components[i]) * (0 - a.components[i]);
+        }
+    } else if (a.components.length < this.components.length) {
+        for (var len = a.components.length; i < len; i++) {
+            sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+        }
+        for (var len2 = this.components.length; i < len2; i++) {
+            sum += (this.components[i] - 0) * (this.components[i] - 0);
+        }
+    } else {
+        for (len = a.components.length; i < len; i++) {
+            sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+        }
+    }
+    return Math.sqrt(sum);
+}
+
+Flory.Vector.prototype.distanceToSq = function(a) {
+
+    var sum = 0;
+    var i = 0;
+    if (a.components.length > this.components.length) {
+        for (var len = this.components.length; i < len; i++) {
+            sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+        }
+        for (var len2 = a.components.length; i < len2; i++) {
+            sum += (0 - a.components[i]) * (0 - a.components[i]);
+        }
+    } else if (a.components.length < this.components.length) {
+        for (var len = a.components.length; i < len; i++) {
+            sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+        }
+        for (var len2 = this.components.length; i < len2; i++) {
+            sum += (this.components[i] - 0) * (this.components[i] - 0);
+        }
+    } else {
+        for (len = a.components.length; i < len; i++) {
+            sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+        }
+    }
+
+    return sum;
+}
+Flory.Vector.prototype.zero = function() {
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        this.components[i] = 0;
+    }
+    return this;
+}
+Flory.Vector.prototype.negate = function() {
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        this.components[i] = -this.components[i];
+    }
+    return this;
+}
+Flory.Vector.prototype.clone = function() {
+    return new Flory.Vector(this.components.slice(0));
+}
