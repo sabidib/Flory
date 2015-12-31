@@ -52,14 +52,14 @@ Flory._CoreEnvironment.prototype = {
     update: function(data) {
 
     },
-    enableVisualization: function(data) {
+    enableVisualization: function(canvas,data) {
         if (this.data.rendererType ==
             Flory._CoreEnvironment.RendererType.Default ||
             this.data.rendererType == "") {
-            this.renderer = new Flory.Renderer();
+            this.renderer = new Flory.Renderer(canvas);
         } else if (this.data.rendererType ==
             Flory._CoreEnvironment.RendererType.PointCloud) {
-            this.renderer = new Flory.PointCloudRenderer();
+            this.renderer = new Flory.PointCloudRenderer(canvas);
         }
         this.visualization = true;
         this.setUpVisualization(data);

@@ -2,7 +2,6 @@
  * @author sabidib
  */
 
-
 /** @constructor */
 Flory.RandomWalk = function(seed,step_size){
 	Flory.Environment.call(this);
@@ -23,7 +22,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 	var dimension_to_choose;
 	var rnum;
 	var number_of_steps = 1;
-
+	var prob_right = 0.5;
 	if(additional.number_of_steps != undefined){
 		number_of_steps = additional.number_of_steps;
 	}
@@ -32,10 +31,10 @@ Flory.RandomWalk.prototype.update = function(additional){
 		for( var i = 0;i<len;i++){
 			entity = this.entities[i];
 			if(entity instanceof Flory.Monomer){
-				prob_right = 0.5;
 				number_of_dimensions = entity.position.dimension();
 				dimension_increment = (1.0/number_of_dimensions);
 				dimension_to_choose = 0;
+				//Choose which dimension to move in 
 				rnum = this.randomGen.random();
 				rnum -= dimension_increment;
 				while(rnum > 0){

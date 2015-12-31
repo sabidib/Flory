@@ -47,7 +47,7 @@ for(var i = 0; i < exp.number_of_monomers;i++){
 newton.add(field);
 
 
-newton.enableVisualization();
+newton.enableVisualization("mycanvas");
 
 var k = 0;
 var fps = 0;

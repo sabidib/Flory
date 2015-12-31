@@ -3,8 +3,8 @@
  */
 
 /** @constructor */
-Flory.PointCloudRenderer = function(){
-	Flory.Renderer.call(this);
+Flory.PointCloudRenderer = function(canvas){
+	Flory.Renderer.call(this,canvas);
 	this.data.particles = new THREE.Geometry();
 	this.data.pMaterial = new THREE.PointCloudMaterial({color : 0xFF0000, size:2});
 	this.data.particle_system = new THREE.PointCloud(this.data.particles,this.data.pMaterial);

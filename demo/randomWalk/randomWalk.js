@@ -89,7 +89,7 @@ for(var i = 0; i < exp.number_of_monomers;i++){
 }
 
 
-randomWalk.enableVisualization({segments : 20, color : 0x00FF00});
+randomWalk.enableVisualization("mycanvas",{segments : 20, color : 0x00FF00});
 
 var k = 0;
 var fps = 0;

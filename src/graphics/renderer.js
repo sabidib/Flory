@@ -2,17 +2,27 @@
  * @author sabidib
  */
 /** @constructor */
-Flory.Renderer = function(scene,camera,renderables){
+Flory.Renderer = function(canvas,scene,camera,renderables){
 	this.data = {};
-	if(this.canvas !== null){
+	if(canvas != undefined){
 		this.renderer = new THREE.WebGLRenderer();
 		if(this.renderer == undefined){
 			console.log("Flory : WebGL is not supported in your browser.");
 		}
 		this.renderer.setSize(window.innerWidth,window.innerHeight);
-		document.body.appendChild(this.renderer.domElement);
+		
+		var cav = document.getElementById("#"+canvas);
+		if(cav == null){
+			cav = document.getElementById(canvas);
+			if(cav == null){
+				console.log("Flory: A canvas must be a valid id.")
+			}
+		}
+		this.canvas = cav;
+		cav.appendChild(this.renderer.domElement);
 	}  else {
 		console.log("Flory : A canvas_id must be specified.");
+		return undefined;
 	}
 
 	this.scene = (scene === undefined)? new THREE.Scene() : scene;
