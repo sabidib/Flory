@@ -5,7 +5,7 @@ var monomers = [];
 var polymer = new Flory.Polymer(1,1,1,0.001,Math.pow(0.5,(1.0/6.0))*0.001,2 );
 
 
-polymer.enableVisualization({segments : 20, color : 0x00FF00});
+polymer.enableVisualization("mycanvas",{segments : 20, color : 0x00FF00});
 
 
 var k = 0;

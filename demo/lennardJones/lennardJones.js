@@ -60,7 +60,7 @@ for(var i = 0; i < number_of_monomers;i++){
 
 
 
-lennard.enableVisualization();
+lennard.enableVisualization("mycanvas");
 
 var k = 0;
 var fps = 0;
