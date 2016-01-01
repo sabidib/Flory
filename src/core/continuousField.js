@@ -1,16 +1,16 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 /** @constructor */
 Flory.ContinuousField = function(field_function){
-	Flory.Field.call(this,[]);
+	Flory.baseField.call(this,[]);
 	this.scaler = 1;
-	this.field_function = (field_function != undefined) ? field_function : function(){};
+	this.field_function = (field_function !== undefined) ? field_function : function(){};
 }
 
 
-Flory.ContinuousField.prototype = Object.create(Flory.Field.prototype);
+Flory.ContinuousField.prototype = Object.create(Flory.baseField.prototype);
 
 
 Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;

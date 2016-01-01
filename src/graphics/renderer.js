@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 /** @constructor */
 Flory.Renderer = function(canvas, scene, camera, renderables) {

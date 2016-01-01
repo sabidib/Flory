@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 
@@ -22,12 +22,12 @@ Flory.Monomer = function(options) {
         console.log("Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.");
         return undefined;
     }
-    if (options.kinematics !== undefined && options.kinematics.position === undefined ){
+    if (options.kinematics !== undefined && options.kinematics.position === undefined) {
         console.log("Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.");
         return undefined;
     }
 
-    Flory.Particle.call(this,name);
+    Flory.Particle.call(this, name);
 
     var radius = options.radius;
     var charge = options.charge;
@@ -53,32 +53,56 @@ Flory.Monomer = function(options) {
 
     if (position.components == undefined && position instanceof Array) {
         this.position = new Flory.Vector(position);
+    } else if (position instanceof Flory.baseVector) {
+        if (position instanceof Flory.Vector2 || position instanceof Flory.Vector3) {
+            this.position = new Flory.Vector(velocity.components);
+        } else {
+            this.position = position.clone();
+        }
     } else {
-        this.position = position.clone();
+        console.log("Flory: position is not an array or descendant of Flory.baseVector ")
     }
 
     if (velocity == undefined) {
         this.velocity = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
     } else if (velocity.components == undefined && velocity instanceof Array) {
         this.velocity = new Flory.Vector(velocity);
+    } else if (velocity instanceof Flory.baseVector) {
+        if (velocity instanceof Flory.Vector2 || velocity instanceof Flory.Vector3) {
+            this.velocity = new Flory.Vector(velocity.components);
+        } else {
+            this.velocity = velocity.clone();
+        }
     } else {
-        this.velocity = velocity.clone();
+        console.log("Flory: velocity is not an array or descendant of Flory.baseVector ")
     }
 
     if (acceleration == undefined) {
         this.acceleration = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
     } else if (acceleration.components == undefined && acceleration instanceof Array) {
         this.acceleration = new Flory.Vector(acceleration);
+    } else if (acceleration instanceof Flory.baseVector) {
+        if (acceleration instanceof Flory.Vector2 || acceleration instanceof Flory.Vector3) {
+            this.acceleration = new Flory.Vector(velocity.components);
+        } else {
+            this.acceleration = acceleration.clone();
+        }
     } else {
-        this.acceleration = acceleration.clone();
+        console.log("Flory: acceleration is not an array or descendant of Flory.baseVector ")
     }
 
     if (force == undefined) {
         this.force = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
     } else if (force.components == undefined && force instanceof Array) {
         this.force = new Flory.Vector(force);
+    } else if (force instanceof Flory.baseVector) {
+        if (force instanceof Flory.Vector2 || force instanceof Flory.Vector3) {
+            this.force = new Flory.Vector(velocity.components);
+        } else {
+            this.force = force.clone();
+        }
     } else {
-        this.force = force.clone();
+        console.log("Flory: force is not an array or descendant of Flory.baseVector ")
     }
 
     this.setDefaultMesh(renderableSettings);
@@ -92,25 +116,29 @@ Flory.Monomer.prototype.setDefaultMesh = function(settings) {
     var material = {};
     var geometry = {};
 
-    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
+    var segments = (settings != undefined && typeof settings.segments == "number") ? settings.segments : 20;
 
     var dim = this.position.dimension();
-    if(dim >= 3){
-        geometry = new THREE.SphereGeometry(this.radius,segments,segments);
+    if (dim >= 3) {
+        geometry = new THREE.SphereGeometry(this.radius, segments, segments);
     } else {
-        geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2*3.14159265359);
+        geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2 * 3.14159265359);
     }
-    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
-    if(settings == undefined){
-        material = new THREE.MeshBasicMaterial({color : color_of_mesh});
-    } else if(settings.material != undefined && settings.material instanceof THREE.Material){
+    var color_of_mesh = (settings != undefined && typeof settings.color == "number") ? settings.color : 0xFF0000;
+    if (settings == undefined) {
+        material = new THREE.MeshBasicMaterial({
+            color: color_of_mesh
+        });
+    } else if (settings.material != undefined && settings.material instanceof THREE.Material) {
         material = settings.material;
     } else {
-        material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+        material = new THREE.MeshBasicMaterial({
+            color: color_of_mesh
+        });
     }
 
     this.geometry = geometry;
-    this.material =  material;
+    this.material = material;
     this.mesh = new THREE.Mesh(geometry, material);
     return this;
 }

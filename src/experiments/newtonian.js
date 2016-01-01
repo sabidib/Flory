@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 
@@ -87,10 +87,10 @@ Flory.Newtonian.prototype.update = function(additional){
 	for(var i = 0;i < len;i++){
 		var entity = this.entities[i];
 		var tmp = new Flory.Vector();
-		if(entity instanceof Flory.Monomer){
+		if(entity instanceof Flory.Particle){
 			for(var j = 0;j < len;j++){
 				var entity2 = this.entities[j];
-				if(entity2 instanceof Flory.Field){
+				if(entity2 instanceof Flory.baseField){
 					var field = entity2;
 					tmp.add(field.getForce(entity.position));
 				} 
@@ -100,7 +100,7 @@ Flory.Newtonian.prototype.update = function(additional){
 	}
 	for(var i = 0 , len = this.entities.length; i < len; i++){
 		var entity = this.entities[i];
-		if(entity instanceof Flory.Monomer){
+		if(entity instanceof Flory.Particle){
 			entity.acceleration = entity.force.mult(1.0/entity.mass);
 			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
 			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
