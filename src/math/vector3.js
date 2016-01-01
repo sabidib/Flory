@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 /** @constructor */
@@ -49,6 +49,12 @@ Flory.Vector3.prototype.scale = function(num) {
 }
 Flory.Vector3.prototype.mult = function(num) {
     return new Flory.Vector3(this.x * num, this.y * num, this.z * num);
+}
+
+Flory.Vector3.prototype.cross = function(vec){
+    return new Flory.Vector3([ this.y * vec.components[2] - this.z * vec.components[1], 
+                                this.z * vec.components[0] - this.x * vec.components[2], 
+                                this.x * vec.components[1] - this.y * vec.components[0] ]);
 }
 
 Flory.Vector3.prototype.dot = function(a) {

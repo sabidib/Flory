@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 /**
@@ -8,78 +8,57 @@
  * @param {Array} data Each element of the data array must be an object containing
  *                     a |position| and a |vector| property. 
  */
-Flory.Field3D = function(data){
-	Flory.Entity.call(this);
-	
-	this.data = [];
-	for( var i = 0 ,len = data.length; i < len;i++){
-		this.data[i] = {}
+Flory.Field3D = function(data) {
+    Flory.baseField.call(this);
 
-		if(data[i].position == undefined){
-			this.data[i].position = new Flory.Vector3(data[i][0][0],data[i][0][1],data[i][0][2]); 		
-		} else if(data[i].position instanceof Array){
-			this.data[i].position = new Flory.Vector3(data[i].position[0] , data[i].position[1],data[i].position[2]);
-		} else if(data[i].position.x != undefined && data[i].position.y != undefined && data[i].position.z != undefined){
-			this.data[i].position = data[i].position.clone();
-		}
 
-		if(data[i].vector == undefined){
-			this.data[i].vector = new Flory.Vector3(data[i][1][0],data[i][1][1],data[i][1][2]); 		
-		} else if(data[i].vector instanceof Array){
-			this.data[i].vector = new Flory.Vector3(data[i].vector[0] , data[i].vector[1],data[i].vector[2]);
-		} else if(data[i].vector.x != undefined && data[i].vector.y != undefined && data[i].postiion.z != undefined){
-			this.data[i].vector = data[i].vector.clone();
-		}
+    for (var i = 0, len = data.length; i < len; i++) {
+        this.field[i] = {}
 
-	}
+        if (data[i].position == undefined) {
+            this.field[i].position = new Flory.Vector3(data[i][0][0], data[i][0][1], data[i][0][2]);
+        } else if (data[i].position instanceof Array) {
+            this.field[i].position = new Flory.Vector3(data[i].position[0], data[i].position[1], data[i].position[2]);
+        } else if (data[i].position instanceof baseVector) {
+            if (data[i].position instanceof Flory.Vector2) {
+                this.field[i].position = new Flory.Vector3([data[i].position.x, data[i].position.y,0])
+            } else if (data[i].position instanceof Flory.Vector) {
+                this.field[i].position = new Flory.Vector3([data[i].position.components[0], data[i].position.components[1], data[i].position.components[2]])
+            } else {
+                this.field[i].position = data[i].position.clone();
+            }
+        } else {
+            console.log("Flory: data.position is not an Array or a descendant of Flory.baseVector");
+            return undefined;
+        }
+
+        if (data[i].vector == undefined) {
+            this.field[i].vector = new Flory.Vector3(data[i][1][0], data[i][1][1], data[i][1][2]);
+        } else if (data[i].vector instanceof Array) {
+            this.field[i].vector = new Flory.Vector3(data[i].vector[0], data[i].vector[1], data[i].vector[2]);
+        } else if (data[i].vector.x != undefined || data[i].vector.y != undefined || data[i].postiion.z != undefined) {
+            this.field[i].vector = data[i].vector.clone();
+        } else if (data[i].vector instanceof baseVector) {
+            if (data[i].vector instanceof Flory.Vector2) {
+                this.field[i].vector = new Flory.Vezctor3([data[i].vector.x, data[i].vector.y,0])
+            } else if (data[i].vector instanceof Flory.Vector) {
+                this.field[i].vector = new Flory.Vector3([data[i].vector.components[0], data[i].vector.components[1], data[i].vector.components[2]])
+            } else {
+                this.field[i].vector = data[i].vector.clone();
+            }
+        } else {
+            console.log("Flory: data.vector is not an Array or a descendant of Flory.baseVector");
+            return undefined;
+        }
+    }
 };
 
 
-Flory.Field3D.prototype = Object.create(Flory.Entity.prototype);
+Flory.Field3D.prototype = Object.create(Flory.baseField.prototype);
 
 Flory.Field3D.prototype.constructor = Flory.Field3D;
 
 
-	//TODO: OPTIMIZE THIS... it is currently O(n)
-	/**
-	 * Returns the force at the given position
-	 * by finding the closest point to the given position and returning
-	 * the associated vector
-	 * 
-	 * @param  {Vector3} position 
-	 * @return {Vector3}		The force at the given position          
-	 */
-Flory.Field3D.prototype.getForce = function(position,data){
-		var closest = 0;
-		var index_of_closest = 0;
-		for( var i = 0, len = this.data.length; i < len ; i++){
-			var cur_dist = this.data[i].position.distanceToSq(position);
-			if(cur_dist <= closest){
-				index_of_closest = i;
-				closest = cur_dist;
-			}
-		}
-		return this.data[index_of_closest].vector;
-	};
-
-
-/**
- * Combines @field with the object. This is done by merging the
- * data and summing the vectors at points in common.
- * @param  {Field3D} field 
- * @return {this}
- */
-Flory.Field3D.prototype.combine = function(field){
-
-}
-
-
-Flory.Field3D.prototype.scale = function(num){
-		for( var i =0, len = this.data.length; i < len; i++){
-			this.data[i].vector.scale(num);
-		}
-	};
-
-Flory.Field3D.prototype.clone = function(){
-		return new Flory.Field3D(this.data);
-	};
+Flory.Field3D.prototype.clone = function() {
+    return new Flory.Field3D(this.field);
+};

@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 /**
@@ -77,5 +77,5 @@ lennard.enableVisualization("mycanvas");
 
 var k = 0;
 var fps = 0;
-setInterval(function(){lennard.update();k++},0);
+setInterval(function(){lennard.advance();k++},0);
 setInterval(function(){fps = k;k=0;},1000);

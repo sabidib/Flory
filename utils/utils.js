@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
 */
 
 Flory._random = new Flory.RandomGen();
@@ -82,10 +82,10 @@ Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_d
 		count++;
 	}
 	if(count > (1000000-5) ){
-		console.log("Flory: can't place a monomer that does not overlap with another. Tried 1million times...")
+		console.log("Flory: can't place a monomer that does not overlap with another. Tried 1 million times...")
 		return undefined;
 	}
-	return new Flory.Monomer(radius, charge, mass, {position : vec});
+	return new Flory.Monomer({"radius" : radius , "charge" : charge , "mass" : mass ,"position" : vec});
 }
 
 

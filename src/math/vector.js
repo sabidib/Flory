@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 /**
@@ -108,6 +108,21 @@ Flory.Vector.prototype.lengthSq = function() {
 
     return sum;
 }
+
+
+Flory.Vector.prototype.cross = function(vec){
+    if(vec.components[2] == undefined){
+        return new Flory.Vector([ - this.components[2] * vec.components[1], 
+                                this.components[2] * vec.components[0], 
+                                this.components[0] * vec.components[1] - this.components[1] * vec.components[0] ]);
+    } else {
+        return new Flory.Vector([ this.components[1] * vec.components[2] - this.components[2] * vec.components[1], 
+                                this.components[2] * vec.components[0] - this.components[0] * vec.components[2], 
+                                this.components[0] * vec.components[1] - this.components[1] * vec.components[0] ]);    
+    }
+    
+}
+
 
 Flory.Vector.prototype.distanceTo = function(a) {
     var sum = 0;

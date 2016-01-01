@@ -28,7 +28,7 @@ polymer.createBondBetweenEntities(monomers[1],monomers[2],2)
 var m = setInterval(
 	function(){
 		console.log("One");
-		polymer.update({
+		polymer.advance({
 			 "number_of_steps" : 1
 			});
 		polymer.renderer.render();

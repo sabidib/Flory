@@ -1,5 +1,5 @@
 /**
- * @author sabidib
+ * @author sabidib http://github.com/sabidib
  */
 
 /** @constructor */
@@ -86,7 +86,9 @@ Flory._CoreEnvironment.prototype = {
         this.update(options);
         if (this.visualization) {
             for (var i = 0, len = this.entities.length; i < len; i++) {
-            	this.renderer.updateRenderablePosition(this.entities[i]);
+                if(this.entities[i] instanceof Flory.Renderable){
+                    this.renderer.updateRenderablePosition(this.entities[i]);    
+                }            	
             }        
             this.render();
         } 
