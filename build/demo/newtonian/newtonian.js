@@ -209,7 +209,7 @@ Flory.RandomGen.prototype.genrand_res53 = function() {
 /* These real versions are due to Isaku Wada, 2002/01/09 added */
 /**
  * @author sabidib http://github.com/sabidib
-*/
+ */
 
 Flory._random = new Flory.RandomGen();
 
@@ -239,21 +239,21 @@ Flory.rand = Flory._random.random;
  * @param  {[Float]} max_z 
  * @return {[Flory.Vector]}    
  */
-Flory.getRandomVector = function(max_x,max_y,max_z){
+Flory.getRandomVector = function(max_x, max_y, max_z) {
 
-	var x = Flory._random.random()*max_x*(0.5 - random.random());
-	var y = Flory._random.random()*max_y*(0.5 - random.random());
-	var z = Flory._random.random()*max_z*(0.5 - random.random());
+    var x = Flory._random.random() * max_x * (0.5 - random.random());
+    var y = Flory._random.random() * max_y * (0.5 - random.random());
+    var z = Flory._random.random() * max_z * (0.5 - random.random());
 
-	if(isNaN(x)){
-		return new Flory.Vector([]);
-	} else if(isNaN(y)){
-		return new Flory.Vector([x]);
-	} else if(isNaN(z)){
-		return new Flory.Vector([x,y]);
-	} else {
-		return new Flory.Vector([x,y,z]);
-	}
+    if (isNaN(x)) {
+        return new Flory.Vector([]);
+    } else if (isNaN(y)) {
+        return new Flory.Vector([x]);
+    } else if (isNaN(z)) {
+        return new Flory.Vector([x, y]);
+    } else {
+        return new Flory.Vector([x, y, z]);
+    }
 
 }
 
@@ -271,45 +271,60 @@ Flory.getRandomVector = function(max_x,max_y,max_z){
  * @param  {[Float]} max_z_dim          		[]
  * @return {[Flory.Monomer]}                    []
  */
-Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_distance_apart,max_x_dim,max_y_dim,max_z_dim){
-	var vec = {};
-	var count = 0;
-	while(count < 1000000){
-		var position_overlaps = false;
-		var vec = Flory.getRandomVector(max_x_dim,max_y_dim,max_z_dim);
-		for(var j = 0; j < monomersGiven.length;j++){
-			var total_min_distance_apart = (radius+monomersGiven[j].radius+min_distance_apart)*(radius+monomersGiven[j].radius+min_distance_apart);
-			if(monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart){
-				position_overlaps = true;
-				break;
-			}
-		}
-		if(!position_overlaps){
-			break;
-		}
-		//If count goes over 1million there probably is not enough room....
-		count++;
-	}
-	if(count > (1000000-5) ){
-		console.log("Flory: can't place a monomer that does not overlap with another. Tried 1 million times...")
-		return undefined;
-	}
-	return new Flory.Monomer({"radius" : radius , "charge" : charge , "mass" : mass ,"position" : vec});
+Flory.getNonOverlappingMonomer = function(monomersGiven, radius, mass, charge, min_distance_apart, max_x_dim, max_y_dim, max_z_dim) {
+    var vec = {};
+    var count = 0;
+    while (count < 1000000) {
+        var position_overlaps = false;
+        var vec = Flory.getRandomVector(max_x_dim, max_y_dim, max_z_dim);
+        for (var j = 0; j < monomersGiven.length; j++) {
+            var total_min_distance_apart = (radius + monomersGiven[j].radius + min_distance_apart) * (radius + monomersGiven[j].radius + min_distance_apart);
+            if (monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart) {
+                position_overlaps = true;
+                break;
+            }
+        }
+        if (!position_overlaps) {
+            break;
+        }
+        //If count goes over 1million there probably is not enough room....
+        count++;
+    }
+    if (count > (1000000 - 5)) {
+        console.log("Flory: can't place a monomer that does not overlap with another. Tried 1 million times...")
+        return undefined;
+    }
+    return new Flory.Monomer({
+        "radius": radius,
+        "charge": charge,
+        "mass": mass,
+        "position": vec
+    });
 }
 
 
 Flory.generateGUID = function() {
-  
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  }
 
-  	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-           s4() + '-' + s4() + s4() + s4();
-  
-  
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
+
+Flory.isWebGlAvailable = function() {
+    try {
+        var canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (
+            canvas.getContext('webgl') ||
+            canvas.getContext('experimental-webgl')));
+    } catch (e) {
+        return false;
+    }
 }
 
 /**
@@ -51603,7 +51618,11 @@ THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype )
 Flory.Renderer = function(canvas, scene, camera, renderables) {
     this.data = {};
     if (canvas != undefined) {
-        this.renderer = new THREE.WebGLRenderer();
+        if ( Flory.isWebGlAvailable() ) {
+            this.renderer = new THREE.WebGLRenderer();
+        } else {
+            this.renderer = new THREE.CanvasRenderer();
+        }
         if (this.renderer == undefined) {
             console.log("Flory : WebGL is not supported in your browser.");
         }
@@ -53257,7 +53276,7 @@ Flory.Polymer.default_epsilon = 1;
 
 /**
  * @author sabidib http://github.com/sabidib
-*/
+ */
 
 Flory._random = new Flory.RandomGen();
 
@@ -53287,21 +53306,21 @@ Flory.rand = Flory._random.random;
  * @param  {[Float]} max_z 
  * @return {[Flory.Vector]}    
  */
-Flory.getRandomVector = function(max_x,max_y,max_z){
+Flory.getRandomVector = function(max_x, max_y, max_z) {
 
-	var x = Flory._random.random()*max_x*(0.5 - random.random());
-	var y = Flory._random.random()*max_y*(0.5 - random.random());
-	var z = Flory._random.random()*max_z*(0.5 - random.random());
+    var x = Flory._random.random() * max_x * (0.5 - random.random());
+    var y = Flory._random.random() * max_y * (0.5 - random.random());
+    var z = Flory._random.random() * max_z * (0.5 - random.random());
 
-	if(isNaN(x)){
-		return new Flory.Vector([]);
-	} else if(isNaN(y)){
-		return new Flory.Vector([x]);
-	} else if(isNaN(z)){
-		return new Flory.Vector([x,y]);
-	} else {
-		return new Flory.Vector([x,y,z]);
-	}
+    if (isNaN(x)) {
+        return new Flory.Vector([]);
+    } else if (isNaN(y)) {
+        return new Flory.Vector([x]);
+    } else if (isNaN(z)) {
+        return new Flory.Vector([x, y]);
+    } else {
+        return new Flory.Vector([x, y, z]);
+    }
 
 }
 
@@ -53319,45 +53338,60 @@ Flory.getRandomVector = function(max_x,max_y,max_z){
  * @param  {[Float]} max_z_dim          		[]
  * @return {[Flory.Monomer]}                    []
  */
-Flory.getNonOverlappingMonomer = function(monomersGiven,radius,mass,charge,min_distance_apart,max_x_dim,max_y_dim,max_z_dim){
-	var vec = {};
-	var count = 0;
-	while(count < 1000000){
-		var position_overlaps = false;
-		var vec = Flory.getRandomVector(max_x_dim,max_y_dim,max_z_dim);
-		for(var j = 0; j < monomersGiven.length;j++){
-			var total_min_distance_apart = (radius+monomersGiven[j].radius+min_distance_apart)*(radius+monomersGiven[j].radius+min_distance_apart);
-			if(monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart){
-				position_overlaps = true;
-				break;
-			}
-		}
-		if(!position_overlaps){
-			break;
-		}
-		//If count goes over 1million there probably is not enough room....
-		count++;
-	}
-	if(count > (1000000-5) ){
-		console.log("Flory: can't place a monomer that does not overlap with another. Tried 1 million times...")
-		return undefined;
-	}
-	return new Flory.Monomer({"radius" : radius , "charge" : charge , "mass" : mass ,"position" : vec});
+Flory.getNonOverlappingMonomer = function(monomersGiven, radius, mass, charge, min_distance_apart, max_x_dim, max_y_dim, max_z_dim) {
+    var vec = {};
+    var count = 0;
+    while (count < 1000000) {
+        var position_overlaps = false;
+        var vec = Flory.getRandomVector(max_x_dim, max_y_dim, max_z_dim);
+        for (var j = 0; j < monomersGiven.length; j++) {
+            var total_min_distance_apart = (radius + monomersGiven[j].radius + min_distance_apart) * (radius + monomersGiven[j].radius + min_distance_apart);
+            if (monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart) {
+                position_overlaps = true;
+                break;
+            }
+        }
+        if (!position_overlaps) {
+            break;
+        }
+        //If count goes over 1million there probably is not enough room....
+        count++;
+    }
+    if (count > (1000000 - 5)) {
+        console.log("Flory: can't place a monomer that does not overlap with another. Tried 1 million times...")
+        return undefined;
+    }
+    return new Flory.Monomer({
+        "radius": radius,
+        "charge": charge,
+        "mass": mass,
+        "position": vec
+    });
 }
 
 
 Flory.generateGUID = function() {
-  
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  }
 
-  	return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-           s4() + '-' + s4() + s4() + s4();
-  
-  
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
+
+
+Flory.isWebGlAvailable = function() {
+    try {
+        var canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (
+            canvas.getContext('webgl') ||
+            canvas.getContext('experimental-webgl')));
+    } catch (e) {
+        return false;
+    }
 }
 
 
