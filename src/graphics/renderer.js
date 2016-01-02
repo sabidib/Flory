@@ -5,7 +5,11 @@
 Flory.Renderer = function(canvas, scene, camera, renderables) {
     this.data = {};
     if (canvas != undefined) {
-        this.renderer = new THREE.WebGLRenderer();
+        if ( Flory.isWebGlAvailable() ) {
+            this.renderer = new THREE.WebGLRenderer();
+        } else {
+            this.renderer = new THREE.CanvasRenderer();
+        }
         if (this.renderer == undefined) {
             console.log("Flory : WebGL is not supported in your browser.");
         }
