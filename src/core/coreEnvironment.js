@@ -56,14 +56,56 @@ Flory._CoreEnvironment.prototype = {
         if (this.data.rendererType ==
             Flory._CoreEnvironment.RendererType.Default ||
             this.data.rendererType == "") {
-            this.renderer = new Flory.Renderer(canvas);
+            this.renderer = new Flory.Renderer(canvas,data);
         } else if (this.data.rendererType ==
             Flory._CoreEnvironment.RendererType.PointCloud) {
-            this.renderer = new Flory.PointCloudRenderer(canvas);
+            this.renderer = new Flory.PointCloudRenderer(canvas,data);
         }
         this.visualization = true;
+        if(data != undefined){
+            if(data.clearColor != undefined){
+                this.renderer.setClearColor(data.clearColor);
+            }    
+            if(data.grid != undefined && data.grid == true){
+               this.addGrid(data.gridSize,data.gridSteps,data.gridPlane,data.gridPosition);
+            }
+            if(data.axis != undefined && data.axis == true){
+                this.addAxis(data.axisSize,data.axisPosition);        
+            }
+        }
+
         this.setUpVisualization(data);
         return this;
+    },
+    addGrid: function(gridSize,gridSteps,gridPlane,gridPosition){
+        size = 100;
+        steps = 10;
+        plane = "xy"
+        position = undefined;
+        if(gridSize != undefined){
+            size =gridSize;
+        }
+        if(gridSteps != undefined){
+            steps = gridSteps;
+        }
+        if(gridPlane != undefined){
+            plane = gridPlane;
+        }
+        if(gridPosition != undefined){
+            position = new Flory.Vector3(gridPosition);
+        }
+        this.renderer.createHelperGrid(size,steps,plane,position);
+    },
+    addAxis: function(axisSize, axisPosition) {
+        position = undefined;
+        size = 2;
+        if (axisSize != undefined) {
+            size = axisSize;
+        }
+        if(axisPosition != undefined){
+            position = new Flory.Vector3(axisPosition);
+        }
+        this.renderer.createAxis(size,position);
     },
     disableVisualization: function() {
         this.renderer = {}
