@@ -187,6 +187,18 @@ Flory.Vector.prototype.negate = function() {
     }
     return this;
 }
+
+Flory.Vector.prototype.normalize = function(){
+    var length = this.length();
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        this.components[i] = this.components[i]/length;
+    }
+    return this;
+}
+
+
+
 Flory.Vector.prototype.clone = function() {
     return new Flory.Vector(this.components.slice(0));
 }
+

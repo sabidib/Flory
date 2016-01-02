@@ -317,7 +317,6 @@ Flory.generateGUID = function() {
 
 
 Flory.isWebGlAvailable = function() {
-	return false
     try {
         var canvas = document.createElement('canvas');
         return !!(window.WebGLRenderingContext && (
@@ -353,10 +352,16 @@ dimension : function(){
 /** @constructor */
 Flory.Vector3 = function(x, y, z) {
     Flory.baseVector.call(this);
-    if (x instanceof Object && x == undefined && z == undefined) {
-        y = x.y
+    
+
+    if(x instanceof Array && y == undefined && z == undefined){
+        y = x[1]
+        z = x[2]
+        x = x[0]
+    } else if (x instanceof Object && y == undefined && z == undefined) {
+        y = x.y;
         z = x.z;
-        x = x.x
+        x = x.x;
     }
     this.x = (x === undefined) ? 0 : x;
     this.y = (y === undefined) ? 0 : y;
@@ -437,6 +442,14 @@ Flory.Vector3.prototype.negate = function() {
     this.z = -this.z;
     return this;
 }
+Flory.Vector3.prototype.normalize = function(){
+    var len = this.length();
+    this.x = this.x/len;
+    this.y = this.y/len; 
+    this.z = this.z/len; 
+    return this;
+}
+
 Flory.Vector3.prototype.clone = function() {
     return new Flory.Vector3(this.x, this.y, this.z);
 }
@@ -448,13 +461,16 @@ Flory.Vector3.prototype.clone = function() {
 /** @constructor */
 Flory.Vector2 = function(x, y) {
     Flory.baseVector.call(this);
-    if (x instanceof Object && x == undefined) {
+    if(x instanceof Array && y == undefined){
+        y = x[1];
+        x = x[0];
+    } if (x instanceof Object && y == undefined) {
         y = x.y
         x = x.x
     }
     this.x = (x === undefined) ? 0 : x;
     this.y = (y === undefined) ? 0 : y;
-    this.components = [this.x, this.y];
+    this.components = [this.x, this.y,0];
 }
 
 
@@ -484,7 +500,7 @@ Flory.Vector2.prototype.scale = function(num) {
 
 
 Flory.Vector2.prototype.cross = function(vec){
-    return new Flory.Vector2([ this.y * vec.components[2] , 
+    return new Flory.Vector2([this.y * vec.components[2], 
                                 - this.x * vec.components[2]]);
 }
 
@@ -521,6 +537,14 @@ Flory.Vector2.prototype.negate = function() {
     this.y = -this.y;
     return this;
 }
+
+Flory.Vector2.prototype.normalize = function(){
+    var len = this.length();
+    this.x = this.x/len;
+    this.y = this.y/len; 
+    return this;
+}
+
 Flory.Vector2.prototype.clone = function() {
     return new Flory.Vector2(this.x, this.y);
 }
@@ -714,9 +738,21 @@ Flory.Vector.prototype.negate = function() {
     }
     return this;
 }
+
+Flory.Vector.prototype.normalize = function(){
+    var length = this.length();
+    for (var i = 0, len = this.components.length; i < len; i++) {
+        this.components[i] = this.components[i]/length;
+    }
+    return this;
+}
+
+
+
 Flory.Vector.prototype.clone = function() {
     return new Flory.Vector(this.components.slice(0));
 }
+
 
 /**
  * @author sabidib http://github.com/sabidib 
@@ -14539,14 +14575,56 @@ Flory._CoreEnvironment.prototype = {
         if (this.data.rendererType ==
             Flory._CoreEnvironment.RendererType.Default ||
             this.data.rendererType == "") {
-            this.renderer = new Flory.Renderer(canvas);
+            this.renderer = new Flory.Renderer(canvas,data);
         } else if (this.data.rendererType ==
             Flory._CoreEnvironment.RendererType.PointCloud) {
-            this.renderer = new Flory.PointCloudRenderer(canvas);
+            this.renderer = new Flory.PointCloudRenderer(canvas,data);
         }
         this.visualization = true;
+        if(data != undefined){
+            if(data.clearColor != undefined){
+                this.renderer.setClearColor(data.clearColor);
+            }    
+            if(data.grid != undefined && data.grid == true){
+               this.addGrid(data.gridSize,data.gridSteps,data.gridPlane,data.gridPosition);
+            }
+            if(data.axis != undefined && data.axis == true){
+                this.addAxis(data.axisSize,data.axisPosition);        
+            }
+        }
+
         this.setUpVisualization(data);
         return this;
+    },
+    addGrid: function(gridSize,gridSteps,gridPlane,gridPosition){
+        size = 100;
+        steps = 10;
+        plane = "xy"
+        position = undefined;
+        if(gridSize != undefined){
+            size =gridSize;
+        }
+        if(gridSteps != undefined){
+            steps = gridSteps;
+        }
+        if(gridPlane != undefined){
+            plane = gridPlane;
+        }
+        if(gridPosition != undefined){
+            position = new Flory.Vector3(gridPosition);
+        }
+        this.renderer.createHelperGrid(size,steps,plane,position);
+    },
+    addAxis: function(axisSize, axisPosition) {
+        position = undefined;
+        size = 2;
+        if (axisSize != undefined) {
+            size = axisSize;
+        }
+        if(axisPosition != undefined){
+            position = new Flory.Vector3(axisPosition);
+        }
+        this.renderer.createAxis(size,position);
     },
     disableVisualization: function() {
         this.renderer = {}
@@ -14607,7 +14685,7 @@ Flory.Environment.prototype.constructor = Flory.Environment;
 
 
 Flory.Environment.prototype.removedEntity = function(entity, id, index) {
-	if(this.visualization){
+	if(this.visualization && entity instanceof Flory.Renderable){
 		this.renderer.removeRenderable(id);
 	}
 	return this;
@@ -14615,7 +14693,7 @@ Flory.Environment.prototype.removedEntity = function(entity, id, index) {
 
 
 Flory.Environment.prototype.addedEntity = function(entity) {
-	if(this.visualization){	
+	if(this.visualization && entity instanceof Flory.Renderable){	
 		this.renderer.addRenderable(entity);
 	}
 	return this;
@@ -14630,14 +14708,18 @@ Flory.Environment.prototype.update = function(data) {
 Flory.Environment.prototype.setUpVisualization = function(data) {
 	this.data.visualization_data = data;
 	for(var i = 0; i  < this.entities.length; i++){
-		this.renderer.addRenderable(this.entities[i]);
+		if(this.entities[i] instanceof Flory.Renderable){
+			this.renderer.addRenderable(this.entities[i]);	
+		}		
 	}
 }
 
 
 Flory.Environment.prototype.disabledVisualization = function() {
 	for(var i = 0; i  < this.entities.length; i++){
-		this.renderer.removeRenderable(this.entity[i]);
+		if(this.entities[i] instanceof Flory.Renderable){
+			this.renderer.removeRenderable(this.entity[i]);	
+		}		
 	}
 	this.data.visualization_data = undefined;
 	delete this.data.visualization_data;
@@ -51930,10 +52012,10 @@ THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype )
  * @author sabidib http://github.com/sabidib
  */
 /** @constructor */
-Flory.Renderer = function(canvas, scene, camera, renderables) {
+Flory.Renderer = function(canvas, data, scene, camera, renderables) {
     this.data = {};
     if (canvas != undefined) {
-        if ( Flory.isWebGlAvailable() ) {
+        if (Flory.isWebGlAvailable()) {
             this.renderer = new THREE.WebGLRenderer();
         } else {
             this.renderer = new THREE.CanvasRenderer();
@@ -51958,13 +52040,22 @@ Flory.Renderer = function(canvas, scene, camera, renderables) {
     }
 
     this.scene = (scene === undefined) ? new THREE.Scene() : scene;
-    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000) : camera;
-    this.camera.position.set(0, 0, 100);
+    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
+
+    cameraPosition = new Flory.Vector3([0, 0, 100]);
+    if (data != undefined && data.cameraPosition != undefined) {
+        cameraPosition = new Flory.Vector3(data.cameraPosition);
+    }
+    this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
     this.camera.up = new THREE.Vector3(0, 0, 1);
+
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
     this.renderables = (renderables === undefined) ? {} : renderables;
+    this.camera.z = 20;
     var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
     controls.addEventListener('change', function() {
         this.render
     });
@@ -51981,6 +52072,39 @@ Flory.Renderer.prototype = {
             console.log("Flory : Attempted to add an object to Flory.Renderer.renderables that did not inherit from Flory.Renderable.")
             return this;
         }
+    },
+    setClearColor: function(color) {
+        this.renderer.setClearColor(color);
+    },
+    setCameraPosition: function(position) {
+        if (position != undefined &&
+            position.components[0] != undefined &&
+            position.components[1] != undefined &&
+            position.components[2] != undefined) {
+            this.camera.position.set(position.components[0], position.components[1], position.components[2]);
+        }
+
+    },
+    createHelperGrid: function(size, steps, plane, position) {
+        var toR = plane.toUpperCase().split("").sort().join("");
+        var grid = new THREE.GridHelper(size, steps);
+        if (toR == "XY") {
+            grid.rotation.x = Math.PI / 2;
+        } else if (toR == "YZ") {
+            grid.rotation.z = Math.PI / 2;
+        }
+        if (position != undefined) {
+            grid.position.set(position.components[0], position.components[1], position.components[2]);
+        }
+
+        this.scene.add(grid);
+    },
+    createAxis: function(axisSize, axisPosition) {
+        var axes = new THREE.AxisHelper(axisSize);
+        if (axisPosition != undefined) {
+            axes.position.set(position.components[0], position.components[1], position.components[2]);
+        }
+        this.scene.add(axes);
     },
     updateRenderablePosition: function(renderable) {
         var i = renderable.id;
@@ -52007,12 +52131,12 @@ Flory.Renderer.prototype = {
             return undefined;
         }
         // } else if(new_position instanceof Flory.Vector2){
-        // 	this.renderables[i].mesh.position.x = new_position.x;
-        // 	this.renderables[i].mesh.position.y = new_position.y;
+        //  this.renderables[i].mesh.position.x = new_position.x;
+        //  this.renderables[i].mesh.position.y = new_position.y;
         // } else if(new_position instanceof Flory.Vector3){
-        // 	this.renderables[i].mesh.position.x = new_position.x;
-        // 	this.renderables[i].mesh.position.y = new_position.y;
-        // 	this.renderables[i].mesh.position.z = new_position.z;
+        //  this.renderables[i].mesh.position.x = new_position.x;
+        //  this.renderables[i].mesh.position.y = new_position.y;
+        //  this.renderables[i].mesh.position.z = new_position.z;
         // }
         return this;
     },
@@ -52053,8 +52177,8 @@ Flory.Renderer.ShaderTypes = {}
  */
 
 /** @constructor */
-Flory.PointCloudRenderer = function(canvas){
-	Flory.Renderer.call(this,canvas);
+Flory.PointCloudRenderer = function(canvas,data){
+	Flory.Renderer.call(this,canvas,data);
 	this.data.particles = new THREE.Geometry();
 	this.data.pMaterial = new THREE.PointCloudMaterial({color : 0xFF0000, size:2});
 	this.data.particle_system = new THREE.PointCloud(this.data.particles,this.data.pMaterial);
@@ -53108,73 +53232,6 @@ Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
 
 Flory.Newtonian.constructor = Flory.Newtonian;
 
-Flory.Newtonian.prototype.addedEntity = function(entity){
-	if(this.visualization){
-		if(entity instanceof Flory.Monomer || entity instanceof Flory.Monomer2D || entity instanceof Flory.Monomer3D){
-		    this.meshes.push(this.generateMonomerMesh(entity));
-			this.addRenderable(entity);
-		}
-	}
-	return this;
-}
-
-Flory.Newtonian.prototype.generateMonomerMesh = function(entity,settings){
-	if(entity instanceof Flory.Monomer || entity instanceof Flory.Monomer2D || entity instanceof Flory.Monomer3D){
-		var material = {};
-		var geometry = {};
-
-        var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
-
-        var dim = entity.position.dimension();
-        if(dim >= 3){
-            geometry = new THREE.SphereGeometry(entity.radius,segments,segments);
-        } else {
-            geometry = new THREE.CircleGeometry(entity.radius, segments, 0, 2*3.14159265359);
-        }
-
-        var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
-        
-        if(settings == undefined){
-            material = new THREE.MeshBasicMaterial({color : color_of_mesh});
-        } else if(settings.material != undefined && settings.materials instanceof THREE.Material){
-            material = settings.material;
-        } else {
-            material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
-        }
-        return new THREE.Mesh(geometry, material); 
-	} else {	
-		return undefined;
-	}
-}
-
-Flory.Newtonian.prototype.removedEntity = function(entity,id,index){
-	if(this.meshes.length != 0){
-		if(this.visualization){
-			this.renderer.scene.remove(this.meshes[index]);
-		}
-		this.meshes.splice(index);
-	}
-}
-
-Flory.Newtonian.prototype.disabledVisualization = function(){
-	for(var i = 0, len = this.meshes.length;i <len;i++){
-		this.renderer.scene.remove(this.meshes[i]);
-	}
-	this.meshes = [];
-}
-
-Flory.Newtonian.prototype.setUpVisualization = function(data){
-	for(var i = 0, len = this.entities.length;i < len;i++){
-		var entity = this.entities[i];
-		if(entity instanceof Flory.Monomer || entity instanceof Flory.Monomer2D || entity instanceof Flory.Monomer3D){
-		    var mesh = this.generateMonomerMesh(this.entities[i]);
-		    this.meshes.push(mesh);
-		    this.entities[i].mesh = mesh;
-		    this.renderer.addRenderable(this.entities[i]);
-		}		
-	}
-}
-
 Flory.Newtonian.prototype.update = function(additional){
 	var len = this.entities.length;
 	for(var i = 0;i < len;i++){
@@ -53184,29 +53241,15 @@ Flory.Newtonian.prototype.update = function(additional){
 			for(var j = 0;j < len;j++){
 				var entity2 = this.entities[j];
 				if(entity2 instanceof Flory.baseField){
-					var field = entity2;
-					tmp.add(field.getForce(entity.position));
+					tmp.add(entity2.getForce(entity.position));
 				} 
 			}
 			entity.force = tmp.clone();
-		}
-	}
-	for(var i = 0 , len = this.entities.length; i < len; i++){
-		var entity = this.entities[i];
-		if(entity instanceof Flory.Particle){
 			entity.acceleration = entity.force.mult(1.0/entity.mass);
 			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
 			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
-			if(this.visualization){
-				this.renderer.updateRenderablePosition(entity);
-			}
 		}
 	}
-	
-	if(this.visualization){
-		this.renderer.render()
-	}
-
 	return this;
 }
 
@@ -53699,7 +53742,6 @@ Flory.generateGUID = function() {
 
 
 Flory.isWebGlAvailable = function() {
-	return false
     try {
         var canvas = document.createElement('canvas');
         return !!(window.WebGLRenderingContext && (

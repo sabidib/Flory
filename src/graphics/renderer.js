@@ -2,10 +2,10 @@
  * @author sabidib http://github.com/sabidib
  */
 /** @constructor */
-Flory.Renderer = function(canvas, scene, camera, renderables) {
+Flory.Renderer = function(canvas, data, scene, camera, renderables) {
     this.data = {};
     if (canvas != undefined) {
-        if ( Flory.isWebGlAvailable() ) {
+        if (Flory.isWebGlAvailable()) {
             this.renderer = new THREE.WebGLRenderer();
         } else {
             this.renderer = new THREE.CanvasRenderer();
@@ -30,13 +30,22 @@ Flory.Renderer = function(canvas, scene, camera, renderables) {
     }
 
     this.scene = (scene === undefined) ? new THREE.Scene() : scene;
-    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000) : camera;
-    this.camera.position.set(0, 0, 100);
+    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
+
+    cameraPosition = new Flory.Vector3([0, 0, 100]);
+    if (data != undefined && data.cameraPosition != undefined) {
+        cameraPosition = new Flory.Vector3(data.cameraPosition);
+    }
+    this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
     this.camera.up = new THREE.Vector3(0, 0, 1);
+
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
     this.renderables = (renderables === undefined) ? {} : renderables;
+    this.camera.z = 20;
     var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
     controls.addEventListener('change', function() {
         this.render
     });
@@ -53,6 +62,39 @@ Flory.Renderer.prototype = {
             console.log("Flory : Attempted to add an object to Flory.Renderer.renderables that did not inherit from Flory.Renderable.")
             return this;
         }
+    },
+    setClearColor: function(color) {
+        this.renderer.setClearColor(color);
+    },
+    setCameraPosition: function(position) {
+        if (position != undefined &&
+            position.components[0] != undefined &&
+            position.components[1] != undefined &&
+            position.components[2] != undefined) {
+            this.camera.position.set(position.components[0], position.components[1], position.components[2]);
+        }
+
+    },
+    createHelperGrid: function(size, steps, plane, position) {
+        var toR = plane.toUpperCase().split("").sort().join("");
+        var grid = new THREE.GridHelper(size, steps);
+        if (toR == "XY") {
+            grid.rotation.x = Math.PI / 2;
+        } else if (toR == "YZ") {
+            grid.rotation.z = Math.PI / 2;
+        }
+        if (position != undefined) {
+            grid.position.set(position.components[0], position.components[1], position.components[2]);
+        }
+
+        this.scene.add(grid);
+    },
+    createAxis: function(axisSize, axisPosition) {
+        var axes = new THREE.AxisHelper(axisSize);
+        if (axisPosition != undefined) {
+            axes.position.set(position.components[0], position.components[1], position.components[2]);
+        }
+        this.scene.add(axes);
     },
     updateRenderablePosition: function(renderable) {
         var i = renderable.id;
@@ -79,12 +121,12 @@ Flory.Renderer.prototype = {
             return undefined;
         }
         // } else if(new_position instanceof Flory.Vector2){
-        // 	this.renderables[i].mesh.position.x = new_position.x;
-        // 	this.renderables[i].mesh.position.y = new_position.y;
+        //  this.renderables[i].mesh.position.x = new_position.x;
+        //  this.renderables[i].mesh.position.y = new_position.y;
         // } else if(new_position instanceof Flory.Vector3){
-        // 	this.renderables[i].mesh.position.x = new_position.x;
-        // 	this.renderables[i].mesh.position.y = new_position.y;
-        // 	this.renderables[i].mesh.position.z = new_position.z;
+        //  this.renderables[i].mesh.position.x = new_position.x;
+        //  this.renderables[i].mesh.position.y = new_position.y;
+        //  this.renderables[i].mesh.position.z = new_position.z;
         // }
         return this;
     },

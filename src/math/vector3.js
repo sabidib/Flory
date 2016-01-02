@@ -5,10 +5,16 @@
 /** @constructor */
 Flory.Vector3 = function(x, y, z) {
     Flory.baseVector.call(this);
-    if (x instanceof Object && x == undefined && z == undefined) {
-        y = x.y
+    
+
+    if(x instanceof Array && y == undefined && z == undefined){
+        y = x[1]
+        z = x[2]
+        x = x[0]
+    } else if (x instanceof Object && y == undefined && z == undefined) {
+        y = x.y;
         z = x.z;
-        x = x.x
+        x = x.x;
     }
     this.x = (x === undefined) ? 0 : x;
     this.y = (y === undefined) ? 0 : y;
@@ -89,6 +95,14 @@ Flory.Vector3.prototype.negate = function() {
     this.z = -this.z;
     return this;
 }
+Flory.Vector3.prototype.normalize = function(){
+    var len = this.length();
+    this.x = this.x/len;
+    this.y = this.y/len; 
+    this.z = this.z/len; 
+    return this;
+}
+
 Flory.Vector3.prototype.clone = function() {
     return new Flory.Vector3(this.x, this.y, this.z);
 }
