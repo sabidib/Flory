@@ -3,8 +3,11 @@
  */
 
 /** @constructor */
-Flory.Environment = function() {
+Flory.Environment = function(handler) {
     Flory._CoreEnvironment.call(this);
+    if(handler !== undefined){
+    	this.handler = this.addHandler(handler)
+    }
 }
 
 Flory.Environment.prototype = Object.create(Flory._CoreEnvironment.prototype);
@@ -12,6 +15,12 @@ Flory.Environment.prototype = Object.create(Flory._CoreEnvironment.prototype);
 
 Flory.Environment.prototype.constructor = Flory.Environment;
 
+
+Flory.Environment.prototype.addHandler = function(handler){
+	if(handler !== undefined){
+		this.handler.push(handler);
+	}
+}
 
 Flory.Environment.prototype.removedEntity = function(entity, id, index) {
 	if(this.visualization && entity instanceof Flory.Renderable){
@@ -30,7 +39,9 @@ Flory.Environment.prototype.addedEntity = function(entity) {
 
 
 Flory.Environment.prototype.update = function(data) {
-
+	for (var i = 0; i < this.handler.length; i++) {
+		this.handler[i].update(this.entities);
+	};
 }
 
 
