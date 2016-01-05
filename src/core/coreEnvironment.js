@@ -6,6 +6,7 @@
 Flory._CoreEnvironment =
     function() {
         this.entities = [];
+        this.handlers = [];
         this.renderer = {};
         this.data = {};
         this.visualization = false;
