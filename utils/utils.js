@@ -32,9 +32,9 @@ Flory.rand = Flory._random.random;
  */
 Flory.getRandomVector = function(max_x, max_y, max_z) {
 
-    var x = Flory._random.random() * max_x * (0.5 - random.random());
-    var y = Flory._random.random() * max_y * (0.5 - random.random());
-    var z = Flory._random.random() * max_z * (0.5 - random.random());
+    var x = Flory.rand() * max_x * (0.5 - Flory.rand());
+    var y = Flory.rand() * max_y * (0.5 - Flory.rand());
+    var z = Flory.rand() * max_z * (0.5 - Flory.rand());
 
     if (isNaN(x)) {
         return new Flory.Vector([]);

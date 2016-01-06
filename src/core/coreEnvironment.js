@@ -35,6 +35,14 @@ Flory._CoreEnvironment.prototype = {
         }
         return this;
     },
+    destroyScene : function(){
+        this.renderer.destroyAllRenderables();
+        this.renderer.destroyCanvas();
+        this.entities = [];
+        this.handlers = [];
+        this.renderers = [];
+        this.visualization = false;
+    },
     remove: function(entity) {
         for (var i = 0, len = this.entities.length; i < len; i++) {
             if (this.entities[i].id === entity.id) {
@@ -124,6 +132,13 @@ Flory._CoreEnvironment.prototype = {
     },
     resetEnvironment: function() {
 
+    },
+    setDimension : function(size){
+        if(size != undefined && size instanceof Array){
+            this.renderer.setDimension(size[0],size[1]);
+        } else if(size != undefined && size instanceof Object){
+            this.renderer.setDimension(size.width,size.width);
+        }
     },
     advance: function(options) {
         this.update(options);

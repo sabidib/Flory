@@ -218,7 +218,7 @@ Flory.Options.prototype = {
 	},
 
 	getValue : function(key){
-		var k =  $("[name='"+key+"'").val();
+		var k =  $("[name='"+key+"']").val();
 		if(k == "i-am-a-check-box-causing-errors"){
 			return $("[name='"+key+"']").is(':checked');
 		} else {
