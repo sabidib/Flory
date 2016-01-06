@@ -13,7 +13,12 @@ Flory.Renderer = function(canvas, data, scene, camera, renderables) {
         if (this.renderer == undefined) {
             console.log("Flory : WebGL is not supported in your browser.");
         }
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        if(data != undefined && data.size != undefined){
+            this.renderer.setSize(data.size[0],data.size[1]);
+        } else {
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
 
         var cav = document.getElementById("#" + canvas);
         if (cav == null) {
@@ -30,30 +35,49 @@ Flory.Renderer = function(canvas, data, scene, camera, renderables) {
     }
 
     this.scene = (scene === undefined) ? new THREE.Scene() : scene;
-    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
-
-    cameraPosition = new Flory.Vector3([0, 0, 100]);
-    if (data != undefined && data.cameraPosition != undefined) {
-        cameraPosition = new Flory.Vector3(data.cameraPosition);
-    }
-    this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
-    this.camera.up = new THREE.Vector3(0, 0, 1);
-
-    this.camera.lookAt(this.scene.position);
-    this.scene.add(this.camera);
+    refreshCamera(data,undefined);
+    
     this.renderables = (renderables === undefined) ? {} : renderables;
-    this.camera.z = 20;
-    var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.25;
-    controls.addEventListener('change', function() {
-        this.render
-    });
 }
 
 
 Flory.Renderer.prototype = {
     constructor: Flory.Renderer,
+    refreshCamera : function(data,camera){
+        var cameraPosition = new Flory.Vector3([0, 0, 100]);
+        if(this.camera != undefined){
+            cameraPosition = this.camera.position;
+            this.scene.remove(this.camera);
+        }
+        if(this.controls != undefined){
+            this.controls.removeEventListener("change");
+        }
+
+        var width  = window.innerWidth;
+        var height = window.innerHeight;
+        if(data != undefined && data.size != undefined){
+            width = data.size[0]
+            height = data.size[1]
+        } 
+        this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, width / height, 1, 10000) : camera;
+
+        if (data != undefined && data.cameraPosition != undefined) {
+            cameraPosition = new Flory.Vector3(data.cameraPosition);
+        }
+        this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
+        this.camera.up = new THREE.Vector3(0, 0, 1);
+
+        this.camera.lookAt(this.scene.position);
+
+        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.25;
+        this.controls.addEventListener('change', function() {
+            this.render
+        });
+
+        this.scene.add(this.camera);
+    },
     addRenderable: function(renderable) {
         if (renderable instanceof Flory.Renderable) {
             this.renderables[renderable.id] = renderable;
@@ -147,6 +171,14 @@ Flory.Renderer.prototype = {
         this.renderables = [];
         return this;
     },
+    destroyAllRenderables : function(){
+        for (var i in this.renderables) {
+            this.renderables[i].destroy();
+            this.scene.remove(this.renderables[i]);
+        }
+        this.renderables = [];
+        return this;
+    },
     /** The following should be not be overriden **/
     setDimension: function(width, height) {
         this.renderer.setSize(width, height);
@@ -155,6 +187,12 @@ Flory.Renderer.prototype = {
     render: function() {
         this.renderer.render(this.scene, this.camera);
         return this;
+    },
+    destroy : function(){
+        this.removeAllRenderables();
+    },
+    destroyCanvas : function(){
+        $(this.renderer.domElement).remove()
     }
 }
 
