@@ -35,7 +35,26 @@ Flory.Renderer = function(canvas, data, scene, camera, renderables) {
     }
 
     this.scene = (scene === undefined) ? new THREE.Scene() : scene;
-    refreshCamera(data,undefined);
+    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
+
+    var cameraPosition = new Flory.Vector3([0, 0, 100]);
+    if (data != undefined && data.cameraPosition != undefined) {
+        cameraPosition = new Flory.Vector3(data.cameraPosition);
+    }
+    this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
+    this.camera.up = new THREE.Vector3(0, 0, 1);
+
+    this.camera.lookAt(this.scene.position);
+    this.scene.add(this.camera);
+    this.renderables = (renderables === undefined) ? {} : renderables;
+    this.camera.z = 20;
+    var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+    controls.addEventListener('change', function() {
+        this.render
+    });
+    // this.refreshCamera(data,undefined);
     
     this.renderables = (renderables === undefined) ? {} : renderables;
 }

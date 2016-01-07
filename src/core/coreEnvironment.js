@@ -87,10 +87,10 @@ Flory._CoreEnvironment.prototype = {
         return this;
     },
     addGrid: function(gridSize,gridSteps,gridPlane,gridPosition){
-        size = 100;
-        steps = 10;
-        plane = "xy"
-        position = undefined;
+        var size = 100;
+        var steps = 10;
+        var plane = "xy"
+        var position = undefined;
         if(gridSize != undefined){
             size =gridSize;
         }
@@ -106,8 +106,8 @@ Flory._CoreEnvironment.prototype = {
         this.renderer.createHelperGrid(size,steps,plane,position);
     },
     addAxis: function(axisSize, axisPosition) {
-        position = undefined;
-        size = 2;
+        var position = undefined;
+        var size = 2;
         if (axisSize != undefined) {
             size = axisSize;
         }
