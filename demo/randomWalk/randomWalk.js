@@ -55,14 +55,52 @@ var random_walk_options = new Flory.Options(settings,"options");
 var random = new Flory.RandomGen();
 var calculator = new Flory.DataProcessor();
 var monomers = [];
-var randomWalk = new Flory.RandomWalk(1);
+var randomWalk = new Flory.Environment();
+
+randomWalk.addHandler(
+{"update" : 
+	function(entities){
+	var len = entities.length;
+	var entity;
+	var number_of_dimensions;
+	var dimension_increment;
+	var dimension_to_choose;
+	var rnum;
+	var number_of_steps = 1;
+	var prob_right = 0.5;
+
+	for(var k = 0; k < number_of_steps;k++){
+		for( var i = 0;i<len;i++){
+			entity = entities[i];
+			if(entity instanceof Flory.Particle){
+				number_of_dimensions = entity.position.dimension();
+				dimension_increment = (1.0/number_of_dimensions);
+				dimension_to_choose = 0;
+				//Choose which dimension to move in 
+				rnum = random.random();
+				rnum -= dimension_increment;
+				while(rnum > 0){
+					rnum -= dimension_increment;
+					dimension_to_choose++;
+				}
+				//Choose the direction of movement in the dimension
+				rnum = random.random();
+				if(rnum < prob_right){
+					entity.position.components[dimension_to_choose]++;
+				} else {
+					entity.position.components[dimension_to_choose]--;
+				} 
+
+			}
+		}
+	}
+}
+
+
+});
 
 
 var exp = settings.experiment;
-
-
-
-
 
 
 for(var i = 0; i < exp.number_of_monomers;i++){

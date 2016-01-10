@@ -1031,13 +1031,11 @@ Flory.Environment.prototype.addedEntity = function(entity) {
 	return this;
 }
 
-
 Flory.Environment.prototype.update = function(data) {
 	for (var i = 0; i < this.handler.length; i++) {
 		this.handler[i].update(this.entities);
 	};
 }
-
 
 Flory.Environment.prototype.setUpVisualization = function(data) {
 	this.data.visualization_data = data;
