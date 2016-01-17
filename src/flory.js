@@ -1,8 +1,9 @@
 /**
- * 	@author sabidib http://github.com/sabidib 
+ *  @author sabidib http://github.com/sabidib
  */
+/*global Flory*/
+/*jshint white*/
+'use strict';
 
 var Flory = { VERSION : '0.2',
-			  timestep: 0.01 };
-
-
+              timestep: 0.01 };

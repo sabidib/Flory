@@ -1,12 +1,28 @@
 /**
- * 	@author sabidib http://github.com/sabidib 
+ *  @author sabidib http://github.com/sabidib
+ */
+/*global console,window,$,THREE,document*/
+/*jslint white*/
+'use strict';
+
+
+/**
+ *  @author sabidib http://github.com/sabidib
  */
 
+
+
+
+
+/**
+ *  @author sabidib http://github.com/sabidib
+ */
+
+/*jshint white*/
+
+
 var Flory = { VERSION : '0.2',
-			  timestep: 0.01 };
-
-
-
+              timestep: 0.01 };
 /**
  * @author Sean McCullough (banksean@gmail.com)
  */
@@ -93,6 +109,8 @@ Flory.RandomGen = function(seed) {
 
   this.init_genrand(seed);
 }  
+
+Flory.RandomGen.prototype.constructor = Flory.RandomGen;
  
 /* initializes mt[N] with a seed */
 Flory.RandomGen.prototype.init_genrand = function(s) {
@@ -210,75 +228,72 @@ Flory.RandomGen.prototype.genrand_res53 = function() {
 /**
  * @author sabidib http://github.com/sabidib
  */
-
-Flory._random = new Flory.RandomGen();
-
-
 /**
  * Provides various utility functions for demos.
  */
 
 
 
-
 /**
- * Function
- * Returns a random number (0,1).
- * @return {[Float]} a random number (0,1)
- */
-Flory.rand = Flory._random.random;
-
-
+* Function
+* Returns a random number (0,1).
+* @return {[Float]} a random number (0,1)
+*/
+Flory.rand = new Flory.RandomGen();
 /**
- * Provides a Flory.Vector object with the dimension equal
- * to the number of defined parameters.
- * 
- * The returned vector is always has components with ranges [-max , +max]
- * @param  {[Float]} max_x 
- * @param  {[Float]} max_y 
- * @param  {[Float]} max_z 
- * @return {[Flory.Vector]}    
- */
-Flory.getRandomVector = function(max_x, max_y, max_z) {
-
-    var x = Flory.rand() * max_x * (0.5 - Flory.rand());
-    var y = Flory.rand() * max_y * (0.5 - Flory.rand());
-    var z = Flory.rand() * max_z * (0.5 - Flory.rand());
-
+* Provides a Flory.Vector object with the dimension equal
+* to the number of defined parameters.
+* The returned vector is always has components with ranges [-max , +max]
+* @param  {[Float]} max_x
+* @param  {[Float]} max_y
+* @param  {[Float]} max_z
+* @return {[Flory.Vector]}
+*/
+Flory.getRandomVector = function (max_x, max_y, max_z) {
+    var x = Flory.rand.random() * max_x * (0.5 - Flory.rand.random());
+    var y = Flory.rand.random() * max_y * (0.5 - Flory.rand.random());
+    var z = Flory.rand.random() * max_z * (0.5 - Flory.rand.random());
     if (isNaN(x)) {
         return new Flory.Vector([]);
     } else if (isNaN(y)) {
         return new Flory.Vector([x]);
     } else if (isNaN(z)) {
-        return new Flory.Vector([x, y]);
+        return new Flory.Vector([
+            x,
+            y
+        ]);
     } else {
-        return new Flory.Vector([x, y, z]);
+        return new Flory.Vector([
+            x,
+            y,
+            z
+        ]);
     }
-
-}
-
+};
 /**
- * Given an array of monomers, the function will return
- * a Flory.Monomer object in the same dimension as the max dimensions given
- * that does not overlap with another monomer based on the radius of the monomers.
- * @param  {[Flory.Monomer*]} monomersGiven     [An array of monomer to be checked for overlaps.]
- * @param  {[Float]} radius             		[The radius of the new monomer to be created.]
- * @param  {[Float]} mass 						[The mass of the monomer]
- * @param  {[Float]} charge 					[The charge of the monomer]
- * @param  {[Float]} min_distance_apart 		[The minimum distance between surface of monomers.]
- * @param  {[Float]} max_x_dim          		[]
- * @param  {[Float]} max_y_dim          		[]
- * @param  {[Float]} max_z_dim          		[]
- * @return {[Flory.Monomer]}                    []
- */
-Flory.getNonOverlappingMonomer = function(monomersGiven, radius, mass, charge, min_distance_apart, max_x_dim, max_y_dim, max_z_dim) {
-    var vec = {};
+* Given an array of monomers, the function will return
+* a Flory.Monomer object in the same dimension as the max dimensions given
+* that does not overlap with another monomer based on the radius of the monomers.
+* @param  {[Flory.Monomer*]} monomersGiven     [An array of monomer to be checked for overlaps.]
+* @param  {[Float]} radius                     [The radius of the new monomer to be created.]
+* @param  {[Float]} mass                       [The mass of the monomer]
+* @param  {[Float]} charge                     [The charge of the monomer]
+* @param  {[Float]} min_distance_apart         [The minimum distance between surface of monomers.]
+* @param  {[Float]} max_x_dim                  []
+* @param  {[Float]} max_y_dim                  []
+* @param  {[Float]} max_z_dim                  []
+* @return {[Flory.Monomer]}                    []
+*/
+Flory.getNonOverlappingMonomer = function (monomersGiven, radius, mass, charge, min_distance_apart, max_x_dim, max_y_dim, max_z_dim) {
     var count = 0;
+    var position_overlaps, vec, total_min_distance_apart;
+    var j;
+    var len = monomersGiven.length;
     while (count < 1000000) {
-        var position_overlaps = false;
-        var vec = Flory.getRandomVector(max_x_dim, max_y_dim, max_z_dim);
-        for (var j = 0; j < monomersGiven.length; j++) {
-            var total_min_distance_apart = (radius + monomersGiven[j].radius + min_distance_apart) * (radius + monomersGiven[j].radius + min_distance_apart);
+        position_overlaps = false;
+        vec = Flory.getRandomVector(max_x_dim, max_y_dim, max_z_dim);
+        for (j = 0; j < len; j += 1) {
+            total_min_distance_apart = (radius + monomersGiven[j].radius + min_distance_apart) * (radius + monomersGiven[j].radius + min_distance_apart);
             if (monomersGiven[j].position.distanceToSq(vec) <= total_min_distance_apart) {
                 position_overlaps = true;
                 break;
@@ -288,271 +303,239 @@ Flory.getNonOverlappingMonomer = function(monomersGiven, radius, mass, charge, m
             break;
         }
         //If count goes over 1million there probably is not enough room....
-        count++;
+        count += 1;
     }
-    if (count > (1000000 - 5)) {
-        console.log("Flory: can't place a monomer that does not overlap with another. Tried 1 million times...")
+    if (count > 1000000 - 5) {
+        console.log('Flory: can\'t place a monomer that does not overlap with another. Tried 1 million times...');
         return undefined;
     }
     return new Flory.Monomer({
-        "radius": radius,
-        "charge": charge,
-        "mass": mass,
-        "position": vec
+        radius: radius,
+        charge: charge,
+        mass: mass,
+        position: vec
     });
-}
-
-
-Flory.generateGUID = function() {
-
+};
+Flory.generateGUID = function () {
     function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
+        return Math.floor((1 + Math.random()) * 65536).toString(16).substring(1);
     }
-
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-        s4() + '-' + s4() + s4() + s4();
-}
-
-
-Flory.isWebGlAvailable = function() {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+};
+Flory.isWebGlAvailable = function () {
     try {
         var canvas = document.createElement('canvas');
-        return !!(window.WebGLRenderingContext && (
-            canvas.getContext('webgl') ||
-            canvas.getContext('experimental-webgl')));
+        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
     } catch (e) {
+        console.log(e);
         return false;
     }
-}
-
-/**
- * @author sabidib http://github.com/sabidib
- */
-
-/** @constructor */
-Flory.baseVector = function(){
-	this.components = []
-}
-
-Flory.baseVector.prototype.constructor = Flory.baseVector;
-
-Flory.baseVector.prototype = {
-
-dimension : function(){
-		return this.components.length;
-	}
-
 };
+
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /** @constructor */
-Flory.Vector3 = function(x, y, z) {
-    Flory.baseVector.call(this);
-    
 
-    if(x instanceof Array && y == undefined && z == undefined){
-        y = x[1]
-        z = x[2]
-        x = x[0]
-    } else if (x instanceof Object && y == undefined && z == undefined) {
+
+
+Flory.baseVector = function () {
+    this.components = [];
+};
+Flory.baseVector.prototype.constructor = Flory.baseVector;
+Flory.baseVector.prototype = {
+    dimension: function () {
+        return this.components.length;
+    }
+};
+
+/**
+ * @author sabidib http://github.com/sabidib
+ */
+/** @constructor */
+
+
+
+
+Flory.Vector3 = function (x, y, z) {
+    Flory.baseVector.call(this);
+    if (x instanceof Array && y === undefined && z === undefined) {
+        y = x[1];
+        z = x[2];
+        x = x[0];
+    } else if (x instanceof Object && y === undefined && z === undefined) {
         y = x.y;
         z = x.z;
         x = x.x;
     }
-    this.x = (x === undefined) ? 0 : x;
-    this.y = (y === undefined) ? 0 : y;
-    this.z = (z === undefined) ? 0 : z;
-    this.components = [this.x, this.y, this.z];
-}
-
-
-
+    this.x = x === undefined ? 0 : x;
+    this.y = y === undefined ? 0 : y;
+    this.z = z === undefined ? 0 : z;
+    this.components = [
+        this.x,
+        this.y,
+        this.z
+    ];
+};
 Flory.Vector3.prototype = Object.create(Flory.baseVector.prototype);
-
 Flory.Vector3.prototype.constructor = Flory.Vector3;
-
 //** Mandatory for all vector classes **//
-
-Flory.Vector3.prototype.add = function(a) {
+Flory.Vector3.prototype.add = function (a) {
     this.x += a.x;
     this.y += a.y;
     this.z += a.z;
-
     return this;
-}
-
-Flory.Vector3.prototype.sub = function(a) {
+};
+Flory.Vector3.prototype.sub = function (a) {
     this.x -= a.x;
     this.y -= a.y;
     this.z -= a.z;
-
     return this;
-}
-
-Flory.Vector3.prototype.scale = function(num) {
+};
+Flory.Vector3.prototype.scale = function (num) {
     this.x *= num;
     this.y *= num;
     this.z *= num;
-
     return this;
-}
-Flory.Vector3.prototype.mult = function(num) {
+};
+Flory.Vector3.prototype.mult = function (num) {
     return new Flory.Vector3(this.x * num, this.y * num, this.z * num);
-}
-
-Flory.Vector3.prototype.cross = function(vec){
-    return new Flory.Vector3([ this.y * vec.components[2] - this.z * vec.components[1], 
-                                this.z * vec.components[0] - this.x * vec.components[2], 
-                                this.x * vec.components[1] - this.y * vec.components[0] ]);
-}
-
-Flory.Vector3.prototype.dot = function(a) {
-    return (this.x * a.x + this.y * a.y + this.z * a.z);
-}
-
-Flory.Vector3.prototype.length = function() {
+};
+Flory.Vector3.prototype.cross = function (vec) {
+    return new Flory.Vector3([
+        this.y * vec.components[2] - this.z * vec.components[1],
+        this.z * vec.components[0] - this.x * vec.components[2],
+        this.x * vec.components[1] - this.y * vec.components[0]
+    ]);
+};
+Flory.Vector3.prototype.dot = function (a) {
+    return this.x * a.x + this.y * a.y + this.z * a.z;
+};
+Flory.Vector3.prototype.length = function () {
     return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-}
-
-Flory.Vector3.prototype.lengthSq = function() {
-    return (this.x * this.x + this.y * this.y + this.z * this.z);
-}
-
-Flory.Vector3.prototype.distanceTo = function(a) {
+};
+Flory.Vector3.prototype.lengthSq = function () {
+    return this.x * this.x + this.y * this.y + this.z * this.z;
+};
+Flory.Vector3.prototype.distanceTo = function (a) {
     return Math.sqrt((a.x - this.x) * (a.x - this.x) + (a.y - this.y) * (a.y - this.y) + (a.z - this.z) * (a.z - this.z));
-}
-
-Flory.Vector3.prototype.distanceToSq = function(a) {
-    return ((a.x - this.x) * (a.x - this.x) + (a.y - this.y) * (a.y - this.y) + (a.z - this.z) * (a.z - this.z));
-}
-
-Flory.Vector3.prototype.zero = function() {
+};
+Flory.Vector3.prototype.distanceToSq = function (a) {
+    return (a.x - this.x) * (a.x - this.x) + (a.y - this.y) * (a.y - this.y) + (a.z - this.z) * (a.z - this.z);
+};
+Flory.Vector3.prototype.zero = function () {
     this.x = 0;
     this.y = 0;
     this.z = 0;
     return this;
-}
-Flory.Vector3.prototype.negate = function() {
+};
+Flory.Vector3.prototype.negate = function () {
     this.x = -this.x;
     this.y = -this.y;
     this.z = -this.z;
     return this;
-}
-Flory.Vector3.prototype.normalize = function(){
+};
+Flory.Vector3.prototype.normalize = function () {
     var len = this.length();
-    this.x = this.x/len;
-    this.y = this.y/len; 
-    this.z = this.z/len; 
+    this.x = this.x / len;
+    this.y = this.y / len;
+    this.z = this.z / len;
     return this;
-}
-
-Flory.Vector3.prototype.clone = function() {
+};
+Flory.Vector3.prototype.clone = function () {
     return new Flory.Vector3(this.x, this.y, this.z);
-}
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /** @constructor */
-Flory.Vector2 = function(x, y) {
+
+
+
+
+Flory.Vector2 = function (x, y) {
     Flory.baseVector.call(this);
-    if(x instanceof Array && y == undefined){
+    if (x instanceof Array && y === undefined) {
         y = x[1];
         x = x[0];
-    } if (x instanceof Object && y == undefined) {
-        y = x.y
-        x = x.x
     }
-    this.x = (x === undefined) ? 0 : x;
-    this.y = (y === undefined) ? 0 : y;
-    this.components = [this.x, this.y,0];
-}
-
-
+    if (x instanceof Object && y === undefined) {
+        y = x.y;
+        x = x.x;
+    }
+    this.x = x === undefined ? 0 : x;
+    this.y = y === undefined ? 0 : y;
+    this.components = [
+        this.x,
+        this.y,
+        0
+    ];
+};
 Flory.Vector2.prototype = Object.create(Flory.baseVector.prototype);
-
 Flory.Vector2.prototype.constructor = Flory.Vector2;
-
-Flory.Vector2.prototype.add = function(a) {
+Flory.Vector2.prototype.add = function (a) {
     this.x += a.x;
     this.y += a.y;
-
     return this;
-}
-
-Flory.Vector2.prototype.sub = function(a) {
+};
+Flory.Vector2.prototype.sub = function (a) {
     this.x -= a.x;
     this.y -= a.y;
-
     return this;
-}
-Flory.Vector2.prototype.scale = function(num) {
+};
+Flory.Vector2.prototype.scale = function (num) {
     this.x *= num;
     this.y *= num;
-
     return this;
-}
-
-
-Flory.Vector2.prototype.cross = function(vec){
-    return new Flory.Vector2([this.y * vec.components[2], 
-                                - this.x * vec.components[2]]);
-}
-
-
-Flory.Vector2.prototype.mult = function(num) {
+};
+Flory.Vector2.prototype.cross = function (vec) {
+    return new Flory.Vector2([
+        this.y * vec.components[2],
+        -this.x * vec.components[2]
+    ]);
+};
+Flory.Vector2.prototype.mult = function (num) {
     return new Flory.Vector2(this.x * num, this.y * num);
-}
-Flory.Vector2.prototype.dot = function(a) {
+};
+Flory.Vector2.prototype.dot = function (a) {
     return this.x * a.x + this.y * a.y;
-}
-
-Flory.Vector2.prototype.length = function() {
+};
+Flory.Vector2.prototype.length = function () {
     return Math.sqrt(this.x * this.x + this.y * this.y);
-}
-
-Flory.Vector2.prototype.lengthSq = function() {
+};
+Flory.Vector2.prototype.lengthSq = function () {
     return this.x * this.x + this.y * this.y;
-}
-
-Flory.Vector2.prototype.distanceTo = function(a) {
+};
+Flory.Vector2.prototype.distanceTo = function (a) {
     return Math.sqrt((a.x - this.x) * (a.x - this.x) + (a.y - this.y) * (a.y - this.y));
-}
-
-Flory.Vector2.prototype.distanceToSq = function(a) {
-    return ((a.x - this.x) * (a.x - this.x) + (a.y - this.y) * (a.y - this.y));
-}
-Flory.Vector2.prototype.zero = function() {
+};
+Flory.Vector2.prototype.distanceToSq = function (a) {
+    return (a.x - this.x) * (a.x - this.x) + (a.y - this.y) * (a.y - this.y);
+};
+Flory.Vector2.prototype.zero = function () {
     this.x = 0;
     this.y = 0;
     return this;
-}
-Flory.Vector2.prototype.negate = function() {
+};
+Flory.Vector2.prototype.negate = function () {
     this.x = -this.x;
     this.y = -this.y;
     return this;
-}
-
-Flory.Vector2.prototype.normalize = function(){
+};
+Flory.Vector2.prototype.normalize = function () {
     var len = this.length();
-    this.x = this.x/len;
-    this.y = this.y/len; 
+    this.x = this.x / len;
+    this.y = this.y / len;
     return this;
-}
-
-Flory.Vector2.prototype.clone = function() {
+};
+Flory.Vector2.prototype.clone = function () {
     return new Flory.Vector2(this.x, this.y);
-}
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /**
  * A general vector class that chooses the dimension based on the number of elements
  * in the Flory.Vector.componenets variable.
@@ -561,316 +544,330 @@ Flory.Vector2.prototype.clone = function() {
  * @constructor
  * @param {Array} vec An array of number values that represent each component of the vector
  */
-Flory.Vector = function(vec) {
+
+
+
+
+Flory.Vector = function (vec) {
     Flory.baseVector.call(this);
-    if (vec == undefined) {
-        this.components = []
-    } else if (typeof vec == "number") {
-        this.components = [].slice.apply(new Uint8Array(vec));
+    if (vec === undefined) {
+        this.components = [];
+    } else if (typeof vec === 'number') {
+        this.components = new Array(vec);
+        var a = this.components;
+        var i;
+        for (i = 0; i < vec; i += 1) {
+            a[i] = 0;
+        }
     } else {
         this.components = vec;
     }
-}
-
-
+};
 Flory.Vector.prototype = Object.create(Flory.baseVector.prototype);
-
-Flory.Vector.prototype.constructor = Flory.Vector
-
-Flory.Vector.prototype.add = function(a) {
+Flory.Vector.prototype.constructor = Flory.Vector;
+Flory.Vector.prototype.add = function (a) {
+    var i = 0;
+    var len;
     if (a.components.length > this.components.length) {
-        var i = 0;
-        for (len = this.components.length; i < len; i++) {
+        for (len = this.components.length; i < len; i += 1) {
             this.components[i] += a.components[i];
         }
-        for (len = a.components.length; i < len; i++) {
-            this.components[i] = 0;
-            this.components[i] += a.components[i];
+        for (len = a.components.length; i < len; i += 1) {
+            this.components[i] = a.components[i];
         }
     } else {
-        for (var i = 0, len = a.components.length; i < len; i++) {
+        for (len = a.components.length; i < len; i += 1) {
             this.components[i] += a.components[i];
         }
     }
     return this;
-}
-
-Flory.Vector.prototype.sub = function(a) {
+};
+Flory.Vector.prototype.sub = function (a) {
+    var i = 0;
+    var len;
     if (a.components.length > this.components.length) {
-        var i = 0;
-        for (len = this.components.length; i < len; i++) {
+        for (len = this.components.length; i < len; i += 1) {
             this.components[i] -= a.components[i];
         }
-        for (len = a.components.length; i < len; i++) {
-            this.components[i] = 0;
-            this.components[i] -= a.components[i];
+        for (len = a.components.length; i < len; i += 1) {
+            this.components[i] = a.components[i];
         }
     } else {
-        for (var i = 0, len = a.components.length; i < len; i++) {
+        for (len = a.components.length; i < len; i += 1) {
             this.components[i] -= a.components[i];
         }
     }
     return this;
-}
-
-Flory.Vector.prototype.scale = function(num) {
-    for (var i = 0, len = this.components.length; i < len; i++) {
+};
+Flory.Vector.prototype.scale = function (num) {
+    var i;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
         this.components[i] *= num;
     }
     return this;
-}
-Flory.Vector.prototype.mult = function(num) {
+};
+Flory.Vector.prototype.mult = function (num) {
     var components = [];
-    for (var i = 0, len = this.components.length; i < len; i++) {
+    var i;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
         components[i] = num * this.components[i];
     }
     return new Flory.Vector(components);
-}
-
-Flory.Vector.prototype.dot = function(a) {
-    if (a.components.length != this.components.length) {
-        console.log("Flory.vector.dot(a) can only accept a vector of the same dimension as the object.")
+};
+Flory.Vector.prototype.dot = function (a) {
+    if (a.components.length !== this.components.length) {
+        console.log('Flory.vector.dot(a) can only accept a vector of the same dimension as the object.');
         return undefined;
     }
     var sum = 0;
-    for (var i = 0, len = a.components.length; i < len; i++) {
+    var i;
+    var len = a.components.length;
+    for (i = 0; i < len; i += 1) {
         sum += this.components[i] * a.components[i];
     }
     return sum;
-}
-
-Flory.Vector.prototype.length = function() {
-    var sum = 0;
-
-    for (var i = 0, len = this.components.length; i < len; i++) {
-        sum += this.components[i] * this.components[i];
-    }
-
-    return Math.sqrt(sum);
-}
-
-Flory.Vector.prototype.lengthSq = function() {
-
-    var sum = 0;
-
-    for (var i = 0, len = this.components.length; i < len; i++) {
-        sum += this.components[i] * this.components[i];
-    }
-
-    return sum;
-}
-
-
-Flory.Vector.prototype.cross = function(vec){
-    if(vec.components[2] == undefined){
-        return new Flory.Vector([ - this.components[2] * vec.components[1], 
-                                this.components[2] * vec.components[0], 
-                                this.components[0] * vec.components[1] - this.components[1] * vec.components[0] ]);
-    } else {
-        return new Flory.Vector([ this.components[1] * vec.components[2] - this.components[2] * vec.components[1], 
-                                this.components[2] * vec.components[0] - this.components[0] * vec.components[2], 
-                                this.components[0] * vec.components[1] - this.components[1] * vec.components[0] ]);    
-    }
-    
-}
-
-
-Flory.Vector.prototype.distanceTo = function(a) {
+};
+Flory.Vector.prototype.length = function () {
     var sum = 0;
     var i = 0;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
+        sum += this.components[i] * this.components[i];
+    }
+    return Math.sqrt(sum);
+};
+Flory.Vector.prototype.lengthSq = function () {
+    var sum = 0;
+    var i;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
+        sum += this.components[i] * this.components[i];
+    }
+    return sum;
+};
+Flory.Vector.prototype.cross = function (vec) {
+    if (vec.components[2] === undefined) {
+        return new Flory.Vector([
+            -this.components[2] * vec.components[1],
+            this.components[2] * vec.components[0],
+            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+        ]);
+    } else {
+        return new Flory.Vector([
+            this.components[1] * vec.components[2] - this.components[2] * vec.components[1],
+            this.components[2] * vec.components[0] - this.components[0] * vec.components[2],
+            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+        ]);
+    }
+};
+Flory.Vector.prototype.distanceTo = function (a) {
+    var sum = 0;
+    var i = 0;
+    var len;
+    var len2;
     if (a.components.length > this.components.length) {
-        for (var len = this.components.length; i < len; i++) {
+        len = this.components.length;
+        len2 = a.components.length;
+        while (i < len) {
             sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+            i += 1;
         }
-        for (var len2 = a.components.length; i < len2; i++) {
-            sum += (0 - a.components[i]) * (0 - a.components[i]);
+        while (i < len2) {
+            sum += a.components[i] * a.components[i];
+            i += 1;
         }
     } else if (a.components.length < this.components.length) {
-        for (var len = a.components.length; i < len; i++) {
+        len = a.components.length;
+        len2 = this.components.length;
+        while (i < len) {
             sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+            i += 1;
         }
-        for (var len2 = this.components.length; i < len2; i++) {
-            sum += (this.components[i] - 0) * (this.components[i] - 0);
+        while (i < len2) {
+            sum += this.components[i] * this.components[i];
+            i += 1;
         }
     } else {
-        for (len = a.components.length; i < len; i++) {
+        len = a.components.length;
+        while (i < len) {
             sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+            i += 1;
         }
     }
     return Math.sqrt(sum);
-}
-
-Flory.Vector.prototype.distanceToSq = function(a) {
-
+};
+Flory.Vector.prototype.distanceToSq = function (a) {
     var sum = 0;
     var i = 0;
+    var len, len2;
     if (a.components.length > this.components.length) {
-        for (var len = this.components.length; i < len; i++) {
+        len = this.components.length;
+        len2 = a.components.length;
+        while (i < len) {
             sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+            i += 1;
         }
-        for (var len2 = a.components.length; i < len2; i++) {
+        while (i < len2) {
             sum += (0 - a.components[i]) * (0 - a.components[i]);
+            i += 1;
         }
     } else if (a.components.length < this.components.length) {
-        for (var len = a.components.length; i < len; i++) {
+        len = a.components.length;
+        len2 = this.components.length;
+        while (i < len) {
             sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+            i += 1;
         }
-        for (var len2 = this.components.length; i < len2; i++) {
+        while (i < len2) {
             sum += (this.components[i] - 0) * (this.components[i] - 0);
+            i += 1;
         }
     } else {
-        for (len = a.components.length; i < len; i++) {
+        len = a.components.length;
+        while (i < len) {
             sum += (this.components[i] - a.components[i]) * (this.components[i] - a.components[i]);
+            i += 1;
         }
     }
-
     return sum;
-}
-Flory.Vector.prototype.zero = function() {
-    for (var i = 0, len = this.components.length; i < len; i++) {
+};
+Flory.Vector.prototype.zero = function () {
+    var i;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
         this.components[i] = 0;
     }
     return this;
-}
-Flory.Vector.prototype.negate = function() {
-    for (var i = 0, len = this.components.length; i < len; i++) {
+};
+Flory.Vector.prototype.negate = function () {
+    var i;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
         this.components[i] = -this.components[i];
     }
     return this;
-}
-
-Flory.Vector.prototype.normalize = function(){
+};
+Flory.Vector.prototype.normalize = function () {
     var length = this.length();
-    for (var i = 0, len = this.components.length; i < len; i++) {
-        this.components[i] = this.components[i]/length;
+    var i;
+    var len = this.components.length;
+    for (i = 0; i < len; i += 1) {
+        this.components[i] = this.components[i] / length;
     }
     return this;
-}
-
-
-
-Flory.Vector.prototype.clone = function() {
+};
+Flory.Vector.prototype.clone = function () {
     return new Flory.Vector(this.components.slice(0));
-}
-
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
 
 /** @constructor */
-Flory.baseEntity = function(){
-	this.id = Flory.baseEntity.entityIDCount++;
-	this.name = '';
-}
 
+
+Flory.baseEntity = function () {
+    this.id = Flory.baseEntity.entityIDCount;
+    Flory.baseEntity.entityIDCount += 1;
+    this.name = '';
+};
 Flory.baseEntity.entityIDCount = 0;
-
 Flory.baseEntity.prototype.constructor = Flory.baseEntity;
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /** @constructor */
-Flory.Renderable = function(){
-	Flory.baseEntity.call(this);
-	this.mesh = {};
-	this.geometry = {};
-	this.material = {};
-	this.updateGeometry = true;
-}
 
 
+
+Flory.Renderable = function () {
+    Flory.baseEntity.call(this);
+    this.mesh = undefined;
+    this.geometry = undefined;
+    this.material = undefined;
+    this.updateGeometry = true;
+};
 Flory.Renderable.prototype = Object.create(Flory.baseEntity.prototype);
-
 Flory.Renderable.prototype.constructor = Flory.Renderable;
-
-Flory.Renderable.prototype.destroy = function(){
-
-    if(this.mesh.geometry != {}){
-    	this.mesh.geometry.dispose();
+Flory.Renderable.prototype.destroy = function () {
+    if (this.mesh.geometry !== undefined) {
+        this.mesh.geometry.dispose();
     }
-    if(this.mesh.material != {}){
-    	this.mesh.material.dispose();
+    if (this.mesh.material !== undefined) {
+        this.mesh.material.dispose();
     }
-    this.mesh = {}
-    if(this.geometry != {}){
-    	this.geometry.dispose();
-    	this.geometry =  {};
+    this.mesh = undefined;
+    if (this.geometry !== undefined) {
+        this.geometry.dispose();
+        this.geometry = undefined;
     }
-    if(this.material != {}){
-    	this.material.dispose();
-    	this.material =  {};
+    if (this.material !== undefined) {
+        this.material.dispose();
+        this.material = undefined;
     }
-
-}
-
-
-
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
 
 /** @constructor */
-Flory.Entity = function(){
-	Flory.baseEntity.call(this);
-	this.data = {};
-}
 
+Flory.Entity = function () {
+    Flory.baseEntity.call(this);
+    this.data = {};
+};
 Flory.Entity.prototype = Object.create(Flory.baseEntity.prototype);
-
 Flory.Entity.prototype.constructor = Flory.Entity;
 
-
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /** @constructor */
-Flory._CoreEnvironment =
-    function() {
-        this.entities = [];
-        this.handlers = [];
-        this.renderer = {};
-        this.data = {};
-        this.visualization = false;
-        this.data.rendererType = Flory._CoreEnvironment.RendererType.Default;
-    }
 
 
-
-Flory._CoreEnvironment.prototype = {
-
-    constuctor: Flory._CoreEnvironment,
-
-    add: function(entity) {
-        if (this.id == entity.id) {
-            console.log("Flory: Can't add an entity to itself.");
+Flory.CoreEnvironment = function () {
+    this.entities = [];
+    this.handlers = [];
+    this.renderer = undefined;
+    this.data = {};
+    this.visualization = false;
+    this.data.rendererType = Flory.CoreEnvironment.RendererType.Default;
+};
+Flory.CoreEnvironment.prototype = {
+    constuctor: Flory.CoreEnvironment,
+    add: function (entity) {
+        if (this.id === entity.id) {
+            console.log('Flory: Can\'t add an entity to itself.');
         } else {
-            for (var i = 0, len = this.entities.length; i < len; i++) {
+            var len = this.entities.length;
+            var i;
+            for (i = 0; i < len; i += 1) {
                 if (this.entities[i].id === entity.id) {
-                    console.log(
-                        "Flory : Can't add an entity twice to the same environment.");
+                    console.log('Flory : Can\'t add an entity twice to the same environment.');
                     return undefined;
                 }
             }
-            this.addedEntity(
-                this.entities[this.entities.push(entity) - 1]);
+            this.addedEntity(this.entities[this.entities.push(entity) - 1]);
         }
         return this;
     },
-    destroyScene : function(){
+    destroyScene: function () {
         this.renderer.destroyAllRenderables();
         this.renderer.destroyCanvas();
         this.entities = [];
         this.handlers = [];
-        this.renderers = [];
+        this.renderer = undefined;
         this.visualization = false;
     },
-    remove: function(entity) {
-        for (var i = 0, len = this.entities.length; i < len; i++) {
+    remove: function (entity) {
+        var len = this.entities.length;
+        var i = 0;
+        for (i = 0; i < len; i += 1) {
             if (this.entities[i].id === entity.id) {
                 this.entities.splice(i);
                 this.removedEntity(entity, entity.id, i);
@@ -878,277 +875,379 @@ Flory._CoreEnvironment.prototype = {
         }
         return this;
     },
-    removedEntity: function(entity, id, index) {
-
+    removedEntity: function (entity, id, index) {
     },
-    addedEntity: function() {
-
+    addedEntity: function () {
     },
-    update: function(data) {
-
+    update: function (data) {
     },
-    enableVisualization: function(canvas,data) {
-        if (this.data.rendererType ==
-            Flory._CoreEnvironment.RendererType.Default ||
-            this.data.rendererType == "") {
-            this.renderer = new Flory.Renderer(canvas,data);
-        } else if (this.data.rendererType ==
-            Flory._CoreEnvironment.RendererType.PointCloud) {
-            this.renderer = new Flory.PointCloudRenderer(canvas,data);
+    enableVisualization: function (canvas, data) {
+        if (this.data.rendererType === Flory.CoreEnvironment.RendererType.Default || this.data.rendererType === '') {
+            this.renderer = new Flory.Renderer(canvas, data);
+        } else if (this.data.rendererType === Flory.CoreEnvironment.RendererType.PointCloud) {
+            this.renderer = new Flory.PointCloudRenderer(canvas, data);
         }
         this.visualization = true;
-        if(data != undefined){
-            if(data.clearColor != undefined){
+        if (data !== undefined) {
+            if (data.clearColor !== undefined) {
                 this.renderer.setClearColor(data.clearColor);
-            }    
-            if(data.grid != undefined && data.grid == true){
-               this.addGrid(data.gridSize,data.gridSteps,data.gridPlane,data.gridPosition);
             }
-            if(data.axis != undefined && data.axis == true){
-                this.addAxis(data.axisSize,data.axisPosition);        
+            if (data.grid !== undefined && data.grid === true) {
+                this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
+            }
+            if (data.axis !== undefined && data.axis === true) {
+                this.addAxis(data.axisSize, data.axisPosition);
             }
         }
-
         this.setUpVisualization(data);
         return this;
     },
-    addGrid: function(gridSize,gridSteps,gridPlane,gridPosition){
-        size = 100;
-        steps = 10;
-        plane = "xy"
-        position = undefined;
-        if(gridSize != undefined){
-            size =gridSize;
+    addGrid: function (gridSize, gridSteps, gridPlane, gridPosition) {
+        var size = 100;
+        var steps = 10;
+        var plane = 'xy';
+        var position;
+        if (gridSize !== undefined) {
+            size = gridSize;
         }
-        if(gridSteps != undefined){
+        if (gridSteps !== undefined) {
             steps = gridSteps;
         }
-        if(gridPlane != undefined){
+        if (gridPlane !== undefined) {
             plane = gridPlane;
         }
-        if(gridPosition != undefined){
+        if (gridPosition !== undefined) {
             position = new Flory.Vector3(gridPosition);
         }
-        this.renderer.createHelperGrid(size,steps,plane,position);
+        this.renderer.createHelperGrid(size, steps, plane, position);
     },
-    addAxis: function(axisSize, axisPosition) {
-        position = undefined;
-        size = 2;
-        if (axisSize != undefined) {
+    addAxis: function (axisSize, axisPosition) {
+        var position;
+        var size = 2;
+        if (axisSize !== undefined) {
             size = axisSize;
         }
-        if(axisPosition != undefined){
+        if (axisPosition !== undefined) {
             position = new Flory.Vector3(axisPosition);
         }
-        this.renderer.createAxis(size,position);
+        this.renderer.createAxis(size, position);
     },
-    disableVisualization: function() {
-        this.renderer = {}
+    disableVisualization: function () {
         var elem = this.renderer.renderer.domElement;
         elem.parentElement.removeChild(elem);
+        this.renderer = undefined;
         this.visualization = false;
         this.disabledVisualization();
         return this;
     },
-    setUpVisualization: function() {
-
+    setUpVisualization: function () {
     },
-    disabledVisualization: function() {
-
+    disabledVisualization: function () {
     },
-    resetEnvironment: function() {
-
+    resetEnvironment: function () {
     },
-    setDimension : function(size){
-        if(size != undefined && size instanceof Array){
-            this.renderer.setDimension(size[0],size[1]);
-        } else if(size != undefined && size instanceof Object){
-            this.renderer.setDimension(size.width,size.width);
+    setDimension: function (size) {
+        if (size !== undefined && size instanceof Array) {
+            this.renderer.setDimension(size[0], size[1]);
+        } else if (size !== undefined && size instanceof Object) {
+            this.renderer.setDimension(size.width, size.width);
         }
     },
-    advance: function(options) {
+    advance: function (options) {
         this.update(options);
         if (this.visualization) {
-            for (var i = 0, len = this.entities.length; i < len; i++) {
-                if(this.entities[i] instanceof Flory.Renderable){
-                    this.renderer.updateRenderablePosition(this.entities[i]);    
-                }            	
-            }        
+            var len = this.entities.length;
+            var i;
+            for (i = 0; i < len; i += 1) {
+                if (this.entities[i] instanceof Flory.Renderable) {
+                    this.renderer.updateRenderablePosition(this.entities[i]);
+                }
+            }
             this.render();
-        } 
+        }
         return this;
     },
-    render : function(){
-    	this.renderer.render();
+    render: function () {
+        this.renderer.render();
         return this;
     }
-
-
-}
-
-
-Flory._CoreEnvironment.RendererType = {
-    Default: "default",
-    PointCloud: "pointCloud",
-}
-
-/**
- * @author sabidib http://github.com/sabidib
- */
-
-/** @constructor */
-Flory.Environment = function(handler) {
-    Flory._CoreEnvironment.call(this);
-    if(handler !== undefined){
-    	this.handler = this.addHandler(handler)
-    }
-}
-
-Flory.Environment.prototype = Object.create(Flory._CoreEnvironment.prototype);
-
-
-Flory.Environment.prototype.constructor = Flory.Environment;
-
-
-Flory.Environment.prototype.addHandler = function(handler){
-	if(handler !== undefined){
-		this.handler.push(handler);
-	}
-}
-
-Flory.Environment.prototype.removedEntity = function(entity, id, index) {
-	if(this.visualization && entity instanceof Flory.Renderable){
-		this.renderer.removeRenderable(id);
-	}
-	return this;
-}
-
-
-Flory.Environment.prototype.addedEntity = function(entity) {
-	if(this.visualization && entity instanceof Flory.Renderable){	
-		this.renderer.addRenderable(entity);
-	}
-	return this;
-}
-
-
-Flory.Environment.prototype.update = function(data) {
-	for (var i = 0; i < this.handler.length; i++) {
-		this.handler[i].update(this.entities);
-	};
-}
-
-
-Flory.Environment.prototype.setUpVisualization = function(data) {
-	this.data.visualization_data = data;
-	for(var i = 0; i  < this.entities.length; i++){
-		if(this.entities[i] instanceof Flory.Renderable){
-			this.renderer.addRenderable(this.entities[i]);	
-		}		
-	}
-}
-
-
-Flory.Environment.prototype.disabledVisualization = function() {
-	for(var i = 0; i  < this.entities.length; i++){
-		if(this.entities[i] instanceof Flory.Renderable){
-			this.renderer.removeRenderable(this.entity[i]);	
-		}		
-	}
-	this.data.visualization_data = undefined;
-	delete this.data.visualization_data;
-}
-
-
-Flory.Environment.prototype.resetEnvironment = function() {
-
-
-}
-
-
-
-
-/**
- * @author sabidib http://github.com/sabidib
- */
-
-Flory.baseField = function(){
-	Flory.Entity.call(this);
-	this.data['field'] = [];
-	this.field = this.data['field'];
+};
+Flory.CoreEnvironment.RendererType = {
+    Default: 'default',
+    PointCloud: 'pointCloud'
 };
 
+/**
+* @author sabidib http://github.com/sabidib
+*/
+/** @constructor */
 
+
+
+Flory.Environment = function (handler) {
+    Flory.CoreEnvironment.call(this);
+    if (handler !== undefined) {
+        this.addHandler(handler);
+    }
+};
+Flory.Environment.prototype = Object.create(Flory.CoreEnvironment.prototype);
+Flory.Environment.prototype.constructor = Flory.Environment;
+Flory.Environment.prototype.addHandler = function (handler) {
+    if (handler !== undefined) {
+        this.handlers.push(handler);
+    }
+};
+Flory.Environment.prototype.removedEntity = function (entity, id, index) {
+    if (this.visualization && entity instanceof Flory.Renderable) {
+        this.renderer.removeRenderable(id);
+    }
+    return this;
+};
+Flory.Environment.prototype.addedEntity = function (entity) {
+    if (this.visualization && entity instanceof Flory.Renderable) {
+        this.renderer.addRenderable(entity);
+    }
+    return this;
+};
+Flory.Environment.prototype.update = function (data) {
+    var i;
+    var len = this.handlers.length;
+    for (i = 0; i < len; i += 1) {
+        this.handlers[i].update(this.entities, data);
+    }
+};
+Flory.Environment.prototype.setUpVisualization = function (data) {
+    this.data.visualization_data = data;
+    var i;
+    var len = this.entities.length;
+    for (i = 0; i < len; i += 1) {
+        if (this.entities[i] instanceof Flory.Renderable) {
+            this.renderer.addRenderable(this.entities[i]);
+        }
+    }
+};
+Flory.Environment.prototype.disabledVisualization = function () {
+    var i;
+    var len = this.entities.length;
+    for (i = 0; i < len; i += 1) {
+        if (this.entities[i] instanceof Flory.Renderable) {
+            this.renderer.removeRenderable(this.entity[i]);
+        }
+    }
+    this.data.visualization_data = undefined;
+    delete this.data.visualization_data;
+};
+Flory.Environment.prototype.resetEnvironment = function () {
+};
+
+/**
+ * @author sabidib http://github.com/sabidib
+ */
+
+
+
+
+Flory.baseField = function () {
+    Flory.Entity.call(this);
+    this.data.field = [];
+    this.field = this.data.field;
+};
 Flory.baseField.prototype = Object.create(Flory.Entity.prototype);
-
-
 Flory.baseField.prototype.constructor = Flory.baseField;
-
-
-//TODO: OPTIMIZE THIS... it is currently O(n)
 /**
  * Returns the force at the given position
  * by finding the closest point to the given position and returning
  * the associated vector
- * 
- * @param  {baseVector} position 
- * @return {baseVector}		The force at the given position          
+ *
+ * @param  {baseVector} position
+ * @return {baseVector}     The force at the given position
  */
-Flory.baseField.prototype.getForce = function(position,data){
-	var closest = 0;
-	var index_of_closest = 0;
-	for( var i = 0, len = this.field.length; i < len ; i++){
-		var cur_dist = this.field[i].position.distanceToSq(position);
-		if(cur_dist <= closest){
-			index_of_closest = i;
-			closest = cur_dist;
-		}
-	}
-	return this.field[index_of_closest].vector;
+Flory.baseField.prototype.getForce = function (position) {
+    var closest = 0;
+    var index_of_closest = 0;
+    var len = this.field.length;
+    var i;
+    var cur_dist;
+    for (i = 0; i < len; i += 1) {
+        cur_dist = this.field[i].position.distanceToSq(position);
+        if (cur_dist <= closest) {
+            index_of_closest = i;
+            closest = cur_dist;
+        }
+    }
+    return this.field[index_of_closest].vector;
+};
+Flory.baseField.prototype.scale = function (num) {
+    var len = this.field.length;
+    var i;
+    for (i = 0; i < len; i += 1) {
+        this.field.vector.scale(num);
+    }
 };
 
-Flory.baseField.prototype.scale = function(num){
-		for( var i =0, len = this.field.length; i < len; i++){
-			this.field.vector.scale(num);
-		}
-	};
+/**
+ * @author sabidib http://github.com/sabidib
+ */
+/** @constructor */
+
+
+
+
+Flory.ContinuousField = function (field_function) {
+    Flory.baseField.call(this, []);
+    this.scaler = 1;
+    this.field_function = (field_function !== undefined) ? field_function : function () {};
+};
+Flory.ContinuousField.prototype = Object.create(Flory.baseField.prototype);
+Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;
+Flory.ContinuousField.prototype.getForce = function (position) {
+    return this.field_function(position).mult(this.scaler);
+};
+Flory.ContinuousField.prototype.scale = function (num) {
+    if (typeof num === 'number') {
+        this.scaler = num;
+    }
+    return this;
+};
+Flory.ContinuousField.prototype.clone = function () {
+    return new Flory.ContinuousField(this.field_function);
+};
+
 /**
  * @author sabidib http://github.com/sabidib
  */
 
-/** @constructor */
-Flory.ContinuousField = function(field_function){
-	Flory.baseField.call(this,[]);
-	this.scaler = 1;
-	this.field_function = (field_function !== undefined) ? field_function : function(){};
-}
 
 
-Flory.ContinuousField.prototype = Object.create(Flory.baseField.prototype);
+Flory.DataProcessor = function () {
 
-
-Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;
-
-Flory.ContinuousField.prototype.getForce = function(position){
-	return this.field_function(position).mult(this.scaler);
-}
-
-Flory.ContinuousField.prototype.scale =function(num){
-	if(typeof num === "number"){
-		this.scaler = num;		
-	}
-	return this;
-}
-
-Flory.ContinuousField.prototype.clone = function(){
-	return new Flory.ContinuousField(this.field_function);
-}
-
-
-
-
-
-
+};
+Flory.DataProcessor.prototype = {
+    constructor: Flory.DataProcessor,
+/**
+ * Accepts an array of numbers and calculates the average
+ * @param  {[Array]} data []
+ * @return {[Float]}      [Average]
+ */
+    mean: function (data) {
+        var sum = 0, i, len = data.length;
+        for (i = 0; i < len; i += 1) {
+            sum += data[i];
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of numbers and calculates the mean square average.
+ * @param  {[Array]} data []
+ * @return {[Float]}      [Mean squared]
+ */
+    meanSquare: function (data) {
+        var sum = 0, i, len = data.length;
+        for (i = 0; i < len; i += 1) {
+            sum += data[i] * data[i];
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean square average displacement
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Float]}      []
+ */
+    meanSquareMonomerDisplacement: function (data) {
+        var sum = 0, i, len = data.length, displacement = 0;
+        for (i = 0; i < len; i += 1) {
+            displacement = data[i].position.length();
+            sum += displacement * displacement;
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean square average velocity
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Float]}      []
+ */
+    meanSquareMonomerVelocity: function (data) {
+        var sum = 0, i, len = data.length, velocity = 0;
+        for (i = 0; i < len; i += 1) {
+            velocity = data[i].velocity.length();
+            sum += velocity * velocity;
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean square average acceleration
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Float]}      []
+ */
+    meanSquareMonomerAcceleration: function (data) {
+        var sum = 0, i, len = data.length, acceleration = 0;
+        for (i = 0; i < len; i += 1) {
+            acceleration = data[i].acceleration.length();
+            sum += acceleration * acceleration;
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean displacement
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Float]}      []
+ */
+    meanMonomerDisplacement: function (data) {
+        var sum = 0, i, len = data.length;
+        for (i = 0; i < len; i += 1) {
+            sum += data[i].position.length();
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean displacement
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Flory.Vector]}      []
+ */
+    meanMonomerPosition: function (data) {
+        var i = 0, len = data.length, sum = new Flory.Vector();
+        for (i = 0; i < len; i += 1) {
+            sum.add(data[i].position);
+        }
+        return sum.mult(1 / len);
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean displacement
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Float]}      []
+ */
+    meanMonomerSpeed: function (data) {
+        var sum = 0, i, len = data.length;
+        for (i = 0; i < len; i += 1) {
+            sum += data[i].velocity.length();
+        }
+        return sum / len;
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean velocity
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Flory.Vector]}      []
+ */
+    meanMonomerVelocity: function (data) {
+        var sum = new Flory.Vector(), i, len = data.length;
+        for (i = 0; i < len; i += 1) {
+            sum.add(data[i].velocity);
+        }
+        return sum.mult(1 / len);
+    },
+    /**
+ * Accepts an array of Flory.Monomer* and calculates the mean acceleration
+ * @param  {[Flory.Monomer*]} data []
+ * @return {[Flory.Vector]}      []
+ */
+    meanMonomerAcceleration: function (data) {
+        var sum = new Flory.Vector(), i, len = data.length;
+        for (i = 0; i < len; i += 1) {
+            sum.add(data[i].acceleration);
+        }
+        return sum.mult(1 / len);
+    }
+};
 // File:src/Three.js
 
 /**
@@ -37334,7 +37433,7 @@ THREE.MorphBlendMesh.prototype.update = function ( delta ) {
  * @author WestLangley / http://github.com/WestLangley
  * @author erich666 / http://erichaines.com
  */
-/*global THREE, console */
+
 
 // This set of controls performs orbiting, dollying (zooming), and panning. It maintains
 // the "up" direction as +Y, unlike the TrackballControls. Touch on tablet and phones is
@@ -37346,631 +37445,636 @@ THREE.MorphBlendMesh.prototype.update = function ( delta ) {
 //
 // This is a drop-in replacement for (most) TrackballControls used in examples.
 // That is, include this js file and wherever you see:
-//    	controls = new THREE.TrackballControls( camera );
+//      controls = new THREE.TrackballControls( camera );
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
+
+
 
 /** @constructor **/
 THREE.OrbitControls = function ( object, domElement ) {
 
-	this.object = object;
-	this.domElement = ( domElement !== undefined ) ? domElement : document;
+    this.object = object;
+    this.domElement = ( domElement !== undefined ) ? domElement : document;
 
-	// API
+    // API
 
-	// Set to false to disable this control
-	this.enabled = true;
+    // Set to false to disable this control
+    this.enabled = true;
 
-	// "target" sets the location of focus, where the control orbits around
-	// and where it pans with respect to.
-	this.target = new THREE.Vector3();
+    // "target" sets the location of focus, where the control orbits around
+    // and where it pans with respect to.
+    this.target = new THREE.Vector3();
 
-	// center is old, deprecated; use "target" instead
-	this.center = this.target;
+    // center is old, deprecated; use "target" instead
+    this.center = this.target;
 
-	// This option actually enables dollying in and out; left as "zoom" for
-	// backwards compatibility
-	this.noZoom = false;
-	this.zoomSpeed = 1.0;
+    // This option actually enables dollying in and out; left as "zoom" for
+    // backwards compatibility
+    this.noZoom = false;
+    this.zoomSpeed = 1.0;
 
-	// Limits to how far you can dolly in and out
-	this.minDistance = 0;
-	this.maxDistance = Infinity;
+    // Limits to how far you can dolly in and out
+    this.minDistance = 0;
+    this.maxDistance = Infinity;
 
-	// Set to true to disable this control
-	this.noRotate = false;
-	this.rotateSpeed = 1.0;
+    // Set to true to disable this control
+    this.noRotate = false;
+    this.rotateSpeed = 1.0;
 
-	// Set to true to disable this control
-	this.noPan = false;
-	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+    // Set to true to disable this control
+    this.noPan = false;
+    this.keyPanSpeed = 7.0; // pixels moved per arrow key push
 
-	// Set to true to automatically rotate around the target
-	this.autoRotate = false;
-	this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
+    // Set to true to automatically rotate around the target
+    this.autoRotate = false;
+    this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
-	// How far you can orbit vertically, upper and lower limits.
-	// Range is 0 to Math.PI radians.
-	this.minPolarAngle = 0; // radians
-	this.maxPolarAngle = Math.PI; // radians
+    // How far you can orbit vertically, upper and lower limits.
+    // Range is 0 to Math.PI radians.
+    this.minPolarAngle = 0; // radians
+    this.maxPolarAngle = Math.PI; // radians
 
-	// Set to true to disable use of the keys
-	this.noKeys = false;
+    // Set to true to disable use of the keys
+    this.noKeys = false;
 
-	// The four arrow keys
-	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
+    // The four arrow keys
+    this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
-	////////////
-	// internals
+    ////////////
+    // internals
 
-	var scope = this;
+    var scope = this;
 
-	var EPS = 0.000001;
+    var EPS = 0.000001;
 
-	var rotateStart = new THREE.Vector2();
-	var rotateEnd = new THREE.Vector2();
-	var rotateDelta = new THREE.Vector2();
+    var rotateStart = new THREE.Vector2();
+    var rotateEnd = new THREE.Vector2();
+    var rotateDelta = new THREE.Vector2();
 
-	var panStart = new THREE.Vector2();
-	var panEnd = new THREE.Vector2();
-	var panDelta = new THREE.Vector2();
-	var panOffset = new THREE.Vector3();
+    var panStart = new THREE.Vector2();
+    var panEnd = new THREE.Vector2();
+    var panDelta = new THREE.Vector2();
+    var panOffset = new THREE.Vector3();
 
-	var offset = new THREE.Vector3();
+    var offset = new THREE.Vector3();
 
-	var dollyStart = new THREE.Vector2();
-	var dollyEnd = new THREE.Vector2();
-	var dollyDelta = new THREE.Vector2();
+    var dollyStart = new THREE.Vector2();
+    var dollyEnd = new THREE.Vector2();
+    var dollyDelta = new THREE.Vector2();
 
-	var phiDelta = 0;
-	var thetaDelta = 0;
-	var scale = 1;
-	var pan = new THREE.Vector3();
+    var phiDelta = 0;
+    var thetaDelta = 0;
+    var scale = 1;
+    var pan = new THREE.Vector3();
 
-	var lastPosition = new THREE.Vector3();
-	var lastQuaternion = new THREE.Quaternion();
+    var lastPosition = new THREE.Vector3();
+    var lastQuaternion = new THREE.Quaternion();
 
-	var STATE = { NONE : -1, ROTATE : 0, DOLLY : 1, PAN : 2, TOUCH_ROTATE : 3, TOUCH_DOLLY : 4, TOUCH_PAN : 5 };
+    var STATE = { NONE : -1, ROTATE : 0, DOLLY : 1, PAN : 2, TOUCH_ROTATE : 3, TOUCH_DOLLY : 4, TOUCH_PAN : 5 };
 
-	var state = STATE.NONE;
+    var state = STATE.NONE;
 
-	// for reset
+    // for reset
 
-	this.target0 = this.target.clone();
-	this.position0 = this.object.position.clone();
+    this.target0 = this.target.clone();
+    this.position0 = this.object.position.clone();
 
-	// so camera.up is the orbit axis
+    // so camera.up is the orbit axis
 
-	var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
-	var quatInverse = quat.clone().inverse();
+    var quat = new THREE.Quaternion().setFromUnitVectors( object.up, new THREE.Vector3( 0, 1, 0 ) );
+    var quatInverse = quat.clone().inverse();
 
-	// events
+    // events
 
-	var changeEvent = { type: 'change' };
-	var startEvent = { type: 'start'};
-	var endEvent = { type: 'end'};
+    var changeEvent = { type: 'change' };
+    var startEvent = { type: 'start'};
+    var endEvent = { type: 'end'};
 
-	this.rotateLeft = function ( angle ) {
+    this.rotateLeft = function ( angle ) {
 
-		if ( angle === undefined ) {
+        if ( angle === undefined ) {
 
-			angle = getAutoRotationAngle();
+            angle = getAutoRotationAngle();
 
-		}
+        }
 
-		thetaDelta -= angle;
+        thetaDelta -= angle;
 
-	};
+    };
 
-	this.rotateUp = function ( angle ) {
+    this.rotateUp = function ( angle ) {
 
-		if ( angle === undefined ) {
+        if ( angle === undefined ) {
 
-			angle = getAutoRotationAngle();
+            angle = getAutoRotationAngle();
 
-		}
+        }
 
-		phiDelta -= angle;
+        phiDelta -= angle;
 
-	};
+    };
 
-	// pass in distance in world space to move left
-	this.panLeft = function ( distance ) {
+    // pass in distance in world space to move left
+    this.panLeft = function ( distance ) {
 
-		var te = this.object.matrix.elements;
+        var te = this.object.matrix.elements;
 
-		// get X column of matrix
-		panOffset.set( te[ 0 ], te[ 1 ], te[ 2 ] );
-		panOffset.multiplyScalar( - distance );
-		
-		pan.add( panOffset );
+        // get X column of matrix
+        panOffset.set( te[ 0 ], te[ 1 ], te[ 2 ] );
+        panOffset.multiplyScalar( - distance );
+        pan.add( panOffset );
 
-	};
+    };
 
-	// pass in distance in world space to move up
-	this.panUp = function ( distance ) {
+    // pass in distance in world space to move up
+    this.panUp = function ( distance ) {
+        var te = this.object.matrix.elements;
+        // get Y column of matrix
+        panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
+        panOffset.multiplyScalar( distance );
+        pan.add( panOffset );
 
-		var te = this.object.matrix.elements;
+    };
+    // pass in x,y of change desired in pixel space,
+    // right and down are positive
+    this.pan = function ( deltaX, deltaY ) {
 
-		// get Y column of matrix
-		panOffset.set( te[ 4 ], te[ 5 ], te[ 6 ] );
-		panOffset.multiplyScalar( distance );
-		
-		pan.add( panOffset );
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-	};
-	
-	// pass in x,y of change desired in pixel space,
-	// right and down are positive
-	this.pan = function ( deltaX, deltaY ) {
+        if ( scope.object.fov !== undefined ) {
 
-		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+            // perspective
+            var position = scope.object.position;
+            offset = position.clone().sub( scope.target );
+            var targetDistance = offset.length();
 
-		if ( scope.object.fov !== undefined ) {
+            // half of the fov is center to top of screen
+            targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
 
-			// perspective
-			var position = scope.object.position;
-			var offset = position.clone().sub( scope.target );
-			var targetDistance = offset.length();
+            // we actually don't use screenWidth, since perspective camera is fixed to screen height
+            scope.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
+            scope.panUp( 2 * deltaY * targetDistance / element.clientHeight );
 
-			// half of the fov is center to top of screen
-			targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
+        } else if ( scope.object.top !== undefined ) {
 
-			// we actually don't use screenWidth, since perspective camera is fixed to screen height
-			scope.panLeft( 2 * deltaX * targetDistance / element.clientHeight );
-			scope.panUp( 2 * deltaY * targetDistance / element.clientHeight );
+            // orthographic
+            scope.panLeft( deltaX * (scope.object.right - scope.object.left) / element.clientWidth );
+            scope.panUp( deltaY * (scope.object.top - scope.object.bottom) / element.clientHeight );
 
-		} else if ( scope.object.top !== undefined ) {
+        } else {
 
-			// orthographic
-			scope.panLeft( deltaX * (scope.object.right - scope.object.left) / element.clientWidth );
-			scope.panUp( deltaY * (scope.object.top - scope.object.bottom) / element.clientHeight );
+            // camera neither orthographic or perspective
+            console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
 
-		} else {
+        }
 
-			// camera neither orthographic or perspective
-			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
+    };
 
-		}
+    this.dollyIn = function ( dollyScale ) {
 
-	};
+        if ( dollyScale === undefined ) {
 
-	this.dollyIn = function ( dollyScale ) {
+            dollyScale = getZoomScale();
 
-		if ( dollyScale === undefined ) {
+        }
 
-			dollyScale = getZoomScale();
+        scale /= dollyScale;
 
-		}
+    };
 
-		scale /= dollyScale;
+    this.dollyOut = function ( dollyScale ) {
 
-	};
+        if ( dollyScale === undefined ) {
 
-	this.dollyOut = function ( dollyScale ) {
+            dollyScale = getZoomScale();
 
-		if ( dollyScale === undefined ) {
+        }
 
-			dollyScale = getZoomScale();
+        scale *= dollyScale;
 
-		}
+    };
 
-		scale *= dollyScale;
+    this.update = function () {
 
-	};
+        var position = this.object.position;
 
-	this.update = function () {
+        offset.copy( position ).sub( this.target );
 
-		var position = this.object.position;
+        // rotate offset to "y-axis-is-up" space
+        offset.applyQuaternion( quat );
 
-		offset.copy( position ).sub( this.target );
+        // angle from z-axis around y-axis
 
-		// rotate offset to "y-axis-is-up" space
-		offset.applyQuaternion( quat );
+        var theta = Math.atan2( offset.x, offset.z );
 
-		// angle from z-axis around y-axis
+        // angle from y-axis
 
-		var theta = Math.atan2( offset.x, offset.z );
+        var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
 
-		// angle from y-axis
+        if ( this.autoRotate ) {
 
-		var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+            this.rotateLeft( getAutoRotationAngle() );
 
-		if ( this.autoRotate ) {
+        }
 
-			this.rotateLeft( getAutoRotationAngle() );
+        theta += thetaDelta;
+        phi += phiDelta;
 
-		}
+        // restrict phi to be between desired limits
+        phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
 
-		theta += thetaDelta;
-		phi += phiDelta;
+        // restrict phi to be betwee EPS and PI-EPS
+        phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
 
-		// restrict phi to be between desired limits
-		phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
+        var radius = offset.length() * scale;
 
-		// restrict phi to be betwee EPS and PI-EPS
-		phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
+        // restrict radius to be between desired limits
+        radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
 
-		var radius = offset.length() * scale;
+        // move target to panned location
+        this.target.add( pan );
 
-		// restrict radius to be between desired limits
-		radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
-		
-		// move target to panned location
-		this.target.add( pan );
+        offset.x = radius * Math.sin( phi ) * Math.sin( theta );
+        offset.y = radius * Math.cos( phi );
+        offset.z = radius * Math.sin( phi ) * Math.cos( theta );
 
-		offset.x = radius * Math.sin( phi ) * Math.sin( theta );
-		offset.y = radius * Math.cos( phi );
-		offset.z = radius * Math.sin( phi ) * Math.cos( theta );
+        // rotate offset back to "camera-up-vector-is-up" space
+        offset.applyQuaternion( quatInverse );
 
-		// rotate offset back to "camera-up-vector-is-up" space
-		offset.applyQuaternion( quatInverse );
+        position.copy( this.target ).add( offset );
 
-		position.copy( this.target ).add( offset );
+        this.object.lookAt( this.target );
 
-		this.object.lookAt( this.target );
+        thetaDelta = 0;
+        phiDelta = 0;
+        scale = 1;
+        pan.set( 0, 0, 0 );
 
-		thetaDelta = 0;
-		phiDelta = 0;
-		scale = 1;
-		pan.set( 0, 0, 0 );
+        // update condition is:
+        // min(camera displacement, camera rotation in radians)^2 > EPS
+        // using small-angle approximation cos(x/2) = 1 - x^2 / 8
 
-		// update condition is:
-		// min(camera displacement, camera rotation in radians)^2 > EPS
-		// using small-angle approximation cos(x/2) = 1 - x^2 / 8
+        if ( lastPosition.distanceToSquared( this.object.position ) > EPS
+            || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
 
-		if ( lastPosition.distanceToSquared( this.object.position ) > EPS
-		    || 8 * (1 - lastQuaternion.dot(this.object.quaternion)) > EPS ) {
+            this.dispatchEvent( changeEvent );
 
-			this.dispatchEvent( changeEvent );
+            lastPosition.copy( this.object.position );
+            lastQuaternion.copy (this.object.quaternion );
 
-			lastPosition.copy( this.object.position );
-			lastQuaternion.copy (this.object.quaternion );
+        }
 
-		}
+    };
 
-	};
 
+    this.reset = function () {
 
-	this.reset = function () {
+        state = STATE.NONE;
 
-		state = STATE.NONE;
+        this.target.copy( this.target0 );
+        this.object.position.copy( this.position0 );
 
-		this.target.copy( this.target0 );
-		this.object.position.copy( this.position0 );
+        this.update();
 
-		this.update();
+    };
 
-	};
+    function getAutoRotationAngle() {
 
-	function getAutoRotationAngle() {
+        return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
 
-		return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+    }
 
-	}
+    function getZoomScale() {
 
-	function getZoomScale() {
+        return Math.pow( 0.95, scope.zoomSpeed );
 
-		return Math.pow( 0.95, scope.zoomSpeed );
+    }
 
-	}
+    function onMouseDown( event ) {
 
-	function onMouseDown( event ) {
+        if ( scope.enabled === false ){
+            return;
+        }
+        event.preventDefault();
 
-		if ( scope.enabled === false ) return;
-		event.preventDefault();
+        if ( event.button === 0 ) {
+            if ( scope.noRotate === true ){
+              return;
+            }
 
-		if ( event.button === 0 ) {
-			if ( scope.noRotate === true ) return;
+            state = STATE.ROTATE;
 
-			state = STATE.ROTATE;
+            rotateStart.set( event.clientX, event.clientY );
 
-			rotateStart.set( event.clientX, event.clientY );
+        } else if ( event.button === 1 ) {
+            if ( scope.noZoom === true ){
+                return;
+            }
 
-		} else if ( event.button === 1 ) {
-			if ( scope.noZoom === true ) return;
+            state = STATE.DOLLY;
 
-			state = STATE.DOLLY;
+            dollyStart.set( event.clientX, event.clientY );
 
-			dollyStart.set( event.clientX, event.clientY );
+        } else if ( event.button === 2 ) {
+            if ( scope.noPan === true ){
+                return;
+            }
 
-		} else if ( event.button === 2 ) {
-			if ( scope.noPan === true ) return;
+            state = STATE.PAN;
 
-			state = STATE.PAN;
+            panStart.set( event.clientX, event.clientY );
 
-			panStart.set( event.clientX, event.clientY );
+        }
 
-		}
+        document.addEventListener( 'mousemove', onMouseMove, false );
+        document.addEventListener( 'mouseup', onMouseUp, false );
+        scope.dispatchEvent( startEvent );
 
-		document.addEventListener( 'mousemove', onMouseMove, false );
-		document.addEventListener( 'mouseup', onMouseUp, false );
-		scope.dispatchEvent( startEvent );
+    }
 
-	}
+    function onMouseMove( event ) {
 
-	function onMouseMove( event ) {
+        if ( scope.enabled === false ) return;
 
-		if ( scope.enabled === false ) return;
+        event.preventDefault();
 
-		event.preventDefault();
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        if ( state === STATE.ROTATE ) {
 
-		if ( state === STATE.ROTATE ) {
+            if ( scope.noRotate === true ) return;
 
-			if ( scope.noRotate === true ) return;
+            rotateEnd.set( event.clientX, event.clientY );
+            rotateDelta.subVectors( rotateEnd, rotateStart );
 
-			rotateEnd.set( event.clientX, event.clientY );
-			rotateDelta.subVectors( rotateEnd, rotateStart );
+            // rotating across whole screen goes 360 degrees around
+            scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
 
-			// rotating across whole screen goes 360 degrees around
-			scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+            // rotating up and down along whole screen attempts to go 360, but limited to 180
+            scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
-			// rotating up and down along whole screen attempts to go 360, but limited to 180
-			scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+            rotateStart.copy( rotateEnd );
 
-			rotateStart.copy( rotateEnd );
+        } else if ( state === STATE.DOLLY ) {
 
-		} else if ( state === STATE.DOLLY ) {
+            if ( scope.noZoom === true ) return;
 
-			if ( scope.noZoom === true ) return;
+            dollyEnd.set( event.clientX, event.clientY );
+            dollyDelta.subVectors( dollyEnd, dollyStart );
 
-			dollyEnd.set( event.clientX, event.clientY );
-			dollyDelta.subVectors( dollyEnd, dollyStart );
+            if ( dollyDelta.y > 0 ) {
 
-			if ( dollyDelta.y > 0 ) {
+                scope.dollyIn();
 
-				scope.dollyIn();
+            } else {
 
-			} else {
+                scope.dollyOut();
 
-				scope.dollyOut();
+            }
 
-			}
+            dollyStart.copy( dollyEnd );
 
-			dollyStart.copy( dollyEnd );
+        } else if ( state === STATE.PAN ) {
 
-		} else if ( state === STATE.PAN ) {
+            if ( scope.noPan === true ) return;
 
-			if ( scope.noPan === true ) return;
+            panEnd.set( event.clientX, event.clientY );
+            panDelta.subVectors( panEnd, panStart );
+            
+            scope.pan( panDelta.x, panDelta.y );
 
-			panEnd.set( event.clientX, event.clientY );
-			panDelta.subVectors( panEnd, panStart );
-			
-			scope.pan( panDelta.x, panDelta.y );
+            panStart.copy( panEnd );
 
-			panStart.copy( panEnd );
+        }
 
-		}
+        scope.update();
 
-		scope.update();
+    }
 
-	}
+    function onMouseUp( /* event */ ) {
 
-	function onMouseUp( /* event */ ) {
+        if ( scope.enabled === false ) return;
 
-		if ( scope.enabled === false ) return;
+        document.removeEventListener( 'mousemove', onMouseMove, false );
+        document.removeEventListener( 'mouseup', onMouseUp, false );
+        scope.dispatchEvent( endEvent );
+        state = STATE.NONE;
 
-		document.removeEventListener( 'mousemove', onMouseMove, false );
-		document.removeEventListener( 'mouseup', onMouseUp, false );
-		scope.dispatchEvent( endEvent );
-		state = STATE.NONE;
+    }
 
-	}
+    function onMouseWheel( event ) {
 
-	function onMouseWheel( event ) {
+        if ( scope.enabled === false || scope.noZoom === true ) return;
 
-		if ( scope.enabled === false || scope.noZoom === true ) return;
+        event.preventDefault();
+        event.stopPropagation();
 
-		event.preventDefault();
-		event.stopPropagation();
+        var delta = 0;
 
-		var delta = 0;
+        if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
 
-		if ( event.wheelDelta !== undefined ) { // WebKit / Opera / Explorer 9
+            delta = event.wheelDelta;
 
-			delta = event.wheelDelta;
+        } else if ( event.detail !== undefined ) { // Firefox
 
-		} else if ( event.detail !== undefined ) { // Firefox
+            delta = - event.detail;
 
-			delta = - event.detail;
+        }
 
-		}
+        if ( delta > 0 ) {
 
-		if ( delta > 0 ) {
+            scope.dollyOut();
 
-			scope.dollyOut();
+        } else {
 
-		} else {
+            scope.dollyIn();
 
-			scope.dollyIn();
+        }
 
-		}
+        scope.update();
+        scope.dispatchEvent( startEvent );
+        scope.dispatchEvent( endEvent );
 
-		scope.update();
-		scope.dispatchEvent( startEvent );
-		scope.dispatchEvent( endEvent );
+    }
 
-	}
+    function onKeyDown( event ) {
 
-	function onKeyDown( event ) {
+        if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
+        
+        switch ( event.keyCode ) {
 
-		if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
-		
-		switch ( event.keyCode ) {
+            case scope.keys.UP:
+                scope.pan( 0, scope.keyPanSpeed );
+                scope.update();
+                break;
 
-			case scope.keys.UP:
-				scope.pan( 0, scope.keyPanSpeed );
-				scope.update();
-				break;
+            case scope.keys.BOTTOM:
+                scope.pan( 0, - scope.keyPanSpeed );
+                scope.update();
+                break;
 
-			case scope.keys.BOTTOM:
-				scope.pan( 0, - scope.keyPanSpeed );
-				scope.update();
-				break;
+            case scope.keys.LEFT:
+                scope.pan( scope.keyPanSpeed, 0 );
+                scope.update();
+                break;
 
-			case scope.keys.LEFT:
-				scope.pan( scope.keyPanSpeed, 0 );
-				scope.update();
-				break;
+            case scope.keys.RIGHT:
+                scope.pan( - scope.keyPanSpeed, 0 );
+                scope.update();
+                break;
 
-			case scope.keys.RIGHT:
-				scope.pan( - scope.keyPanSpeed, 0 );
-				scope.update();
-				break;
+        }
 
-		}
+    }
 
-	}
+    function touchstart( event ) {
 
-	function touchstart( event ) {
+        if ( scope.enabled === false ) return;
 
-		if ( scope.enabled === false ) return;
+        switch ( event.touches.length ) {
 
-		switch ( event.touches.length ) {
+            case 1: // one-fingered touch: rotate
 
-			case 1:	// one-fingered touch: rotate
+                if ( scope.noRotate === true ) return;
 
-				if ( scope.noRotate === true ) return;
+                state = STATE.TOUCH_ROTATE;
 
-				state = STATE.TOUCH_ROTATE;
+                rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                break;
 
-				rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-				break;
+            case 2: // two-fingered touch: dolly
 
-			case 2:	// two-fingered touch: dolly
+                if ( scope.noZoom === true ) return;
 
-				if ( scope.noZoom === true ) return;
+                state = STATE.TOUCH_DOLLY;
 
-				state = STATE.TOUCH_DOLLY;
+                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                var distance = Math.sqrt( dx * dx + dy * dy );
+                dollyStart.set( 0, distance );
+                break;
 
-				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-				var distance = Math.sqrt( dx * dx + dy * dy );
-				dollyStart.set( 0, distance );
-				break;
+            case 3: // three-fingered touch: pan
 
-			case 3: // three-fingered touch: pan
+                if ( scope.noPan === true ) return;
 
-				if ( scope.noPan === true ) return;
+                state = STATE.TOUCH_PAN;
 
-				state = STATE.TOUCH_PAN;
+                panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                break;
 
-				panStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-				break;
+            default:
 
-			default:
+                state = STATE.NONE;
 
-				state = STATE.NONE;
+        }
 
-		}
+        scope.dispatchEvent( startEvent );
 
-		scope.dispatchEvent( startEvent );
+    }
 
-	}
+    function touchmove( event ) {
 
-	function touchmove( event ) {
+        if ( scope.enabled === false ) return;
 
-		if ( scope.enabled === false ) return;
+        event.preventDefault();
+        event.stopPropagation();
 
-		event.preventDefault();
-		event.stopPropagation();
+        var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
+        switch ( event.touches.length ) {
 
-		switch ( event.touches.length ) {
+            case 1: // one-fingered touch: rotate
 
-			case 1: // one-fingered touch: rotate
+                if ( scope.noRotate === true ) return;
+                if ( state !== STATE.TOUCH_ROTATE ) return;
 
-				if ( scope.noRotate === true ) return;
-				if ( state !== STATE.TOUCH_ROTATE ) return;
+                rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                rotateDelta.subVectors( rotateEnd, rotateStart );
 
-				rotateEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-				rotateDelta.subVectors( rotateEnd, rotateStart );
+                // rotating across whole screen goes 360 degrees around
+                scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
+                // rotating up and down along whole screen attempts to go 360, but limited to 180
+                scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
 
-				// rotating across whole screen goes 360 degrees around
-				scope.rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientWidth * scope.rotateSpeed );
-				// rotating up and down along whole screen attempts to go 360, but limited to 180
-				scope.rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight * scope.rotateSpeed );
+                rotateStart.copy( rotateEnd );
 
-				rotateStart.copy( rotateEnd );
+                scope.update();
+                break;
 
-				scope.update();
-				break;
+            case 2: // two-fingered touch: dolly
 
-			case 2: // two-fingered touch: dolly
+                if ( scope.noZoom === true ) return;
+                if ( state !== STATE.TOUCH_DOLLY ) return;
 
-				if ( scope.noZoom === true ) return;
-				if ( state !== STATE.TOUCH_DOLLY ) return;
+                var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
+                var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
+                var distance = Math.sqrt( dx * dx + dy * dy );
 
-				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
-				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-				var distance = Math.sqrt( dx * dx + dy * dy );
+                dollyEnd.set( 0, distance );
+                dollyDelta.subVectors( dollyEnd, dollyStart );
 
-				dollyEnd.set( 0, distance );
-				dollyDelta.subVectors( dollyEnd, dollyStart );
+                if ( dollyDelta.y > 0 ) {
 
-				if ( dollyDelta.y > 0 ) {
+                    scope.dollyOut();
 
-					scope.dollyOut();
+                } else {
 
-				} else {
+                    scope.dollyIn();
 
-					scope.dollyIn();
+                }
 
-				}
+                dollyStart.copy( dollyEnd );
 
-				dollyStart.copy( dollyEnd );
+                scope.update();
+                break;
 
-				scope.update();
-				break;
+            case 3: // three-fingered touch: pan
 
-			case 3: // three-fingered touch: pan
+                if ( scope.noPan === true ) return;
+                if ( state !== STATE.TOUCH_PAN ) return;
 
-				if ( scope.noPan === true ) return;
-				if ( state !== STATE.TOUCH_PAN ) return;
+                panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
+                panDelta.subVectors( panEnd, panStart );
+                
+                scope.pan( panDelta.x, panDelta.y );
 
-				panEnd.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-				panDelta.subVectors( panEnd, panStart );
-				
-				scope.pan( panDelta.x, panDelta.y );
+                panStart.copy( panEnd );
 
-				panStart.copy( panEnd );
+                scope.update();
+                break;
 
-				scope.update();
-				break;
+            default:
 
-			default:
+                state = STATE.NONE;
 
-				state = STATE.NONE;
+        }
 
-		}
+    }
 
-	}
+    function touchend( /* event */ ) {
 
-	function touchend( /* event */ ) {
+        if ( scope.enabled === false ) return;
 
-		if ( scope.enabled === false ) return;
+        scope.dispatchEvent( endEvent );
+        state = STATE.NONE;
 
-		scope.dispatchEvent( endEvent );
-		state = STATE.NONE;
+    }
 
-	}
+    this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+    this.domElement.addEventListener( 'mousedown', onMouseDown, false );
+    this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
+    this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
 
-	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
-	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
-	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
+    this.domElement.addEventListener( 'touchstart', touchstart, false );
+    this.domElement.addEventListener( 'touchend', touchend, false );
+    this.domElement.addEventListener( 'touchmove', touchmove, false );
 
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
+    window.addEventListener( 'keydown', onKeyDown, false );
 
-	window.addEventListener( 'keydown', onKeyDown, false );
-
-	// force an update at start
-	this.update();
+    // force an update at start
+    this.update();
 
 };
 
@@ -37979,165 +38083,160 @@ THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype )
  * @author sabidib http://github.com/sabidib
  */
 /** @constructor */
-Flory.Renderer = function(canvas, data, scene, camera, renderables) {
+
+
+
+
+Flory.Renderer = function (canvas, data, scene, camera, renderables) {
     this.data = {};
-    if (canvas != undefined) {
+    if (canvas !== undefined) {
         if (Flory.isWebGlAvailable()) {
             this.renderer = new THREE.WebGLRenderer();
         } else {
             this.renderer = new THREE.CanvasRenderer();
         }
-        if (this.renderer == undefined) {
-            console.log("Flory : WebGL is not supported in your browser.");
+        if (this.renderer === undefined) {
+            console.log('Flory : WebGL is not supported in your browser.');
         }
-        if(data != undefined && data.size != undefined){
-            this.renderer.setSize(data.size[0],data.size[1]);
+        if (data !== undefined && data.size !== undefined) {
+            this.renderer.setSize(data.size[0], data.size[1]);
         } else {
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         }
-
-
-        var cav = document.getElementById("#" + canvas);
-        if (cav == null) {
+        var cav = document.getElementById('#' + canvas);
+        if (cav === null) {
             cav = document.getElementById(canvas);
-            if (cav == null) {
-                console.log("Flory: A canvas must be a valid id.")
+            if (cav === null) {
+                console.log('Flory: A canvas must be a valid id.');
             }
         }
         this.canvas = cav;
         cav.appendChild(this.renderer.domElement);
     } else {
-        console.log("Flory : A canvas_id must be specified.");
+        console.log('Flory : A canvas_id must be specified.');
         return undefined;
     }
-
-    this.scene = (scene === undefined) ? new THREE.Scene() : scene;
-    this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
-
-    cameraPosition = new Flory.Vector3([0, 0, 100]);
-    if (data != undefined && data.cameraPosition != undefined) {
+    this.scene = scene === undefined ? new THREE.Scene() : scene;
+    this.camera = camera === undefined ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
+    var cameraPosition = new Flory.Vector3([
+        0,
+        0,
+        100
+    ]);
+    if (data !== undefined && data.cameraPosition !== undefined) {
         cameraPosition = new Flory.Vector3(data.cameraPosition);
     }
     this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
     this.camera.up = new THREE.Vector3(0, 0, 1);
-
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
-    this.renderables = (renderables === undefined) ? {} : renderables;
+    this.renderables = renderables === undefined ? {} : renderables;
     this.camera.z = 20;
     var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
-    controls.addEventListener('change', function() {
-        this.render
+    var self = this;
+    controls.addEventListener('change', function () {
+        return self.render();
     });
     // this.refreshCamera(data,undefined);
-    
-    this.renderables = (renderables === undefined) ? {} : renderables;
-}
-
-
+    this.renderables = renderables === undefined ? {} : renderables;
+};
 Flory.Renderer.prototype = {
     constructor: Flory.Renderer,
-    refreshCamera : function(data,camera){
-        var cameraPosition = new Flory.Vector3([0, 0, 100]);
-        if(this.camera != undefined){
+    refreshCamera: function (data, camera) {
+        var cameraPosition = new Flory.Vector3([
+            0,
+            0,
+            100
+        ]);
+        if (this.camera !== undefined) {
             cameraPosition = this.camera.position;
             this.scene.remove(this.camera);
         }
-        if(this.controls != undefined){
-            this.controls.removeEventListener("change");
+        if (this.controls !== undefined) {
+            this.controls.removeEventListener('change');
         }
-
-        var width  = window.innerWidth;
+        var width = window.innerWidth;
         var height = window.innerHeight;
-        if(data != undefined && data.size != undefined){
-            width = data.size[0]
-            height = data.size[1]
-        } 
-        this.camera = (camera === undefined) ? new THREE.PerspectiveCamera(60, width / height, 1, 10000) : camera;
-
-        if (data != undefined && data.cameraPosition != undefined) {
+        if (data !== undefined && data.size !== undefined) {
+            width = data.size[0];
+            height = data.size[1];
+        }
+        this.camera = camera === undefined ? new THREE.PerspectiveCamera(60, width / height, 1, 10000) : camera;
+        if (data !== undefined && data.cameraPosition !== undefined) {
             cameraPosition = new Flory.Vector3(data.cameraPosition);
         }
         this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
         this.camera.up = new THREE.Vector3(0, 0, 1);
-
         this.camera.lookAt(this.scene.position);
-
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.25;
-        this.controls.addEventListener('change', function() {
-            this.render
+        this.controls.addEventListener('change', function () {
+            return this.render();
         });
-
         this.scene.add(this.camera);
     },
-    addRenderable: function(renderable) {
+    addRenderable: function (renderable) {
         if (renderable instanceof Flory.Renderable) {
             this.renderables[renderable.id] = renderable;
             this.scene.add(this.renderables[renderable.id].mesh);
         } else {
-            console.log("Flory : Attempted to add an object to Flory.Renderer.renderables that did not inherit from Flory.Renderable.")
+            console.log('Flory : Attempted to add an object to Flory.Renderer.renderables that did not inherit from Flory.Renderable.');
             return this;
         }
     },
-    setClearColor: function(color) {
+    setClearColor: function (color) {
         this.renderer.setClearColor(color);
     },
-    setCameraPosition: function(position) {
-        if (position != undefined &&
-            position.components[0] != undefined &&
-            position.components[1] != undefined &&
-            position.components[2] != undefined) {
+    setCameraPosition: function (position) {
+        if (position !== undefined && position.components[0] !== undefined && position.components[1] !== undefined && position.components[2] !== undefined) {
             this.camera.position.set(position.components[0], position.components[1], position.components[2]);
         }
-
     },
-    createHelperGrid: function(size, steps, plane, position) {
-        var toR = plane.toUpperCase().split("").sort().join("");
+    createHelperGrid: function (size, steps, plane, position) {
+        var toR = plane.toUpperCase().split('').sort().join('');
         var grid = new THREE.GridHelper(size, steps);
-        if (toR == "XY") {
+        if (toR === 'XY') {
             grid.rotation.x = Math.PI / 2;
-        } else if (toR == "YZ") {
+        } else if (toR === 'YZ') {
             grid.rotation.z = Math.PI / 2;
         }
-        if (position != undefined) {
+        if (position !== undefined) {
             grid.position.set(position.components[0], position.components[1], position.components[2]);
         }
-
         this.scene.add(grid);
     },
-    createAxis: function(axisSize, axisPosition) {
+    createAxis: function (axisSize, axisPosition) {
         var axes = new THREE.AxisHelper(axisSize);
-        if (axisPosition != undefined) {
-            axes.position.set(position.components[0], position.components[1], position.components[2]);
+        if (axisPosition !== undefined) {
+            axes.position.set(axisPosition.components[0], axisPosition.components[1], axisPosition.components[2]);
         }
         this.scene.add(axes);
     },
-    updateRenderablePosition: function(renderable) {
+    updateRenderablePosition: function (renderable) {
         var i = renderable.id;
         var new_position = renderable.position;
+        var dim;
         if (new_position instanceof Flory.baseVector) {
-            var dim = new_position.dimension();
-            if (dim == 3) {
+            dim = new_position.dimension();
+            if (dim === 3) {
                 this.renderables[i].mesh.position.x = new_position.components[0];
                 this.renderables[i].mesh.position.y = new_position.components[1];
                 this.renderables[i].mesh.position.z = new_position.components[2];
-            } else if (dim == 2) {
+            } else if (dim === 2) {
                 this.renderables[i].mesh.position.x = new_position.components[0];
                 this.renderables[i].mesh.position.y = new_position.components[1];
-            } else if (dim == 1) {
+            } else if (dim === 1) {
                 this.renderables[i].mesh.position.x = new_position.components[0];
             } else {
                 this.renderables[i].mesh.position.x = new_position.components[0];
                 this.renderables[i].mesh.position.y = new_position.components[1];
                 this.renderables[i].mesh.position.z = new_position.components[2];
             }
-
         } else {
-            console.log("Flory: position of entity is not a baseVector ancestor.");
+            console.log('Flory: position of entity is not a baseVector ancestor.');
             return undefined;
         }
         // } else if(new_position instanceof Flory.Vector2){
@@ -38150,410 +38249,377 @@ Flory.Renderer.prototype = {
         // }
         return this;
     },
-    removeRenderable: function(id) {
-        for (var i in this.renderables) {
-            if (this.renderables[i].id == id) {
-                this.scene.remove(this.renderables[i]);
+    removeRenderable: function (id) {
+        var i;
+        var keys = Object.keys(this.renderables);
+        var l = keys.length;
+        for (i = 0; i < l; i += 1) {
+            if (this.renderables[keys[i]].id === id) {
+                this.scene.remove(this.renderables[keys[i]]);
                 this.renderables = this.renderables.splice(i, 1);
                 break;
             }
         }
         return this;
     },
-    removeAllRenderables: function() {
-        for (var i in this.renderables) {
-            this.scene.remove(this.renderables[i]);
+    removeAllRenderables: function () {
+        var i;
+        var keys = Object.keys(this.renderables);
+        var l = keys.length;
+        for (i = 0; i < l; i += 1) {
+            this.scene.remove(this.renderables[keys[i]]);
         }
         this.renderables = [];
         return this;
     },
-    destroyAllRenderables : function(){
-        for (var i in this.renderables) {
-            this.renderables[i].destroy();
-            this.scene.remove(this.renderables[i]);
+    destroyAllRenderables: function () {
+        var i;
+        var keys = Object.keys(this.renderables);
+        var l = keys.length;
+        for (i = 0; i < l; i += 1) {
+            this.renderables[keys[i]].destroy();
+            this.scene.remove(this.renderables[keys[i]]);
         }
         this.renderables = [];
         return this;
     },
     /** The following should be not be overriden **/
-    setDimension: function(width, height) {
+    setDimension: function (width, height) {
         this.renderer.setSize(width, height);
         return this;
     },
-    render: function() {
+    render: function () {
         this.renderer.render(this.scene, this.camera);
         return this;
     },
-    destroy : function(){
+    destroy: function () {
         this.removeAllRenderables();
     },
-    destroyCanvas : function(){
-        $(this.renderer.domElement).remove()
+    destroyCanvas: function () {
+        $(this.renderer.domElement).remove();
     }
-}
-
-
-
-Flory.Renderer.ShaderTypes = {}
+};
+Flory.Renderer.ShaderTypes = {};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
-
 /**
  * Given a JSON string will generate the HTML for a dialog box
  * that allows editing of the values.
  * JSON structure:
- *
- * 
  * var opt = {
- * 	options : 
- * 	[
- * 		{
- * 		name : "Radius"
- * 		type : "float,
- *  	value : 5.0,
- *  	label : "radius",
- *  	editable : true,
- *  	min : 0.1 ,
- *  	max : 10,
- *  	slider : true
- *   ]    
+ *  options :
+ *  [
+ *      {
+ *      name : "Radius"
+ *      type : "float,
+ *      value : 5.0,
+ *      label : "radius",
+ *      editable : true,
+ *      min : 0.1 ,
+ *      max : 10,
+ *      slider : true
+ *   ]
  * }
  * The name variable must be unique.
- *
- * 
  * Valid options for the "type" parameter are :
- * 		[
- * 			"integer",
- * 			"float",
- * 			"number",
- * 			"string",
- * 			"checkbox",
- * 			"button"
- * 		]
+ *      [
+ *          "integer",
+ *          "float",
+ *          "number",
+ *          "string",
+ *          "checkbox",
+ *          "button"
+ *      ]
  *
  *For the "button" type a function placed in the "calback"
  *variable can be set that will be called when the button is pressed.
  *
- * 
  * m = new Flory.Options(opt,"html_id");
  * m.update();
  * var json_of_values = m.getValues();
- * 
- * 
  */
 
 
-Flory.Options = function(object,html_id_handle){
-	this.data = {};
-	this.json = object;
-	this.html_handle = $("#"+html_id_handle);
-	this.option_list = [];
-	this.generateAndPlace(object,this.html_handle);
-}
 
 
-
+Flory.Options = function (object, html_id_handle) {
+    this.data = {};
+    this.json = object;
+    this.html_handle = $('#' + html_id_handle);
+    this.option_list = [];
+    this.generateAndPlace(object, this.html_handle);
+};
 Flory.Options.prototype = {
-	constructor : Flory.Options,
-
-	generateAndPlace: function(json,html_handle){
-
-		var listeners = [];
-
-
-		var h = "";
-		h += "<div id='option-menu'>";
-
-
-		for(var i = 0, len = json.options.length; i < len;i++){
-			
-			var opt = json.options[i];
-			var opt_to_push = {};
-
-			opt_to_push.name = opt.name;
-
-			
-			if(opt.type == "float" || opt.type == "integer" || opt.type == "number"){
-				if(opt.slider){						
-					var result = this.generateRangeSlider(opt.value,opt.min,opt.max,opt.name,opt.label,opt.step,opt.has_text_box,opt.text_box_is_editable);
-					var number_slider_id = result.input_id;
-					var number_text_box_id = result.text_box_id;
-					if(opt.has_text_box){
-						listeners.push(
-							function(){
-								$("#"+number_slider_id).on("input",function(){
-									 $("#"+number_text_box_id).val(this.value);
-								});
-								$("#"+number_text_box_id).on("change",function(){
-									$("#"+number_slider_id).val(this.value);
-								});
-							}
-						); 
-					}
-					opt_to_push.ids = {"number_slider_id" : number_slider_id , "number_text_box_id" : number_text_box_id};
-					h += result.html;
-				} else {
-					result = this.generateTextBox(opt.value,opt.name,opt.label);
-					opt_to_push.ids = {"text_box_id" : result.text_box_id };
-					h += result.html;
-				}
-			} else if(opt.type == "string" ){
-				var result = this.generateTextBox(opt.value,opt.name,"text",opt.label);
-				opt_to_push.ids = {"text_box_id" : result.text_box_id };
-				h += result.html;
-			} else if(opt.type == "checkbox"){
-				var result = this.generateCheckBox(opt.value,opt.name,opt.label);
-					opt_to_push.ids = {"check_box_id" : result.check_box_id };
-				h+= result.html;
-			} else if(opt.type == "button"){
-				var result = this.generateButton(opt.value,opt.name,opt.label);
-                var callback = opt.callback;
-                var button_id = result.button_id;
-                if(callback){
-                    listeners.push(function(){
-                        $("#"+button_id).on("click",function(){
-                            callback(button_id);                            
-                        });
-                    });
+    constructor: Flory.Options,
+    generateAndPlace: function (json, html_handle) {
+        var listeners = [];
+        var h = '';
+        h += '<div id=\'option-menu\'>';
+        var i, opt, opt_to_push, number_slider_id, number_text_box_id, result, callback, button_id;
+        var len = json.options.length;
+        var onSliderChangeAndInput = function () {
+            $('#' + number_slider_id).on('input', function () {
+                $('#' + number_text_box_id).val(this.value);
+            });
+            $('#' + number_text_box_id).on('change', function () {
+                $('#' + number_slider_id).val(this.value);
+            });
+        };
+        var onButtonClick = function () {
+            $('#' + button_id).on('click', function () {
+                callback(button_id);
+            });
+        };
+        for (i = 0; i < len; i += 1) {
+            opt = json.options[i];
+            opt_to_push = {};
+            opt_to_push.name = opt.name;
+            if (opt.type === 'float' || opt.type === 'integer' || opt.type === 'number') {
+                if (opt.slider) {
+                    result = this.generateRangeSlider(opt.value, opt.min, opt.max, opt.name, opt.label, opt.step, opt.has_text_box, opt.text_box_is_editable);
+                    number_slider_id = result.input_id;
+                    number_text_box_id = result.text_box_id;
+                    if (opt.has_text_box) {
+                        listeners.push(onSliderChangeAndInput);
+                    }
+                    opt_to_push.ids = {
+                        number_slider_id: number_slider_id,
+                        number_text_box_id: number_text_box_id
+                    };
+                    h += result.html;
+                } else {
+                    result = this.generateTextBox(opt.value, opt.name, opt.label);
+                    opt_to_push.ids = {text_box_id: result.text_box_id};
+                    h += result.html;
                 }
-				opt_to_push.ids = {"button_id" : result.button_id };
+            } else if (opt.type === 'string') {
+                result = this.generateTextBox(opt.value, opt.name, 'text', opt.label);
+                opt_to_push.ids = {text_box_id: result.text_box_id};
                 h += result.html;
-			}
+            } else if (opt.type === 'checkbox') {
+                result = this.generateCheckBox(opt.value, opt.name, opt.label);
+                opt_to_push.ids = {check_box_id: result.check_box_id};
+                h += result.html;
+            } else if (opt.type === 'button') {
+                result = this.generateButton(opt.value, opt.name, opt.label);
+                callback = opt.callback;
+                button_id = result.button_id;
+                if (callback) {
+                    listeners.push(onButtonClick);
+                }
+                opt_to_push.ids = {button_id: result.button_id};
+                h += result.html;
+            }
+        }
+        h += '</div>';
+        html_handle.html(h);
+        len = listeners.length;
+        for (i = 0; i < len; i += 1) {
+            listeners[i]();
+        }
+    },
+    generateButton: function (value, name, label) {
+        var h = '';
+        if (label === undefined) {
+            label = name;
+        }
+        var button_id = Flory.generateGUID();
+        h += '<div class=\'option\'>';
+        h += '<label for=\'' + name + '\'>' + label + '</label>';
+        h += '<button class=\'button\' id=\'' + button_id + '\'>' + value + '</button>';
+        h += '</div>';
+        return {
+            html: h,
+            button_id: button_id
+        };
+    },
+    generateTextBox: function (value, name, type, label) {
+        var h = '';
+        if (label === undefined) {
+            label = name;
+        }
+        var text_box_id = Flory.generateGUID();
+        h += '<div class=\'option\'>';
+        h += '<label for=\'' + name + '\'>' + label + '</label>';
+        var input_type = type !== undefined ? type : '';
+        h += '<input class=\'text-box\' type=\'' + input_type + '\' data-key=\'' + name + '\' id=\'' + text_box_id + '\' name=\'' + name + '\' value=\'' + value + '\'> ';
+        h += '</div>';
+        return {
+            html: h,
+            text_box_id: text_box_id
+        };
+    },
+    generateRangeSlider: function (value, min, max, name, label, step, has_text_box, text_box_is_editable) {
+        var h = '';
+        if (label === undefined) {
+            label = name;
+        }
+        var input_id = Flory.generateGUID();
+        var text_box_id = Flory.generateGUID();
+        h += '<div class=\'option\'>';
+        h += '<label for=\'' + name + '\'>' + label + '</label>';
+        if (has_text_box) {
+            h += '<input class=\'text-box-above-slider\' id=\'' + text_box_id + '\' type=\'number\' name=\'' + name + '\' min=\'' + min + '\' max=\'' + max + '\' value=\'' + value + '\'>';
+            h += '<input class=\'range-slider-with-text-box\' id=\'' + input_id + '\' type=\'range\' data-key=\'' + name + '\' value=\'' + value + '\'\' name=\'' + name + '\' min=\'' + min + '\' max=\'' + max + '\' step=\'' + step + '\'>';
+        } else {
+            h += '<input class=\'range-slider\' id=\'' + input_id + '\' type=\'range\' value=\'' + value + '\'\' data-key=\'' + name + '\' name=\'' + name + '\' min=\'' + min + '\' max=\'' + max + '\' step=\'' + step + '\'>';
+        }
+        h += '</div>';
+        return {
+            html: h,
+            input_id: input_id,
+            text_box_id: text_box_id
+        };
+    },
+    generateCheckBox: function (checked, name, label) {
+        var h = '';
+        if (label === undefined) {
+            label = name;
+        }
+        var check_box_id = Flory.generateGUID();
+        h += '<div class=\'option\'>';
+        h += '<label for=\'' + name + '\'>' + label + '</label>';
+        h += '<input class=\'checkbox\' name=\'' + name + '\' data-key=\'' + name + '\' id=\'' + check_box_id + '\' type=\'checkbox\' value=\'i-am-a-check-box-causing-errors\' ';
+        if (checked) {
+            h += 'checked';
+        }
+        h += '>';
+        h += '</div>';
+        return {
+            html: h,
+            check_box_id: check_box_id
+        };
+    },
+    update: function () {
+    },
+    updateValue: function (key, value) {
+        $('[name=\'' + key + '\']').val(value).change();
+    },
+    getValue: function (key) {
+        var k = $('[name=\'' + key + '\']').val();
+        if (k === 'i-am-a-check-box-causing-errors') {
+            return $('[name=\'' + key + '\']').is(':checked');
+        } else {
+            return k;
+        }
+    },
+    getValues: function () {
+    }
+};
 
-		}
-
-		h += "</div>";		
-
-		html_handle.html(h);
-
-		for(var i = 0; i < listeners.length;i++){
-			listeners[i]();
-		}
-		
-	} ,
-	generateButton : function(value,name,label){
-		var h  = "";
-		if(label == undefined){
-			label = name;
-		}
-
-		var button_id = Flory.generateGUID();
-		h += "<div class='option'>";
-		h += "<label for='"+name+"'>" +label+ "</label>";
-        h += "<button class='button' id='"+button_id+"'>" + value + "</button>";   
-        h += "</div>";
-
-        return {"html" : h, "button_id" : button_id}
-	},
-
-	generateTextBox : function(value,name,type,label){
-		var h = "";
-		if(label == undefined){
-			label = name;
-		}
-
-		var text_box_id = Flory.generateGUID();
-		h += "<div class='option'>";
-		h += "<label for='"+name+"'>"+label+"</label>"
-		var input_type = type != undefined ? type : '';
-		h += "<input class='text-box' type='"+input_type+"' data-key='"+name+"' id='"+text_box_id+"' name='"+name+"' value='"+value+"'> "; 
-		h += "</div>";
-		return {"html" : h, "text_box_id" : text_box_id};
-
-	},
-
-	generateRangeSlider : function(value,min,max,name,label,step,has_text_box,text_box_is_editable){
-		var h = "";
-		if(label == undefined){
-			label = name;
-		}
-		var input_id = Flory.generateGUID();
-		var text_box_id = Flory.generateGUID();
-		h += "<div class='option'>"
-		h += "<label for='"+name+"'>"+label+"</label>"
-			if(has_text_box){
-				h += "<input class='text-box-above-slider' id='"+text_box_id+"' type='number' name='"+name+"' min='"+min+"' max='"+max+"' value='"+value+"'>"
-				h += "<input class='range-slider-with-text-box' id='"+input_id+"' type='range' data-key='"+name+"' value='"+value+"'' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
-			} else {
-				h += "<input class='range-slider' id='"+input_id+"' type='range' value='"+value+"'' data-key='"+name+"' name='"+name+"' min='"+min+"' max='"+max+"' step='"+step+"'>"
-			}
-
-		h += "</div>"
-		return {"html" : h, "input_id" : input_id,"text_box_id" : text_box_id};
-	},
-
-	generateCheckBox : function(checked,name,label){
-		var h = "";
-
-		if(label == undefined){
-			label = name;
-		}
-
-		var check_box_id = Flory.generateGUID();
-		h += "<div class='option'>"
-		h += "<label for='"+name+"'>"+label+"</label>"
-
-		h += "<input class='checkbox' name='"+name+"' data-key='"+name+"' id='"+check_box_id+"' type='checkbox' value='i-am-a-check-box-causing-errors' ";
-		if(checked){
-			h += "checked"
-		}
-		h += ">"
-		h += "</div>";
-
-		return {"html" : h , "check_box_id" : check_box_id }
-	},
-
-	update : function(){
-
-
-	},
-
-	updateValue : function(key,value){
-		$("[name='"+key+"']").val(value).change();
-	},
-
-	getValue : function(key){
-		var k =  $("[name='"+key+"']").val();
-		if(k == "i-am-a-check-box-causing-errors"){
-			return $("[name='"+key+"']").is(':checked');
-		} else {
-			return k;
-		}
-	},
-
-	getValues : function(){
-
-	}
-}
-	/**
+/**
  * @author  sabidib
  * A simple class to display different values,
  * a class to abstract the DOM for the rest of the library
  *
  * The data is passed in a fashion similar to options
- * var disp  = 
+ * var disp  =
  *
  * {
- * 	display : 
- * 
- * 		[
- * 			{
- * 				name : "MSD",
- * 			 	label : "Mean^2 Displacement",
- * 			  	value : function(){
- * 				  	calculateMSD();
- * 			 	}
- * 		   	}
+ *  display :
+ *      [
+ *          {
+ *              name : "MSD",
+ *              label : "Mean^2 Displacement",
+ *              value : function(){
+ *                  calculateMSD();
+ *              }
+ *          }
  *      ]
  * }
- * 
  */
 
 
 
-
-
-Flory.Display = function(object,html_id_handle){
-	this.data = {};
-	this.json = object;
-	this.value_functions = [];
-	this.html_handle = $("#" + html_id_handle);
-	this.generateAndPlace(this.json,this.html_handle);
-}
-
+Flory.Display = function (object, html_id_handle) {
+    this.data = {};
+    this.json = object;
+    this.value_functions = [];
+    this.html_handle = $('#' + html_id_handle);
+    this.generateAndPlace(this.html_handle);
+};
 Flory.Display.prototype = {
-	constructor : Flory.Display ,
-
-	generateAndPlace : function(object,html_handle){
-		var listeners = []
-		var h = "";
-
-		h += "<div id='display-menu'>";
-		for(var  i = 0, len = this.json.display.length; i < len; i++){
-			var disp_val = this.json.display[i];
-			if(disp_val.label == undefined){
-				disp_val.label = disp_val.name;
-			}
-			var value_id = Flory.generateGUID();
-			var value = disp_val.value();
-			h += "<div class='display-value'>"
-				h+= "<label for='"+disp_val.name+"'>" + disp_val.label + "</label>";
-				h+= "<input type='text' class='display-value-text-box' data-key='"+disp_val.name+"' id='"+value_id+"' name = '"+disp_val.name+"' value='"+value+"'>";
-			h+= "</div>"
-
-			this.value_functions[disp_val.name] = disp_val.value; 
-		}
-		h+= "</div>";
-
-		html_handle.html(h);
-		return this;
-	},
-	updateValues : function(){
-		for(var i in this.value_functions){
-			var val = this.value_functions[i]();
-			var html_text = $("[data-key='"+i+"'");
-			if(typeof val == "number" || typeof val ==  "string") {
-			 	html_text.val(val);
-			} else {				
-				if(val instanceof Flory.Vector){
-					var dimension = val.dimension();
-					var string = "";
-					for(var i = 0; i < dimension;i++){
-						string += val.components[i] + ","
-					}
-					string = string.substring(0,string.length-1);
-					html_text.val(string);
-				} else if(val instanceof Flory.Vector3){
-					html_text.val(val.x +","+ val.y +","+ val.z);
-				} else if(val instanceof Flory.Vector2){
-					html_text.val(val.x +","+ val.y);
-				}
-			}
-		}
-		return this;		
-	},
-	updateValue : function(name){
-		$("[data-key='"+name+"'").val(this.value_functions[name]());
-	}
-
-}
-
+    constructor: Flory.Display,
+    generateAndPlace: function (html_handle) {
+        var h = '';
+        h += '<div id=\'display-menu\'>';
+        var i, disp_val, value_id, value;
+        var len = this.json.display.length;
+        for (i = 0; i < len; i += 1) {
+            disp_val = this.json.display[i];
+            if (disp_val.label === undefined) {
+                disp_val.label = disp_val.name;
+            }
+            value_id = Flory.generateGUID();
+            value = disp_val.value();
+            h += '<div class=\'display-value\'>';
+            h += '<label for=\'' + disp_val.name + '\'>' + disp_val.label + '</label>';
+            h += '<input type=\'text\' class=\'display-value-text-box\' data-key=\'' + disp_val.name + '\' id=\'' + value_id + '\' name = \'' + disp_val.name + '\' value=\'' + value + '\'>';
+            h += '</div>';
+            this.value_functions[disp_val.name] = disp_val.value;
+        }
+        h += '</div>';
+        html_handle.html(h);
+        return this;
+    },
+    updateValues: function () {
+        var i, j, val, html_text, dimension, string;
+        var keys = Object.keys(this.value_functions);
+        var l = keys.length;
+        for (i = 0; i < l; i += 1) {
+            val = this.value_functions[keys[i]]();
+            html_text = $('[data-key=\'' + keys[i] + '\'');
+            if (typeof val === 'number' || typeof val === 'string') {
+                html_text.val(val);
+            } else {
+                if (val instanceof Flory.Vector) {
+                    dimension = val.dimension();
+                    string = '';
+                    for (j = 0; j < dimension; j += 1) {
+                        string += val.components[j] + ',';
+                    }
+                    string = string.substring(0, string.length - 1);
+                    html_text.val(string);
+                } else if (val instanceof Flory.Vector3) {
+                    html_text.val(val.x + ',' + val.y + ',' + val.z);
+                } else if (val instanceof Flory.Vector2) {
+                    html_text.val(val.x + ',' + val.y);
+                }
+            }
+        }
+        return this;
+    },
+    updateValue: function (name) {
+        $('[data-key=\'' + name + '\'').val(this.value_functions[name]());
+    }
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
 
-Flory.Particle = function(name){
-	Flory.Renderable.call(this);
-	this.position = {};
-	this.velocity = {};
-	this.acceleration = {};
-
-	this.radius = {};
-	this.charge = {};
-	this.mass = {};
-	
-	this.name = (name == undefined ? "Particle" : name);
-}
 
 
 
+Flory.Particle = function (name) {
+    Flory.Renderable.call(this);
+    this.position = {};
+    this.velocity = {};
+    this.acceleration = {};
+    this.radius = {};
+    this.charge = {};
+    this.mass = {};
+    this.name = name === undefined ? 'Particle' : name;
+};
 Flory.Particle.prototype = Object.create(Flory.Renderable.prototype);
-
-
-Flory.Particle.prototype.setDefaultMesh = function(){
-
-}
-
+Flory.Particle.prototype.setDefaultMesh = function () {
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
-
 /**
  * Creates a 2D Monomer
  * @constructor
@@ -38562,184 +38628,153 @@ Flory.Particle.prototype.setDefaultMesh = function(){
  * @param {[Float]} mass       [The mass of the Monomer, default 0]
  * @param {[Object]} [kinematics] [An object with propeties : position , velocity, acceleration, force]
  * @param  {String} [name]        [The name of the entity]
- * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float), 
+ * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float),
  * 'color'(hex) or 'material'(THREE.mesh). This is completely optional]
  */
 
-Flory.Monomer2D = function(options) {
+
+
+
+Flory.Monomer2D = function (options) {
     var name = options.name;
     Flory.Particle.call(this, name);
-
-
     var radius = options.radius;
     var charge = options.charge;
     var mass = options.mass;
     var kinematics = options.kinematics;
     var renderableSettings = options.renderableSettings;
-
     var position = options.position;
     var velocity = options.velocity;
     var acceleration = options.acceleration;
     var force = options.force;
-
     this.dimension = 2;
-
-    if (kinematics != undefined) {
-        position = (position === undefined ? kinematics.position : position);
-        velocity = (velocity === undefined ? kinematics.velocity : velocity);
-        acceleration = (acceleration === undefined ? kinematics.acceleration : acceleration);
-        force = (force === undefined ? kinematics.force : force);
+    if (kinematics !== undefined) {
+        position = position === undefined ? kinematics.position : position;
+        velocity = velocity === undefined ? kinematics.velocity : velocity;
+        acceleration = acceleration === undefined ? kinematics.acceleration : acceleration;
+        force = force === undefined ? kinematics.force : force;
     }
-
-    this.radius = (radius != undefined ? radius : Flory.Monomer2D.defaultRadius);
-    this.charge = (charge != undefined ? charge : 0);
-    this.mass = (mass != undefined ? mass : 0);
-
-    if (position == undefined) {
+    this.radius = radius !== undefined ? radius : Flory.Monomer2D.defaultRadius;
+    this.charge = charge !== undefined ? charge : 0;
+    this.mass = mass !== undefined ? mass : 0;
+    if (position === undefined) {
         this.position = new Flory.Vector2(0, 0);
     } else if (position instanceof Array) {
         this.position = new Flory.Vector2(position[0], position[1]);
-    } else if (position.x != undefined || position.y != undefined) {
+    } else if (position.x !== undefined || position.y !== undefined) {
         this.position = new Flory.Vector2(position.x, position.y);
     } else {
         if (!(position instanceof Flory.baseVector)) {
-            console.log("Flory: position is not a valid Flory.baseVector .")
+            console.log('Flory: position is not a valid Flory.baseVector .');
             return undefined;
-        } else if (position instanceof Flory.Vector3) {
-            this.position = new Flory.Vector2(position.x,position.y);
+        }
+        if (position instanceof Flory.Vector3) {
+            this.position = new Flory.Vector2(position.x, position.y);
         } else if (position instanceof Flory.Vector) {
-            this.position = new Flory.Vector2(position.components[0],position.components[1]);
+            this.position = new Flory.Vector2(position.components[0], position.components[1]);
         } else {
             this.position = position.clone();
         }
     }
-
-    if (velocity == undefined) {
+    if (velocity === undefined) {
         this.velocity = new Flory.Vector2(0, 0);
     } else if (velocity instanceof Array) {
         this.velocity = new Flory.Vector2(velocity[0], velocity[1]);
-    } else if (velocity.x != undefined || velocity.y != undefined) {
+    } else if (velocity.x !== undefined || velocity.y !== undefined) {
         this.velocity = new Flory.Vector2(velocity.x, velocity.y);
     } else {
         if (!(velocity instanceof Flory.baseVector)) {
-            console.log("Flory: velocity is not a valid Flory.baseVector .")
+            console.log('Flory: velocity is not a valid Flory.baseVector .');
             return undefined;
-        } else if (velocity instanceof Flory.Vector3) {
-            this.velocity = new Flory.Vector2(velocity.x,velocity.y);
-        } else if (velocity instanceof Flory.Vector) {
-            this.velocity = new Flory.Vector2(velocity.components[0],velocity.components[1]);
-        } else {
-            this.velocity = velocity.clone();    
         }
-        
+        if (velocity instanceof Flory.Vector3) {
+            this.velocity = new Flory.Vector2(velocity.x, velocity.y);
+        } else if (velocity instanceof Flory.Vector) {
+            this.velocity = new Flory.Vector2(velocity.components[0], velocity.components[1]);
+        } else {
+            this.velocity = velocity.clone();
+        }
     }
-    if (acceleration == undefined) {
+    if (acceleration === undefined) {
         this.acceleration = new Flory.Vector2(0, 0);
     } else if (acceleration instanceof Array) {
         this.acceleration = new Flory.Vector2(acceleration[0], acceleration[1]);
-    } else if (acceleration.x != undefined || acceleration.y != undefined) {
+    } else if (acceleration.x !== undefined || acceleration.y !== undefined) {
         this.acceleration = new Flory.Vector2(acceleration.x, acceleration.y);
     } else {
         if (!(acceleration instanceof Flory.baseVector)) {
-            console.log("Flory: acceleration is not a valid Flory.baseVector .")
+            console.log('Flory: acceleration is not a valid Flory.baseVector .');
             return undefined;
-        } else if (acceleration instanceof Flory.Vector3) {
-            this.acceleration = new Flory.Vector2(acceleration.x,acceleration.y);;
-        } else if (acceleration instanceof Flory.Vector) {
-            this.acceleration = new Flory.Vector2(acceleration.components[0],acceleration.components[1]);
-        } else {
-            this.acceleration = acceleration.clone();    
         }
-        
+        if (acceleration instanceof Flory.Vector3) {
+            this.acceleration = new Flory.Vector2(acceleration.x, acceleration.y);
+        } else if (acceleration instanceof Flory.Vector) {
+            this.acceleration = new Flory.Vector2(acceleration.components[0], acceleration.components[1]);
+        } else {
+            this.acceleration = acceleration.clone();
+        }
     }
-
-
-    if (force == undefined) {
+    if (force === undefined) {
         this.force = new Flory.Vector2(0, 0);
     } else if (force instanceof Array) {
         this.force = new Flory.Vector2(force[0], force[1]);
-    } else if (force.x != undefined || force.y != undefined) {
+    } else if (force.x !== undefined || force.y !== undefined) {
         this.force = new Flory.Vector2(force.x, force.y);
     } else {
         if (!(force instanceof Flory.baseVector)) {
-            console.log("Flory: force is not a valid Flory.baseVector .")
+            console.log('Flory: force is not a valid Flory.baseVector .');
             return undefined;
-        } else if (force instanceof Flory.Vector3) {
-            this.force = new Flory.Vector2(force.x,force.y);
+        }
+        if (force instanceof Flory.Vector3) {
+            this.force = new Flory.Vector2(force.x, force.y);
         } else if (force instanceof Flory.Vector) {
-            this.force = new Flory.Vector2(force.components[0],force.components[1]);
+            this.force = new Flory.Vector2(force.components[0], force.components[1]);
         } else {
-            this.force = force.clone();    
-        }        
+            this.force = force.clone();
+        }
     }
-
-
-
-
-
-
     this.setDefaultMesh(renderableSettings);
-
-}
-
+};
 Flory.Monomer2D.prototype = Object.create(Flory.Particle.prototype);
-
-Flory.Monomer2D.prototype.setDefaultMesh = function(settings) {
+Flory.Monomer2D.prototype.setDefaultMesh = function (settings) {
     var material = {};
     var geometry = {};
-
-    var segments = (settings != undefined && typeof settings.segments == "number") ? settings.segments : 20;
-
+    var segments = settings !== undefined && typeof settings.segments === 'number' ? settings.segments : 20;
     geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2 * 3.14159265359);
-
-
-    var color_of_mesh = (settings != undefined && typeof settings.color == "number") ? settings.color : 0xFF0000;
-
-    if (settings == undefined) {
-        material = new THREE.MeshBasicMaterial({
-            color: color_of_mesh
-        });
-    } else if (settings.material != undefined && settings.material instanceof THREE.Material) {
+    var color_of_mesh = settings !== undefined && typeof settings.color === 'number' ? settings.color : 16711680;
+    if (settings === undefined) {
+        material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
+    } else if (settings.material !== undefined && settings.material instanceof THREE.Material) {
         material = settings.material;
     } else {
-        material = new THREE.MeshBasicMaterial({
-            color: color_of_mesh
-        });
+        material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
     }
     this.mesh = new THREE.Mesh(geometry, material);
     this.geometry = geometry;
     this.material = material;
-}
-
-
-Flory.Monomer2D.prototype.incrementX = function(amount) {
+};
+Flory.Monomer2D.prototype.incrementX = function (amount) {
     this.position.x += amount;
     return this;
 };
-
-Flory.Monomer2D.prototype.incrementY = function(amount) {
+Flory.Monomer2D.prototype.incrementY = function (amount) {
     this.position.y += amount;
     return this;
 };
-
-Flory.Monomer2D.prototype.distanceTo = function(a) {
+Flory.Monomer2D.prototype.distanceTo = function (a) {
     return this.position.distanceTo(a.position);
 };
-
-Flory.Monomer2D.prototype.distanceToSq = function(a) {
+Flory.Monomer2D.prototype.distanceToSq = function (a) {
     return this.position.distanceToSq(a.position);
 };
-
-Flory.Monomer2D.prototype.clone = function() {
+Flory.Monomer2D.prototype.clone = function () {
     return new Flory.Monomer2D(this.radius, this.position);
 };
-
 Flory.Monomer2D.defaultRadius = 1;
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /**
  * Creates a 3D Monomer
  * @constructor
@@ -38748,193 +38783,162 @@ Flory.Monomer2D.defaultRadius = 1;
  * @param {[Float]} mass       [The mass of the Monomer, default 0]
  * @param {[Object]} kinematics [An object with propeties : position , velocity, acceleration, force]
  * @param  {String} name        [The name of the entity]
- * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float), 
+ * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float),
  * 'color'(hex) or 'material'(THREE.mesh). This is completely optional]
  */
-Flory.Monomer3D = function(options) {
 
+
+
+
+Flory.Monomer3D = function (options) {
     var name = options.name;
-    Flory.Particle.call(this,name);
-
-
+    Flory.Particle.call(this, name);
     var radius = options.radius;
     var charge = options.charge;
     var mass = options.mass;
     var kinematics = options.kinematics;
     var renderableSettings = options.renderableSettings;
-
     this.dimension = 3;
     var position = options.position;
     var velocity = options.velocity;
     var acceleration = options.acceleration;
     var force = options.force;
-
-    
-    if(kinematics != undefined){
-        position = (position === undefined ? kinematics.position : position);
-        velocity = (velocity === undefined ? kinematics.velocity : velocity);
-        acceleration = (acceleration === undefined ? kinematics.acceleration : acceleration);
-        force = (force === undefined ? kinematics.force : force);
+    if (kinematics !== undefined) {
+        position = position === undefined ? kinematics.position : position;
+        velocity = velocity === undefined ? kinematics.velocity : velocity;
+        acceleration = acceleration === undefined ? kinematics.acceleration : acceleration;
+        force = force === undefined ? kinematics.force : force;
     }
-    
-    this.radius = (radius !== undefined ? radius : Flory.Monomer3D.defaultRadius);
-    this.charge = (charge !== undefined ? charge : 0);
-    this.mass = (mass != undefined ? mass : 0);
-
-
-    if(position == undefined){
-        this.position = new Flory.Vector3(0,0,0);
-    } else if(position instanceof Array){
-        this.position = new Flory.Vector3(position[0],position[1],position[2]);
-    } else if(position.x != undefined || position.y != undefined || position.z != undefined){
-        this.position = new Flory.Vector3(position.x,position.y,position.z);
-    }else {
-        if(! (position instanceof Flory.baseVector)){
-            console.log("Flory: position is not a valid Flory.baseVector.")
+    this.radius = radius !== undefined ? radius : Flory.Monomer3D.defaultRadius;
+    this.charge = charge !== undefined ? charge : 0;
+    this.mass = mass !== undefined ? mass : 0;
+    if (position === undefined) {
+        this.position = new Flory.Vector3(0, 0, 0);
+    } else if (position instanceof Array) {
+        this.position = new Flory.Vector3(position[0], position[1], position[2]);
+    } else if (position.x !== undefined || position.y !== undefined || position.z !== undefined) {
+        this.position = new Flory.Vector3(position.x, position.y, position.z);
+    } else {
+        if (!(position instanceof Flory.baseVector)) {
+            console.log('Flory: position is not a valid Flory.baseVector.');
             return undefined;
-        } else if(position instanceof Flory.Vector2){
-            this.position = new Flory.Vector3(position.x,position.y,0);
-        } else if(position instanceof Flory.Vector){
-            this.position = new Flory.Vector3(position.components[0],position.components[1],position.components[2]);
-        } else {
-            this.position = position.clone();    
         }
-        
+        if (position instanceof Flory.Vector2) {
+            this.position = new Flory.Vector3(position.x, position.y, 0);
+        } else if (position instanceof Flory.Vector) {
+            this.position = new Flory.Vector3(position.components[0], position.components[1], position.components[2]);
+        } else {
+            this.position = position.clone();
+        }
     }
-
-    if(velocity == undefined){
-        this.velocity = new Flory.Vector3(0,0,0);
-    } else if(velocity instanceof Array){
-        this.velocity = new Flory.Vector3(velocity[0],velocity[1],velocity[2]);
-    } else if(velocity.x != undefined || velocity.y != undefined || velocity.z != undefined){
-        this.velocity = new Flory.Vector3(velocity.x,velocity.y,velocity.z);
+    if (velocity === undefined) {
+        this.velocity = new Flory.Vector3(0, 0, 0);
+    } else if (velocity instanceof Array) {
+        this.velocity = new Flory.Vector3(velocity[0], velocity[1], velocity[2]);
+    } else if (velocity.x !== undefined || velocity.y !== undefined || velocity.z !== undefined) {
+        this.velocity = new Flory.Vector3(velocity.x, velocity.y, velocity.z);
     } else {
-        if(! (velocity instanceof Flory.baseVector)){
-            console.log("Flory: velocity is not a valid Flory.baseVector.")
-            return undefined
-        } else if(velocity instanceof Flory.Vector2){
-            this.velocity = new Flory.Vector3(velocity.x,velocity.y,0);
-        } else if(velocity instanceof Flory.Vector){
-            this.velocity = new Flory.Vector3(velocity.components[0],velocity.components[1],velocity.components[2]);
-        } else {
-            this.velocity = velocity.clone();    
+        if (!(velocity instanceof Flory.baseVector)) {
+            console.log('Flory: velocity is not a valid Flory.baseVector.');
+            return undefined;
         }
-        
-    }
-
-    if(acceleration == undefined){
-        this.acceleration = new Flory.Vector3(0,0,0);
-    } else if(acceleration instanceof Array){
-        this.acceleration = new Flory.Vector3(acceleration[0],acceleration[1],acceleration[2]);
-    } else if(acceleration.x != undefined || acceleration.y != undefined || acceleration.z != undefined){
-        this.acceleration = new Flory.Vector3(acceleration.x,acceleration.y,acceleration.z);
-    }  else {
-        if(! (acceleration instanceof Flory.baseVector)){
-            console.log("Flory: acceleration is not a valid Flory.baseVector.")
-            return undefined
-        } else if(acceleration instanceof Flory.Vector2){
-            this.acceleration = new Flory.Vector3(acceleration.x,acceleration.y,0);
-        } else if(acceleration instanceof Flory.Vector){
-            this.acceleration = new Flory.Vector3(acceleration.components[0],acceleration.components[1],acceleration.components[2]);
+        if (velocity instanceof Flory.Vector2) {
+            this.velocity = new Flory.Vector3(velocity.x, velocity.y, 0);
+        } else if (velocity instanceof Flory.Vector) {
+            this.velocity = new Flory.Vector3(velocity.components[0], velocity.components[1], velocity.components[2]);
         } else {
-            this.acceleration = acceleration.clone();    
+            this.velocity = velocity.clone();
         }
-        
     }
-
-
-    if(force == undefined){
-        this.force = new Flory.Vector3(0,0,0);
-    } else if(force instanceof Array){
-        this.force = new Flory.Vector3(force[0],force[1],force[2]);
-    } else if(force.x != undefined || force.y != undefined || force.z != undefined){
-        this.force = new Flory.Vector3(force.x,force.y,force.z);
+    if (acceleration === undefined) {
+        this.acceleration = new Flory.Vector3(0, 0, 0);
+    } else if (acceleration instanceof Array) {
+        this.acceleration = new Flory.Vector3(acceleration[0], acceleration[1], acceleration[2]);
+    } else if (acceleration.x !== undefined || acceleration.y !== undefined || acceleration.z !== undefined) {
+        this.acceleration = new Flory.Vector3(acceleration.x, acceleration.y, acceleration.z);
     } else {
-        if(! (force instanceof Flory.baseVector)){
-            console.log("Flory: force is not a valid Flory.baseVector.")
-            return undefined
-        } else if(force instanceof Flory.Vector2){
-            this.force = new Flory.Vector3(force.x,force.y,0);
-        } else if(force instanceof Flory.Vector){
-            this.force = new Flory.Vector3(force.components[0],force.components[1],force.components[2]);
-        } else {
-            this.force = force.clone();    
+        if (!(acceleration instanceof Flory.baseVector)) {
+            console.log('Flory: acceleration is not a valid Flory.baseVector.');
+            return undefined;
         }
-        
+        if (acceleration instanceof Flory.Vector2) {
+            this.acceleration = new Flory.Vector3(acceleration.x, acceleration.y, 0);
+        } else if (acceleration instanceof Flory.Vector) {
+            this.acceleration = new Flory.Vector3(acceleration.components[0], acceleration.components[1], acceleration.components[2]);
+        } else {
+            this.acceleration = acceleration.clone();
+        }
     }
-
+    if (force === undefined) {
+        this.force = new Flory.Vector3(0, 0, 0);
+    } else if (force instanceof Array) {
+        this.force = new Flory.Vector3(force[0], force[1], force[2]);
+    } else if (force.x !== undefined || force.y !== undefined || force.z !== undefined) {
+        this.force = new Flory.Vector3(force.x, force.y, force.z);
+    } else {
+        if (!(force instanceof Flory.baseVector)) {
+            console.log('Flory: force is not a valid Flory.baseVector.');
+            return undefined;
+        }
+        if (force instanceof Flory.Vector2) {
+            this.force = new Flory.Vector3(force.x, force.y, 0);
+        } else if (force instanceof Flory.Vector) {
+            this.force = new Flory.Vector3(force.components[0], force.components[1], force.components[2]);
+        } else {
+            this.force = force.clone();
+        }
+    }
     this.setDefaultMesh(renderableSettings);
-
 };
-
 Flory.Monomer3D.prototype = Object.create(Flory.Particle.prototype);
-
-Flory.Monomer3D.prototype.setDefaultMesh = function(settings) {
+Flory.Monomer3D.prototype.setDefaultMesh = function (settings) {
     var material = {};
     var geometry = {};
-
-    var segments = (settings != undefined && typeof settings.segments == "number" ) ? settings.segments : 20;
-
-    geometry = new THREE.SphereGeometry(this.radius,segments,segments);
-
-    var color_of_mesh = (settings != undefined && typeof settings.color == "number" ) ? settings.color : 0xFF0000;
-
-    if(settings == undefined){
-        material = new THREE.MeshBasicMaterial({color : color_of_mesh});
-    } else if(settings.material != undefined && settings.material instanceof THREE.Material){
+    var segments = settings !== undefined && typeof settings.segments === 'number' ? settings.segments : 20;
+    geometry = new THREE.SphereGeometry(this.radius, segments, segments);
+    var color_of_mesh = settings !== undefined && typeof settings.color === 'number' ? settings.color : 16711680;
+    if (settings === undefined) {
+        material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
+    } else if (settings.material !== undefined && settings.material instanceof THREE.Material) {
         material = settings.material;
     } else {
-        material = new THREE.MeshBasicMaterial({color : color_of_mesh});        
+        material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
     }
-
     this.mesh = new THREE.Mesh(geometry, material);
     this.geometry = geometry;
     this.material = material;
-}
-
-
-Flory.Monomer3D.prototype.applyForce = function(force,time){
-    acceleration.x += (force.x/this.mass)*time;
-    acceleration.y += (force.y/this.mass)*time;
-    acceleration.z += (force.z/this.mass)*time;
-}
-
-
-
-Flory.Monomer3D.prototype.incrementX = function(amount){
-        this.position.x += amount;
-        return this;
-    };
-
-Flory.Monomer3D.prototype.incrementY =  function(amount){
-        this.position.y += amount;
-        return this;
-    };
-
-Flory.Monomer3D.prototype.incrementZ =  function(amount){
-        this.position.z += amount;
-        return this;
-    };
-
-Flory.Monomer3D.prototype.distanceTo = function(a){
-        return this.position.distanceTo(a.position);
-    };
-
-Flory.Monomer3D.prototype.distanceToSq = function(a){
-        return this.position.distanceToSq(a.position);
-    };
-
-Flory.Monomer3D.prototype.clone = function(){
-        return new Flory.Monomer3D(this.radius,this.position);
-    };
-
-
+};
+Flory.Monomer3D.prototype.applyForce = function (force, time) {
+    this.acceleration.x += force.x / this.mass * time;
+    this.acceleration.y += force.y / this.mass * time;
+    this.acceleration.z += force.z / this.mass * time;
+};
+Flory.Monomer3D.prototype.incrementX = function (amount) {
+    this.position.x += amount;
+    return this;
+};
+Flory.Monomer3D.prototype.incrementY = function (amount) {
+    this.position.y += amount;
+    return this;
+};
+Flory.Monomer3D.prototype.incrementZ = function (amount) {
+    this.position.z += amount;
+    return this;
+};
+Flory.Monomer3D.prototype.distanceTo = function (a) {
+    return this.position.distanceTo(a.position);
+};
+Flory.Monomer3D.prototype.distanceToSq = function (a) {
+    return this.position.distanceToSq(a.position);
+};
+Flory.Monomer3D.prototype.clone = function () {
+    return new Flory.Monomer3D(this.radius, this.position);
+};
 Flory.Monomer3D.defaultRadius = 1;
+
 /**
  * @author sabidib http://github.com/sabidib
  */
-
-
 /**
  * Creates  an arbitrary dimension Monomer. The dimension is defined by the
  * number of components in kinematics.position.
@@ -38944,46 +38948,43 @@ Flory.Monomer3D.defaultRadius = 1;
  * @param {[Float]} mass       [The mass of the Monomer, default 0]
  * @param {[Object]} kinematics [An object with vector properties : position , velocity, acceleration, force]
  * @param  {String} name        [The name of the entity]
- * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float), 
+ * @param   {Object} [renderableSettings] [An object containing any of the following keys 'segments'(float),
  * 'color'(hex) or 'material'(THREE.mesh). This is completely optional]
  */
 
-Flory.Monomer = function(options) {
+
+
+
+Flory.Monomer = function (options) {
     var name = options.name;
-    if (options.kinematics == undefined && options.position === undefined) {
-        console.log("Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.");
+    if (options.kinematics === undefined && options.position === undefined) {
+        console.log('Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.');
         return undefined;
     }
     if (options.kinematics !== undefined && options.kinematics.position === undefined) {
-        console.log("Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.");
+        console.log('Flory: Flory.Monomer needs at least the position to know what the dimension of the monomer is.');
         return undefined;
     }
-
     Flory.Particle.call(this, name);
-
     var radius = options.radius;
     var charge = options.charge;
     var mass = options.mass;
     var kinematics = options.kinematics;
     var renderableSettings = options.renderableSettings;
-
     var position = options.position;
     var velocity = options.velocity;
     var acceleration = options.acceleration;
     var force = options.force;
-
-    if (kinematics != undefined) {
-        position = (position === undefined ? kinematics.position : position);
-        velocity = (velocity === undefined ? kinematics.velocity : velocity);
-        acceleration = (acceleration === undefined ? kinematics.acceleration : acceleration);
-        force = (force === undefined ? kinematics.force : force);
+    if (kinematics !== undefined) {
+        position = position === undefined ? kinematics.position : position;
+        velocity = velocity === undefined ? kinematics.velocity : velocity;
+        acceleration = acceleration === undefined ? kinematics.acceleration : acceleration;
+        force = force === undefined ? kinematics.force : force;
     }
-
-    this.radius = (radius != undefined ? radius : Flory.Monomer.defaultRadius);
-    this.charge = (charge != undefined ? charge : 0);
-    this.mass = (mass != undefined ? mass : 0);
-
-    if (position.components == undefined && position instanceof Array) {
+    this.radius = radius !== undefined ? radius : Flory.Monomer.defaultRadius;
+    this.charge = charge !== undefined ? charge : 0;
+    this.mass = mass !== undefined ? mass : 0;
+    if (position.components === undefined && position instanceof Array) {
         this.position = new Flory.Vector(position);
     } else if (position instanceof Flory.baseVector) {
         if (position instanceof Flory.Vector2 || position instanceof Flory.Vector3) {
@@ -38992,12 +38993,11 @@ Flory.Monomer = function(options) {
             this.position = position.clone();
         }
     } else {
-        console.log("Flory: position is not an array or descendant of Flory.baseVector ")
+        console.log('Flory: position is not an array or descendant of Flory.baseVector ');
     }
-
-    if (velocity == undefined) {
-        this.velocity = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
-    } else if (velocity.components == undefined && velocity instanceof Array) {
+    if (velocity === undefined) {
+        this.velocity = new Flory.Vector(this.position.dimension());
+    } else if (velocity.components === undefined && velocity instanceof Array) {
         this.velocity = new Flory.Vector(velocity);
     } else if (velocity instanceof Flory.baseVector) {
         if (velocity instanceof Flory.Vector2 || velocity instanceof Flory.Vector3) {
@@ -39006,12 +39006,11 @@ Flory.Monomer = function(options) {
             this.velocity = velocity.clone();
         }
     } else {
-        console.log("Flory: velocity is not an array or descendant of Flory.baseVector ")
+        console.log('Flory: velocity is not an array or descendant of Flory.baseVector ');
     }
-
-    if (acceleration == undefined) {
-        this.acceleration = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
-    } else if (acceleration.components == undefined && acceleration instanceof Array) {
+    if (acceleration === undefined) {
+        this.acceleration = new Flory.Vector(this.position.dimension());
+    } else if (acceleration.components === undefined && acceleration instanceof Array) {
         this.acceleration = new Flory.Vector(acceleration);
     } else if (acceleration instanceof Flory.baseVector) {
         if (acceleration instanceof Flory.Vector2 || acceleration instanceof Flory.Vector3) {
@@ -39020,12 +39019,11 @@ Flory.Monomer = function(options) {
             this.acceleration = acceleration.clone();
         }
     } else {
-        console.log("Flory: acceleration is not an array or descendant of Flory.baseVector ")
+        console.log('Flory: acceleration is not an array or descendant of Flory.baseVector ');
     }
-
-    if (force == undefined) {
-        this.force = new Flory.Vector([].slice.apply(new Uint8Array(this.position.dimension())));
-    } else if (force.components == undefined && force instanceof Array) {
+    if (force === undefined) {
+        this.force = new Flory.Vector(this.position.dimension());
+    } else if (force.components === undefined && force instanceof Array) {
         this.force = new Flory.Vector(force);
     } else if (force instanceof Flory.baseVector) {
         if (force instanceof Flory.Vector2 || force instanceof Flory.Vector3) {
@@ -39034,267 +39032,228 @@ Flory.Monomer = function(options) {
             this.force = force.clone();
         }
     } else {
-        console.log("Flory: force is not an array or descendant of Flory.baseVector ")
+        console.log('Flory: force is not an array or descendant of Flory.baseVector ');
     }
-
     this.setDefaultMesh(renderableSettings);
-}
-
-
+    return this;
+};
 Flory.Monomer.prototype = Object.create(Flory.Particle.prototype);
-
-
-Flory.Monomer.prototype.setDefaultMesh = function(settings) {
+Flory.Monomer.prototype.setDefaultMesh = function (settings) {
     var material = {};
     var geometry = {};
-
-    var segments = (settings != undefined && typeof settings.segments == "number") ? settings.segments : 20;
-
+    var segments = settings !== undefined && typeof settings.segments === 'number' ? settings.segments : 20;
     var dim = this.position.dimension();
     if (dim >= 3) {
         geometry = new THREE.SphereGeometry(this.radius, segments, segments);
     } else {
         geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2 * 3.14159265359);
     }
-    var color_of_mesh = (settings != undefined && typeof settings.color == "number") ? settings.color : 0xFF0000;
-    if (settings == undefined) {
-        material = new THREE.MeshBasicMaterial({
-            color: color_of_mesh
-        });
-    } else if (settings.material != undefined && settings.material instanceof THREE.Material) {
+    var color_of_mesh = settings !== undefined && typeof settings.color === 'number' ? settings.color : 16711680;
+    if (settings === undefined) {
+        material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
+    } else if (settings.material !== undefined && settings.material instanceof THREE.Material) {
         material = settings.material;
     } else {
-        material = new THREE.MeshBasicMaterial({
-            color: color_of_mesh
-        });
+        material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
     }
-
     this.geometry = geometry;
     this.material = material;
     this.mesh = new THREE.Mesh(geometry, material);
     return this;
-}
-
-
-
-
-Flory.Monomer.prototype.applyForce = function(force, time) {
-    for (var i = 0; i < this.acceleration.components.length; i++) {
-        this.acceleration.components[i] += (force.components[i] / this.mass) * time;
+};
+Flory.Monomer.prototype.applyForce = function (force, time) {
+    var i;
+    var len = this.acceleration.components.length;
+    var acc = this.acceleration.components;
+    for (i = 0; i < len; i += 1) {
+        acc[i] += force.components[i] / this.mass * time;
     }
     return this;
-}
-
-
+};
 /**
- * Given the dimension index, will increment
- * the component by amount
- * @param  {Integer} dimension the dimension to increment.
- * @param  {Float} amount    the amount to increment the dimension by [-inf,+inf];
- * @return {Flory.Monomer}      returns itself.
- */
-Flory.Monomer.prototype.incrementDimension = function(dimension, amount) {
+* Given the dimension index, will increment
+* the component by amount
+* @param  {Integer} dimension the dimension to increment.
+* @param  {Float} amount    the amount to increment the dimension by [-inf,+inf];
+* @return {Flory.Monomer}      returns itself.
+*/
+Flory.Monomer.prototype.incrementDimension = function (dimension, amount) {
     this.position.components[dimension] += amount;
     return this;
 };
-
-Flory.Monomer.prototype.distanceTo = function(a) {
+Flory.Monomer.prototype.distanceTo = function (a) {
     return this.position.distanceTo(a.position);
 };
-
-Flory.Monomer.prototype.distanceToSq = function(a) {
+Flory.Monomer.prototype.distanceToSq = function (a) {
     return this.position.distanceToSq(a.position);
 };
-
-Flory.Monomer.prototype.clone = function() {
+Flory.Monomer.prototype.clone = function () {
     return new Flory.Monomer3D(this.radius, this.position);
 };
-
-
-
-
-
 Flory.Monomer.defaultRadius = 1;
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
-
 /** @constructor */
-Flory.Newtonian = function(){
-	Flory.Environment.call(this);
-	this.meshes = [];
-}
 
 
+
+Flory.Newtonian = function () {
+    Flory.Environment.call(this);
+    this.meshes = [];
+};
 Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
-
-
 Flory.Newtonian.constructor = Flory.Newtonian;
-
-Flory.Newtonian.prototype.update = function(additional){
-	var len = this.entities.length;
-	for(var i = 0;i < len;i++){
-		var entity = this.entities[i];
-		var tmp = new Flory.Vector();
-		if(entity instanceof Flory.Particle){
-			for(var j = 0;j < len;j++){
-				var entity2 = this.entities[j];
-				if(entity2 instanceof Flory.baseField){
-					tmp.add(entity2.getForce(entity.position));
-				} 
-			}
-			entity.force = tmp.clone();
-			entity.acceleration = entity.force.mult(1.0/entity.mass);
-			entity.velocity.add(entity.acceleration.mult(Flory.timestep));
-			entity.position.add(entity.velocity.mult(Flory.timestep*0.5));
-		}
-	}
-	return this;
-}
+Flory.Newtonian.prototype.update = function () {
+    var len = this.entities.length;
+    var i, entity, entity2, tmp, j;
+    for (i = 0; i < len; i += 1) {
+        entity = this.entities[i];
+        tmp = new Flory.Vector();
+        if (entity instanceof Flory.Particle) {
+            for (j = 0; j < len; j += 1) {
+                entity2 = this.entities[j];
+                if (entity2 instanceof Flory.baseField) {
+                    tmp.add(entity2.getForce(entity.position));
+                }
+            }
+            entity.force = tmp.clone();
+            entity.acceleration = entity.force.mult(1 / entity.mass);
+            entity.velocity.add(entity.acceleration.mult(Flory.timestep));
+            entity.position.add(entity.velocity.mult(Flory.timestep * 0.5));
+        }
+    }
+    return this;
+};
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /** @constructor */
-Flory.RandomWalk = function(seed,step_size){
-	Flory.Environment.call(this);
-	this.randomGen = new Flory.RandomGen(seed);
-	this.step_size = (step_size != undefined) ? step_size : 1;
-}
 
 
+
+
+Flory.RandomWalk = function (seed, step_size) {
+    Flory.Environment.call(this);
+    this.randomGen = new Flory.RandomGen(seed);
+    this.step_size = step_size !== undefined ? step_size : 1;
+};
 Flory.RandomWalk.prototype = Object.create(Flory.Environment.prototype);
-
 Flory.RandomWalk.prototype.constructor = Flory.RandomWalk;
-
-Flory.RandomWalk.prototype.update = function(additional){
-	var len = this.entities.length;
-	var entity;
-	var number_of_dimensions;
-	var dimension_increment;
-	var dimension_to_choose;
-	var rnum;
-	var number_of_steps = 1;
-	var prob_right = 0.5;
-	if(additional.number_of_steps != undefined){
-		number_of_steps = additional.number_of_steps;
-	}
-
-	for(var k = 0; k < number_of_steps;k++){
-		for( var i = 0;i<len;i++){
-			entity = this.entities[i];
-			if(entity instanceof Flory.Particle){
-				number_of_dimensions = entity.position.dimension();
-				dimension_increment = (1.0/number_of_dimensions);
-				dimension_to_choose = 0;
-				//Choose which dimension to move in 
-				rnum = this.randomGen.random();
-				rnum -= dimension_increment;
-				while(rnum > 0){
-					rnum -= dimension_increment;
-					dimension_to_choose++;
-				}
-				//Choose the direction of movement in the dimension
-				rnum = this.randomGen.random();
-				if(rnum < prob_right){
-					entity.position.components[dimension_to_choose]++;
-				} else {
-					entity.position.components[dimension_to_choose]--;
-				} 
-
-			}
-		}
-	}
-
-	return this;
-}
-
-
+Flory.RandomWalk.prototype.update = function (additional) {
+    var len = this.entities.length;
+    var entity;
+    var number_of_dimensions;
+    var dimension_increment;
+    var dimension_to_choose;
+    var rnum;
+    var number_of_steps = 1;
+    var i, k;
+    var prob_right = 0.5;
+    if (additional.number_of_steps !== undefined) {
+        number_of_steps = additional.number_of_steps;
+    }
+    for (k = 0; k < number_of_steps; k += 1) {
+        for (i = 0; i < len; i += 1) {
+            entity = this.entities[i];
+            if (entity instanceof Flory.Particle) {
+                number_of_dimensions = entity.position.dimension();
+                dimension_increment = 1 / number_of_dimensions;
+                dimension_to_choose = 0;
+                //Choose which dimension to move in
+                rnum = this.randomGen.random();
+                rnum -= dimension_increment;
+                while (rnum > 0) {
+                    rnum -= dimension_increment;
+                    dimension_to_choose += 1;
+                }
+                //Choose the direction of movement in the dimension
+                rnum = this.randomGen.random();
+                if (rnum < prob_right) {
+                    entity.position.components[dimension_to_choose] += 1;
+                } else {
+                    entity.position.components[dimension_to_choose] -= 1;
+                }
+            }
+        }
+    }
+    return this;
+};
 
 
 
 /**
  * @author sabidib http://github.com/sabidib
  */
-
 /**
  * A demo for experiment/lennardJones.js .
- * 
+ *
  * Generates a cube made of monomers with a given side length.
- * 
+ *
  * The interaction between the monomers is given by the lennard jones potential
  * and its parameters \sigma and \epsilon.
- * 
+ *
  */
 
+(function () {
+    
+    var settings = {
+        visualization: {
+            frames_per_second: 60,
+            ticks_per_frame: 1
+        },
+        experiment: {
+            side_length_of_cube: 3,
+            radius_of_monomers: 1,
+            mass_of_monomers: 1,
+            min_starting_distance_apart: 1,
+            starting_max_x: 50,
+            starting_max_y: 50,
+            starting_max_z: 50,
+            sigma: Math.pow(0.5, 1 / 6),
+            epsilon: 1
+        }
+    };
+    var exp = settings.experiment;
+    var number_of_monomers = exp.side_length_of_cube * exp.side_length_of_cube * exp.side_length_of_cube;
+    var monomers = [];
+    var lennard = new Flory.LennardJones(exp.epsilon, exp.sigma);
+    var i, j, k;
+    var sideLen = exp.side_length_of_cube;
+    for (i = 0; i < sideLen; i += 1) {
+        for (j = 0; j < sideLen; j += 1) {
+            for (k = 0; k < sideLen; k += 1) {
+                monomers.push(new Flory.Monomer({
+                    radius: exp.radius_of_monomers,
+                    charge: 0,
+                    mass: exp.mass_of_monomers,
+                    kinematics: {
+                        position: [
+                            i * exp.min_starting_distance_apart,
+                            j * exp.min_starting_distance_apart,
+                            k * exp.min_starting_distance_apart
+                        ]
+                    }
+                }));
+            }
+        }
+    }
+    for (i = 0; i < number_of_monomers; i += 1) {
+        lennard.add(monomers[i]);
+    }
+    lennard.enableVisualization('mycanvas');
+    var fps = 0;
 
-
-var random = new Flory.RandomGen();
-
-settings = {
-	visualization : {
-		frames_per_second : 60,
-		ticks_per_frame : 1
-	},
-	experiment : {
-		side_length_of_cube : 3,
-		radius_of_monomers : 1,
-		mass_of_monomers : 1,
-		min_starting_distance_apart : 1,
-		starting_max_x : 50,
-		starting_max_y : 50,
-		starting_max_z : 50,
-		sigma : Math.pow(0.5,(1.0/6.0)),
-		epsilon : 1
-	}
-}
-
-
-
-var exp = settings.experiment;
-
-var number_of_monomers = exp.side_length_of_cube*exp.side_length_of_cube*exp.side_length_of_cube;
-var monomers = [];
-
-var lennard = new Flory.LennardJones(exp.epsilon,exp.sigma);
-
-
-
-for(var i = 0; i < exp.side_length_of_cube;i++){
-	for(var j = 0; j < exp.side_length_of_cube;j++){
-		for(var k = 0; k < exp.side_length_of_cube;k++){
-			monomers.push(new Flory.Monomer(
-			{
-				"radius":exp.radius_of_monomers,
-				"charge": 0,
-			 	"mass" : exp.mass_of_monomers,
-			 	"kinematics": {
-			 		position : [
-			 			i*exp.min_starting_distance_apart,
-			 			j*exp.min_starting_distance_apart,
-						k*exp.min_starting_distance_apart
-					]
-				}
-			}
-			));	
-		}
-	}		
-}
-
-
-for(var i = 0; i < number_of_monomers;i++){
-	lennard.add(monomers[i]);	
-}
-
-
-
-lennard.enableVisualization("mycanvas");
-
-var k = 0;
-var fps = 0;
-setInterval(function(){lennard.advance();k++},0);
-setInterval(function(){fps = k;k=0;},1000);
+    setInterval(function () {
+        lennard.advance();
+        k += 1;
+    }, 0);
+    setInterval(function () {
+        fps = k;
+        console.log(fps);
+        k = 0;
+    }, 1000);
+}());
 

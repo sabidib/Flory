@@ -84,6 +84,8 @@ Flory.RandomGen = function(seed) {
 
   this.init_genrand(seed);
 }  
+
+Flory.RandomGen.prototype.constructor = Flory.RandomGen;
  
 /* initializes mt[N] with a seed */
 Flory.RandomGen.prototype.init_genrand = function(s) {
