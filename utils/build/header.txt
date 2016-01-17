@@ -1,0 +1,5 @@
+/**
+ *  @author sabidib http://github.com/sabidib
+ */
+/*global console,window,$,THREE,document*/
+/*jslint white*/
