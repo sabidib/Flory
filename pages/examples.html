@@ -8,8 +8,8 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="css/main.css"> 
 
-  <script src="scripts/r.js"></script>
-  <script data-main="scripts/main.js" src="scripts/require.js"></script>
+  <script src="scripts/require-setup.js"></script>
+  <script data-main="scripts/main" src="scripts/require.js"></script>
 
 
   <link href="/vendor/bootstrap/main.css" type="text/css" rel="stylesheet" />
@@ -92,28 +92,47 @@
 
       <section>
 
+
   <h1 id="basics" class="page-header">The basics</h1>
+    <p>
+      The following examples assume you have a html file of the form
+    </p>
+
+    <pre>
+&lt;html&gt;
+...
+&lt;body&gt;
+...
+&lt;div id =&quot;mycanvas&quot;&gt;&lt;/div&gt;
+...
+&lt;/body&gt;
+&lt;/html&gt;
+    </pre>
 
   <h2 id="single">Run a simple built in simulation</h2>
 
   <p>
-    Starting a flory simulation is easy
+    Starting a flory simulation is easy. 
   </p>
 
-  <pre class="code" data-fill-from=".js-code-basic"></pre>
+  <pre class="code" data-fill-from=".js-code-basic">
+var env = new Flory.Environment()
+var monomer = new Flory.Monomer({"radius":1,"charge":0,"mass":1,"position":[0,0,0],"name" : "atom"})
+env.add(monomer)
+//...
+//add more monomers
+//...
+env.enableVisualization("mycanvas")
+
+var numberOfSteps = 10000
+for(var i = 0; i < numberOfSteps;i++){
+    //This will update the positions of the particles
+    //and render any thing that is renderable that was called with 
+    //env.add
+    env.advance();
+}
+</pre>
   
-<script type="text/x-example-code" class="js-code-basic">
-$(document).ready(function() {
-  $(".js-example-basic-single").select2();
-});
-
-<select class="js-example-basic-single">
-  <option value="AL">Alabama</option>
-    ...
-  <option value="WY">Wyoming</option>
-</select>
-</script>
-
 
   <h2 id="multiple">Multiple select boxes</h2>
 
