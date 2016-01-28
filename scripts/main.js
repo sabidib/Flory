@@ -1,6 +1,25 @@
-requirejs(["helper/util"], function(util) {
-    //This function is called when scripts/helper/util.js is loaded.
-    //If util.js calls define(), then this function is not fired until
-    //util's dependencies have loaded, and the util argument will hold
-    //the module value for "helper/util".
+var requirejs = require('requirejs');
+
+requirejs.config({
+	shim : {
+        "bootstrap" : { "deps" :['jquery'] }
+    },
+    paths: {
+        "jquery" : "//code.jquery.com/jquery-2.1.1.min",
+        "bootstrap" :  "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min"  
+    },
+    nodeRequire: require
 });
+
+
+requirejs(['jquery', 'bootstrap', 'prettify'], function($){
+
+    // DOM ready
+    $(function(){
+
+        // Twitter Bootstrap 3 carousel plugin
+    });
+});
+
+
+
