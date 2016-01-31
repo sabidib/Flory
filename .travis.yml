@@ -1,6 +1,15 @@
-language: python
+language: node_js
 os:
   -linux
   -osx
-script:
-  - ./build.sh -m -d;
+  -windows
+node_js:
+  - "4.1"
+  - "4.0"
+  - "0.12"
+  - "0.11"
+  - "0.10"
+  - "0.8"
+before_install: npm install -g grunt-cli
+install: npm install
+before_script: grunt
