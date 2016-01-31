@@ -3,12 +3,6 @@
   "version": "0.2.0",
   "description": "A JavaScript library for creating educational molecular dynamic simulations in browser.",
   "main": "Gruntfile.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/sabidib/flory.git"
