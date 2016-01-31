@@ -1,5 +1,0 @@
-#!/bin/sh
-SCRIPT_PATH=$(dirname `which $0`)
-cd $SCRIPT_PATH;
-execution="$SCRIPT_PATH/build.py $@"
-$execution 2>&1

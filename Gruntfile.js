@@ -1,15 +1,73 @@
 module.exports = function(grunt) {
     var fs = require('fs');
+    var argparse = require("argparse");
+    var parser = new argparse.ArgumentParser();
+    parser.addArgument(['--include'], {
+        action: 'append',
+        defaultValue: 'utils/build/includes/source.json'
+    });
+    parser.addArgument(['--externs'], {
+        action: 'append',
+        defaultValue: ['./externs/common.js']
+    });
+    parser.addArgument(['--amd'], {
+        action: 'storeTrue',
+        defaultValue: false
+    });
+    parser.addArgument(['--minify'], {
+        action: 'storeTrue',
+        defaultValue: false
+    });
+    parser.addArgument(['--output'], {
+        defaultValue: 'build/flory.js'
+    });
+    parser.addArgument(['--sourcemaps'], {
+        action: 'storeTrue',
+        defaultValue: true
+    });
+    var args = parser.parseArgs();
 
-    var source = JSON.parse(fs.readFileSync('utils/build/includes/source.json', 'utf8'));
+    var output_file = args.output;
+    var min_output_file = "";
+    if (args.minify == true) {
+        min_output_file = args.output
+        min_output_file = min_output_file.split(".")
+        min_output_file.splice(min_output_file.length - 1, 0, "min");
+        min_output_file = min_output_file.join(".")
+    }
+
+    var defaultTask = []
+    if (args.minify == true) {
+        defaultTask = [
+            'clean:start',
+            'concat:javascript',
+            'filter_lines:dev',
+            'closure-compiler:compile_source',
+            "concat:javascript_final_header",
+            "copy:final_build_files",
+            "copy:final_minified_build_files"
+        ]
+    } else {
+        defaultTask = [
+            'clean:start',
+            'concat:javascript',
+            'filter_lines:dev',
+            "concat:javascript_final_header",
+            "copy:final_build_files"
+        ]
+    }
+
+    var source = JSON.parse(fs.readFileSync(args.include, 'utf8'));
 
     source = source.map(function(entry) {
         return "src/" + entry;
     });
 
+
+
     grunt.initConfig({
         clean: {
-            start: ['build/dist/']
+            start: ['build/']
         },
         concat: {
             options: {
@@ -58,16 +116,13 @@ module.exports = function(grunt) {
         },
         'copy': {
             final_build_files: {
-                files: [{
-                    src: ['build/dist/main.js'],
-                    dest: 'build/dist/flory.js',
-                }, {
-                    src: ['build/dist/main.min.js'],
-                    dest: 'build/dist/flory.min.js',
-                }, ],
-
+                src: 'build/dist/js/main.js',
+                dest: output_file,
+            },
+            final_minified_build_files: {
+                src: 'build/dist/js/main.min.js',
+                dest: min_output_file,
             }
-
         }
     });
 
@@ -87,19 +142,11 @@ module.exports = function(grunt) {
             })
             fs.writeFileSync("build/dist/js/main.js", res);
         });
-    grunt.registerTask('default', [
-        'clean:start',
-        'concat:javascript',
-        'filter_lines:dev',
-        'closure-compiler:compile_source',
-        "concat:javascript_final_header",
-        "copy:final_build_files"
-    ]);
 
-    grunt.registerTask('demos',[
-      
 
-    ])
+    grunt.registerTask('default', defaultTask);
+
+
 
 
 };
