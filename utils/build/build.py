@@ -111,7 +111,7 @@ def compileBaseSource(minify,source_order):
     print "";
     print "Compiling " + final_build_location +  " into " + final_minimized_build_location;
 
-    command = "java -jar " + compiler_jar_location + " " + final_build_location + " --warning_level=QUIET --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_minimized_build_location;
+    command = "java -jar " + compiler_jar_location + " " + final_build_location + " --compilation_level SIMPLE_OPTIMIZATIONS "+ " --language_in=ECMASCRIPT5_STRICT " +   " --js_output_file " + final_minimized_build_location;
     print "    " + command;
     if(minify):
         java_output = cmd(command);

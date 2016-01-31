@@ -1,0 +1,39 @@
+{
+  "name": "flory",
+  "version": "0.2.0",
+  "description": "A JavaScript library for creating educational molecular dynamic simulations in browser.",
+  "main": "Gruntfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sabidib/flory.git"
+  },
+  "keywords": [
+    "molecular",
+    "dynamics",
+    "browser",
+    "physics",
+    "visualization",
+    "visualization",
+    "simulation"
+  ],
+  "author": "Samy Abidib",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sabidib/flory/issues"
+  },
+  "homepage": "https://github.com/sabidib/flory",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-closure-compiler": "0.0.21",
+    "grunt-contrib-clean": "^0.7.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-uglify": "^0.11.0"
+  }
+}
