@@ -3,14 +3,12 @@
  */
 /*global console,window,$,THREE,document*/
 /*jslint white*/
-'use strict';
-
 
 /**
  *  @author sabidib http://github.com/sabidib
  */
 
-/*jshint white*/
+
 
 
 var Flory = { VERSION : '0.2',
@@ -39173,5 +39171,3 @@ Flory.RandomWalk.prototype.update = function (additional) {
     }
     return this;
 };
-
-
