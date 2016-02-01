@@ -1,0 +1,30 @@
+{
+  "name": "florywebsite",
+  "version": "0.1.0",
+  "description": "Website for Flory",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "bootstrap": "^3.3.6",
+    "errorhandler": "^1.4.3",
+    "method-override": "^2.3.5",
+    "express": "^4.13.4",
+    "font-awesome": "^4.5.0",
+    "prettyprint": "^1.1.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.7.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-cssmin": "^0.14.0",
+    "grunt-contrib-uglify": "^0.11.0",
+    "grunt-template": "^0.2.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "fox@anconia:/home/fox/Programming/florywebsite"
+  },
+  "author": "Samy Abidib",
+  "license": "APACHE"
+}
