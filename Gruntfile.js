@@ -4,15 +4,11 @@ module.exports = function(grunt) {
     var parser = new argparse.ArgumentParser();
     parser.addArgument(['--include'], {
         action: 'append',
-        defaultValue: 'utils/build/includes/source.json'
+        defaultValue: ['utils/build/includes/source.json']
     });
     parser.addArgument(['--externs'], {
         action: 'append',
         defaultValue: ['./externs/common.js']
-    });
-    parser.addArgument(['--amd'], {
-        action: 'storeTrue',
-        defaultValue: false
     });
     parser.addArgument(['--minify'], {
         action: 'storeTrue',
@@ -57,13 +53,15 @@ module.exports = function(grunt) {
         ]
     }
 
-    var source = JSON.parse(fs.readFileSync(args.include, 'utf8'));
 
+    var source = [];
+
+    args.include.map(function(file){
+        source = source.concat(JSON.parse(fs.readFileSync(file, 'utf8')))
+    })
     source = source.map(function(entry) {
         return "src/" + entry;
     });
-
-
 
     grunt.initConfig({
         clean: {

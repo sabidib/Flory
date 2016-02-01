@@ -110,13 +110,15 @@ For example, a set of `Flory.Particles`( a descendant of `Flory.Renderable`) par
 
 
 ##Build Usage
-Most of the options are for build.py:
+`usage: grunt [-h] [--include INCLUDE] [--externs EXTERNS [--minify] [--output OUTPUT] [--sourcemaps]`
+             
 
-build.py [options]
+Optional arguments:
+  `-h, --help         Show this help message and exit.`
+  `--include INCLUDE`
+  `--externs EXTERNS`
+  `--amd`
+  `--minify`
+  `--output OUTPUT`
+  `--sourcemaps`
 
-Options:
- 
- - `-h, --help`       show this help message and exit
- - `-m, --minify`     minify the output.
- - `-d, --demo`      build the demos.
- - `-n, --no_source`  do not build the base source file
