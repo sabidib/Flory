@@ -23,7 +23,7 @@ Flory.RandomWalk.prototype.update = function (additional) {
     var number_of_steps = 1;
     var i, k;
     var prob_right = 0.5;
-    if (additional.number_of_steps !== undefined) {
+    if (additional !== undefined && additional.number_of_steps !== undefined) {
         number_of_steps = additional.number_of_steps;
     }
     for (k = 0; k < number_of_steps; k += 1) {

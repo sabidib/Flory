@@ -27,7 +27,7 @@ Download the [minified library](https://raw.githubusercontent.com/sabidib/Flory/
 Alternatively, [build it yourself](https://github.com/sabidib/Flory/wiki/Build-Flory).
 
 ##  Getting Started
-The goal of Flory is to provide a simple framework for designing educational molecular dynamic simulations in browser. At its base, Flory provides an `Flory.Environment` class that defines basic events that occur during a simulation and visualization. 
+The goal of Flory is to provide a simple framework for designing educational molecular dynamic simulations in browser. At its base, Flory provides an `Flory.Environment` class that defines basic events that occur during a simulation and visualization.
 
 ```Javascript
 var env = new Flory.Environment()
@@ -41,12 +41,12 @@ env.enableVisualization("mycanvas")
 var numberOfSteps = 10000
 for(var i = 0; i < numberOfSteps;i++){
     //This will update the positions of the particles
-    //and render any thing that is renderable that was called with 
+    //and render any thing that is renderable that was called with
     //env.add
     env.advance();
 }
 ```
-`Flory.Environment` is an empty class that does not define any physical simulations. In order to create you own simulation you need to inherit from `Flory.Environment` and define your own `update()` function. On each call to `Flory.Environment.advance` your subclassed `update()` function is called.  For example, the `Flory.RandomWalk` is implemented as : 
+`Flory.Environment` is an empty class that does not define any physical simulations. In order to create you own simulation you need to inherit from `Flory.Environment` and define your own `update()` function. On each call to `Flory.Environment.advance` your subclassed `update()` function is called.  For example, the `Flory.RandomWalk` is implemented as :
 
 ``` Javascript
 //flory/src/experiments/randomWalk.js
@@ -86,7 +86,7 @@ Flory.RandomWalk.prototype.update = function(additional){
 					entity.position.components[dimension_to_choose]++;
 				} else {
 					entity.position.components[dimension_to_choose]--;
-				} 
+				}
 
 			}
 		}
@@ -95,14 +95,14 @@ Flory.RandomWalk.prototype.update = function(additional){
 }
 ...
 ```
-A demo with this example simulation can be found in `flory/demo/randomWalk/randomWalk.js`. Some basic experiments are already subclassed for you such as : 
+A demo with this example simulation can be found in `flory/demo/randomWalk/randomWalk.js`. Some basic experiments are already subclassed for you such as :
 
 * `Flory.RandomWalk`
 * `Float.LennardJones`
 * `Flory.Newtonian`
 * `Flory.Newtonian2D`
 
-The idea behind an environment is that `Flory.Entities` objects can be added to the scenes.Almost all classes are descendants from `Flory.Entities`. If an object is also a descendant of `Flory.Renderable` ( a descendant of `Flory.Entity`), then it can be rendered by the Environment. 
+The idea behind an environment is that `Flory.Entities` objects can be added to the scenes.Almost all classes are descendants from `Flory.Entities`. If an object is also a descendant of `Flory.Renderable` ( a descendant of `Flory.Entity`), then it can be rendered by the Environment.
 
 For example, a set of `Flory.Particles`( a descendant of `Flory.Renderable`) particles can be added to a `Flory.Newtonian` environment along with a different `Flory.ContinuousField`. On each call to `Flory.Newtonian.advance()`, the positions of the particles will be updated in accordance with forces applied by the various `Flory.ContinuousField`.
 
@@ -111,14 +111,15 @@ For example, a set of `Flory.Particles`( a descendant of `Flory.Renderable`) par
 
 
 ##Build Usage
-Most of the options are for build.py:
+`usage: grunt [-h] [--include INCLUDE] [--externs EXTERNS [--minify] [--output OUTPUT] [--sourcemaps]`
 
-build.py [options]
 
-Options:
-
- - `-h, --help`       show this help message and exit
- - `-m, --minify`     minify the output.
- - `-d, --demo`      build the demos.
- - `-n, --no_source`  do not build the base source file.
+Optional arguments:
+  `-h, --help         Show this help message and exit.`
+  `--include INCLUDE`
+  `--externs EXTERNS`
+  `--amd`
+  `--minify`
+  `--output OUTPUT`
+  `--sourcemaps`
 
