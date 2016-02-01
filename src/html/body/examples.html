@@ -86,13 +86,13 @@
   </p>
   
   <div class="flory-example">
-    <div id="mycanvas"></div>
+    <div class="flory-canvas" id="basic-example-canvas"></div>
   </div>
 
 
 <pre class="code" data-fill-from=".js-code-basic"></pre>
 
-<script class="js-code-basic">
+<div class="hidden-example js-code-basic">
 var env = new Flory.RandomWalk()
 var monomer = new Flory.Monomer({
     radius: 1,
@@ -102,16 +102,37 @@ var monomer = new Flory.Monomer({
     name: "atom"
 })
 env.add(monomer)
-env.enableVisualization("mycanvas")
+env.enableVisualization("basic-example-canvas")
 
 setTimeout(function(){
   //This will update the positions of the particles
   //and render any thing that is renderable that was called with 
   //env.add  
   env.advance()
-},100)
-    
+},100) 
+</div>
 
+
+<script type="text/javascript">
+$(function(){
+var env = new Flory.RandomWalk()
+var monomer = new Flory.Monomer({
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 0, 0],
+    name: "atom"
+})
+env.add(monomer)
+env.enableVisualization("basic-example-canvas")
+
+setTimeout(function(){
+  //This will update the positions of the particles
+  //and render any thing that is renderable that was called with 
+  //env.add  
+  env.advance()
+},100)    
+});
 </script>
 
 

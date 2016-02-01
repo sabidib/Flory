@@ -7,36 +7,16 @@ var express = require("express"),
     methodOverride = require('method-override'),
     hostname = process.env.HOSTNAME || 'localhost',
     port = 8080,
-    publicDir =  __dirname,
+    publicDir =  __dirname+"/dist/",
     path = require('path');
 
 
 
-app.use('/vendor/bootstrap/main.css',function(req,res){
-  res.sendFile(publicDir + '/node_modules/bootstrap/dist/css/bootstrap.min.css')
-})
 
-app.use('/vendor/font-awesome/main.css',function (req,res){
-  res.sendFile(publicDir + '/node_modules/font-awesome/css/font-awesome.min.css')
-})
-
-app.use('/vendor/fonts/', function (req,res){
-  res.sendFile(publicDir + '/node_modules/font-awesome/fonts/'+req.path)
-})
 
 app.get("/", function (req, res) {
-  res.sendFile(path.join(publicDir, "/pages/index.html"));
+  res.sendFile(path.join(publicDir,req.path));
 });
-
-app.get("/index.html", function (req, res) {
-  res.sendFile(path.join(publicDir, "/pages/index.html"));
-});
-
-
-app.get("/examples.html", function (req, res) {
-  res.sendFile(path.join(publicDir, "/pages/examples.html"));
-});
-
 
 
 app.use(methodOverride());

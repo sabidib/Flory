@@ -11,8 +11,20 @@
 
 
 
+
 var Flory = { VERSION : '0.2',
-              timestep: 0.01 };
+              timestep: 0.01 ,
+              RendererDefaults : {
+                fov : 60,
+                near_clip : 0.1,
+                far_clip : 10000,
+                camera_position : [0,0,20],
+                auto_resize: true
+              }
+}
+
+
+
 /**
  * @author Sean McCullough (banksean@gmail.com)
  */
@@ -938,9 +950,9 @@ Flory.CoreEnvironment.prototype = {
     },
     setDimension: function (size) {
         if (size !== undefined && size instanceof Array) {
-            this.renderer.setDimension(size[0], size[1]);
+            this.renderer.setSize(size[0], size[1]);
         } else if (size !== undefined && size instanceof Object) {
-            this.renderer.setDimension(size.width, size.width);
+            this.renderer.setSize(size.width, size.width);
         }
     },
     advance: function (options) {
@@ -38079,6 +38091,10 @@ THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype )
 
 Flory.Renderer = function (canvas, data, scene, camera, renderables) {
     this.data = {};
+
+    var presets = this.getPresetsFromData(data);
+
+
     if (canvas !== undefined) {
         if (Flory.isWebGlAvailable()) {
             this.renderer = new THREE.WebGLRenderer();
@@ -38088,11 +38104,7 @@ Flory.Renderer = function (canvas, data, scene, camera, renderables) {
         if (this.renderer === undefined) {
             console.log('Flory : WebGL is not supported in your browser.');
         }
-        if (data !== undefined && data.size !== undefined) {
-            this.renderer.setSize(data.size[0], data.size[1]);
-        } else {
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+
         var cav = document.getElementById('#' + canvas);
         if (cav === null) {
             cav = document.getElementById(canvas);
@@ -38100,28 +38112,28 @@ Flory.Renderer = function (canvas, data, scene, camera, renderables) {
                 console.log('Flory: A canvas must be a valid id.');
             }
         }
+
+        var bounding_box = cav.getBoundingClientRect();
+        if (data !== undefined && data.size !== undefined) {
+            this._setDimension(data.size[0], data.size[1]);
+        } else {
+            this._setDimension(bounding_box.width,bounding_box.height);
+        }
         this.canvas = cav;
         cav.appendChild(this.renderer.domElement);
     } else {
         console.log('Flory : A canvas_id must be specified.');
         return undefined;
     }
+
     this.scene = scene === undefined ? new THREE.Scene() : scene;
-    this.camera = camera === undefined ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
-    var cameraPosition = new Flory.Vector3([
-        0,
-        0,
-        100
-    ]);
-    if (data !== undefined && data.cameraPosition !== undefined) {
-        cameraPosition = new Flory.Vector3(data.cameraPosition);
-    }
+    this.camera = camera === undefined ? new THREE.PerspectiveCamera(presets.fov, this.width / this.height, presets.near_clip,presets.far_clip) : camera;
+    cameraPosition = new Flory.Vector3(presets.camera_position);
     this.camera.position.set(cameraPosition.components[0], cameraPosition.components[1], cameraPosition.components[2]);
     this.camera.up = new THREE.Vector3(0, 0, 1);
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
     this.renderables = renderables === undefined ? {} : renderables;
-    this.camera.z = 20;
     var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
@@ -38129,11 +38141,37 @@ Flory.Renderer = function (canvas, data, scene, camera, renderables) {
     controls.addEventListener('change', function () {
         return self.render();
     });
+    var doAutoResize = {};
+    doAutoResize = function(){
+        if(self !== undefined){
+            self.adjustRendererForCurrentSize();    
+        } else {
+            window.removeEventListener('resize',doAutoResize)
+        }        
+    }
+    if(presets.auto_resize){
+        window.addEventListener('resize',doAutoResize);    
+    }    
     // this.refreshCamera(data,undefined);
     this.renderables = renderables === undefined ? {} : renderables;
 };
 Flory.Renderer.prototype = {
     constructor: Flory.Renderer,
+    getPresetsFromData : function(data){
+        if(data === undefined){
+            return JSON.parse(JSON.stringify(Flory.RendererDefaults));
+        }
+        var preset = {};
+        preset.fov = (data.fov === undefined) ? Flory.RendererDefaults.fov : data.fov;
+        preset.near_clip = (data.near_clip === undefined) ? Flory.RendererDefaults.near_clip : data.near_clip;
+        preset.far_clip = (data.far_clip === undefined) ? Flory.RendererDefaults.far_clip : data.far_clip;
+        preset.auto_resize = (data.auto_resize === undefined) ? Flory.RendererDefaults.auto_resize : data.auto_resize;
+        
+        preset.camera_position = (data.camera_position === undefined) ? Flory.RendererDefaults.camera_position : data.camera_position;
+        preset.camera_position = new Flory.Vector3(preset.camera_position);
+        
+        return preset;
+    },
     refreshCamera: function (data, camera) {
         var cameraPosition = new Flory.Vector3([
             0,
@@ -38273,9 +38311,22 @@ Flory.Renderer.prototype = {
         this.renderables = [];
         return this;
     },
+    adjustRendererForCurrentSize : function(){
+        var bounding_box = this.canvas.getBoundingClientRect();
+        this.renderer.setSize(bounding_box.width,bounding_box.height);
+        return this;
+    },
+    setSize : function(width,height){
+        this._setDimension(width,height)
+        this.renderer.camera.aspect=width/float(height);
+        this.renderer.camera.updateProjectionMatrix();
+        return this;
+    },
     /** The following should be not be overriden **/
-    setDimension: function (width, height) {
+    _setDimension: function (width, height) {
         this.renderer.setSize(width, height);
+        this.width = width;
+        this.height = height;
         return this;
     },
     render: function () {
