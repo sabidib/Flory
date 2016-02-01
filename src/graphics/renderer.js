@@ -20,7 +20,7 @@ Flory.Renderer = function (canvas, data, scene, camera, renderables) {
         if (data !== undefined && data.size !== undefined) {
             this.renderer.setSize(data.size[0], data.size[1]);
         } else {
-            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setSize(width, height);
         }
         var cav = document.getElementById('#' + canvas);
         if (cav === null) {
@@ -36,7 +36,7 @@ Flory.Renderer = function (canvas, data, scene, camera, renderables) {
         return undefined;
     }
     this.scene = scene === undefined ? new THREE.Scene() : scene;
-    this.camera = camera === undefined ? new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000) : camera;
+    this.camera = camera === undefined ? new THREE.PerspectiveCamera(60, this.width / this.height, 1, 10000) : camera;
     var cameraPosition = new Flory.Vector3([
         0,
         0,
@@ -205,6 +205,8 @@ Flory.Renderer.prototype = {
     /** The following should be not be overriden **/
     setDimension: function (width, height) {
         this.renderer.setSize(width, height);
+        this.width = width;
+        this.height = height;
         return this;
     },
     render: function () {
