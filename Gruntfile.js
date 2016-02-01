@@ -87,7 +87,7 @@ module.exports = function(grunt) {
                 jsOutputFile: 'build/dist/js/main.min.js',
                 maxBuffer: 500,
                 options: {
-                    compilation_level: 'SIMPLE_OPTIMIZATIONS',
+                    // compilation_level: 'SIMPLE_OPTIMIZATIONS',
                     language_in: 'ECMASCRIPT5_STRICT'
                 }
             }
