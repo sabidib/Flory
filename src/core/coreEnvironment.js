@@ -122,9 +122,9 @@ Flory.CoreEnvironment.prototype = {
     },
     setDimension: function (size) {
         if (size !== undefined && size instanceof Array) {
-            this.renderer.setDimension(size[0], size[1]);
+            this.renderer.setSize(size[0], size[1]);
         } else if (size !== undefined && size instanceof Object) {
-            this.renderer.setDimension(size.width, size.width);
+            this.renderer.setSize(size.width, size.width);
         }
     },
     advance: function (options) {
