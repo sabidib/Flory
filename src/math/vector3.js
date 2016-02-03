@@ -51,10 +51,14 @@ Flory.Vector3.prototype.mult = function (num) {
     return new Flory.Vector3(this.x * num, this.y * num, this.z * num);
 };
 Flory.Vector3.prototype.cross = function (vec) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector3(vecToUse);
+    }
     return new Flory.Vector3([
-        this.y * vec.components[2] - this.z * vec.components[1],
-        this.z * vec.components[0] - this.x * vec.components[2],
-        this.x * vec.components[1] - this.y * vec.components[0]
+        this.y * vecToUse.components[2] - this.z * vecToUse.components[1],
+        this.z * vecToUse.components[0] - this.x * vecToUse.components[2],
+        this.x * vecToUse.components[1] - this.y * vecToUse.components[0]
     ]);
 };
 Flory.Vector3.prototype.dot = function (a) {
@@ -86,6 +90,9 @@ Flory.Vector3.prototype.negate = function () {
 };
 Flory.Vector3.prototype.normalize = function () {
     var len = this.length();
+    if(length === 0.0){
+        return this;
+    }
     this.x = this.x / len;
     this.y = this.y / len;
     this.z = this.z / len;

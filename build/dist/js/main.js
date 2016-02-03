@@ -404,10 +404,14 @@ Flory.Vector3.prototype.mult = function (num) {
     return new Flory.Vector3(this.x * num, this.y * num, this.z * num);
 };
 Flory.Vector3.prototype.cross = function (vec) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector3(vecToUse);
+    }
     return new Flory.Vector3([
-        this.y * vec.components[2] - this.z * vec.components[1],
-        this.z * vec.components[0] - this.x * vec.components[2],
-        this.x * vec.components[1] - this.y * vec.components[0]
+        this.y * vecToUse.components[2] - this.z * vecToUse.components[1],
+        this.z * vecToUse.components[0] - this.x * vecToUse.components[2],
+        this.x * vecToUse.components[1] - this.y * vecToUse.components[0]
     ]);
 };
 Flory.Vector3.prototype.dot = function (a) {
@@ -439,6 +443,9 @@ Flory.Vector3.prototype.negate = function () {
 };
 Flory.Vector3.prototype.normalize = function () {
     var len = this.length();
+    if(length === 0.0){
+        return this;
+    }
     this.x = this.x / len;
     this.y = this.y / len;
     this.z = this.z / len;
@@ -470,8 +477,7 @@ Flory.Vector2 = function (x, y) {
     this.y = y === undefined ? 0 : y;
     this.components = [
         this.x,
-        this.y,
-        0
+        this.y
     ];
 };
 Flory.Vector2.prototype = Object.create(Flory.baseVector.prototype);
@@ -492,9 +498,13 @@ Flory.Vector2.prototype.scale = function (num) {
     return this;
 };
 Flory.Vector2.prototype.cross = function (vec) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector2(vecToUse);
+    }
     return new Flory.Vector2([
-        this.y * vec.components[2],
-        -this.x * vec.components[2]
+        this.y * vecToUse.components[2],
+        -this.x * vecToUse.components[2]
     ]);
 };
 Flory.Vector2.prototype.mult = function (num) {
@@ -527,6 +537,9 @@ Flory.Vector2.prototype.negate = function () {
 };
 Flory.Vector2.prototype.normalize = function () {
     var len = this.length();
+    if(len === 0.0){
+        return this;
+    }
     this.x = this.x / len;
     this.y = this.y / len;
     return this;
@@ -550,10 +563,15 @@ Flory.Vector2.prototype.clone = function () {
 
 
 
+
+
+
 Flory.Vector = function (vec) {
     Flory.baseVector.call(this);
     if (vec === undefined) {
         this.components = [];
+    } else if(vec instanceof Array){
+        this.components = vec.slice();
     } else if (typeof vec === 'number') {
         this.components = new Array(vec);
         var a = this.components;
@@ -562,7 +580,7 @@ Flory.Vector = function (vec) {
             a[i] = 0;
         }
     } else {
-        this.components = vec;
+        this.components = vec.components.slice();
     }
 };
 Flory.Vector.prototype = Object.create(Flory.baseVector.prototype);
@@ -650,17 +668,22 @@ Flory.Vector.prototype.lengthSq = function () {
     return sum;
 };
 Flory.Vector.prototype.cross = function (vec) {
-    if (vec.components[2] === undefined) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = Flory.Vector(vecToUse);
+    }
+
+    if (vecToUse.components[2] === undefined) {
         return new Flory.Vector([
-            -this.components[2] * vec.components[1],
-            this.components[2] * vec.components[0],
-            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+            -this.components[2] * vecToUse.components[1],
+            this.components[2] * vecToUse.components[0],
+            this.components[0] * vecToUse.components[1] - this.components[1] * vecToUse.components[0]
         ]);
     } else {
         return new Flory.Vector([
-            this.components[1] * vec.components[2] - this.components[2] * vec.components[1],
-            this.components[2] * vec.components[0] - this.components[0] * vec.components[2],
-            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+            this.components[1] * vecToUse.components[2] - this.components[2] * vecToUse.components[1],
+            this.components[2] * vecToUse.components[0] - this.components[0] * vecToUse.components[2],
+            this.components[0] * vecToUse.components[1] - this.components[1] * vecToUse.components[0]
         ]);
     }
 };
@@ -753,6 +776,9 @@ Flory.Vector.prototype.negate = function () {
 };
 Flory.Vector.prototype.normalize = function () {
     var length = this.length();
+    if(length === 0.0){
+        return this;
+    }
     var i;
     var len = this.components.length;
     for (i = 0; i < len; i += 1) {
@@ -39140,18 +39166,22 @@ Flory.Monomer.defaultRadius = 1;
 
 
 
-Flory.Newtonian = function () {
-    Flory.Environment.call(this);
+Flory.Newtonian = function (handler) {
+    Flory.Environment.call(this, handler);
     this.meshes = [];
 };
 Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
 Flory.Newtonian.constructor = Flory.Newtonian;
 Flory.Newtonian.prototype.update = function () {
     var len = this.entities.length;
-    var i, entity, entity2, tmp, j;
+    var i, entity, entity2, tmp, j, k;
+    var handler_length = this.handlers.length;
     for (i = 0; i < len; i += 1) {
         entity = this.entities[i];
         tmp = new Flory.Vector();
+        for (k = 0; k < handler_length; k += 1) {
+            tmp.add(this.handlers[k].update(entity));
+        }
         if (entity instanceof Flory.Particle) {
             for (j = 0; j < len; j += 1) {
                 entity2 = this.entities[j];
@@ -39222,3 +39252,13 @@ Flory.RandomWalk.prototype.update = function (additional) {
     }
     return this;
 };
+
+if ( typeof define === 'function' && define.amd ) {
+  
+    define( 'flory',Flory );
+
+} else if ( 'undefined' !== typeof exports && 'undefined' !== typeof module ) {
+
+    module.exports = Flory;
+
+}

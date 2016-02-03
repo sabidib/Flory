@@ -20,8 +20,7 @@ Flory.Vector2 = function (x, y) {
     this.y = y === undefined ? 0 : y;
     this.components = [
         this.x,
-        this.y,
-        0
+        this.y
     ];
 };
 Flory.Vector2.prototype = Object.create(Flory.baseVector.prototype);
@@ -42,9 +41,13 @@ Flory.Vector2.prototype.scale = function (num) {
     return this;
 };
 Flory.Vector2.prototype.cross = function (vec) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector2(vecToUse);
+    }
     return new Flory.Vector2([
-        this.y * vec.components[2],
-        -this.x * vec.components[2]
+        this.y * vecToUse.components[2],
+        -this.x * vecToUse.components[2]
     ]);
 };
 Flory.Vector2.prototype.mult = function (num) {
@@ -77,6 +80,9 @@ Flory.Vector2.prototype.negate = function () {
 };
 Flory.Vector2.prototype.normalize = function () {
     var len = this.length();
+    if(len === 0.0){
+        return this;
+    }
     this.x = this.x / len;
     this.y = this.y / len;
     return this;
