@@ -12,11 +12,16 @@
 
 /*global Flory*/
 
+
+
+
 'use strict';
 Flory.Vector = function (vec) {
     Flory.baseVector.call(this);
     if (vec === undefined) {
         this.components = [];
+    } else if(vec instanceof Array){
+        this.components = vec.slice();
     } else if (typeof vec === 'number') {
         this.components = new Array(vec);
         var a = this.components;
@@ -25,7 +30,7 @@ Flory.Vector = function (vec) {
             a[i] = 0;
         }
     } else {
-        this.components = vec;
+        this.components = vec.components.slice();
     }
 };
 Flory.Vector.prototype = Object.create(Flory.baseVector.prototype);
@@ -113,17 +118,22 @@ Flory.Vector.prototype.lengthSq = function () {
     return sum;
 };
 Flory.Vector.prototype.cross = function (vec) {
-    if (vec.components[2] === undefined) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = Flory.Vector(vecToUse);
+    }
+
+    if (vecToUse.components[2] === undefined) {
         return new Flory.Vector([
-            -this.components[2] * vec.components[1],
-            this.components[2] * vec.components[0],
-            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+            -this.components[2] * vecToUse.components[1],
+            this.components[2] * vecToUse.components[0],
+            this.components[0] * vecToUse.components[1] - this.components[1] * vecToUse.components[0]
         ]);
     } else {
         return new Flory.Vector([
-            this.components[1] * vec.components[2] - this.components[2] * vec.components[1],
-            this.components[2] * vec.components[0] - this.components[0] * vec.components[2],
-            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+            this.components[1] * vecToUse.components[2] - this.components[2] * vecToUse.components[1],
+            this.components[2] * vecToUse.components[0] - this.components[0] * vecToUse.components[2],
+            this.components[0] * vecToUse.components[1] - this.components[1] * vecToUse.components[0]
         ]);
     }
 };
@@ -216,6 +226,9 @@ Flory.Vector.prototype.negate = function () {
 };
 Flory.Vector.prototype.normalize = function () {
     var length = this.length();
+    if(length === 0.0){
+        return this;
+    }
     var i;
     var len = this.components.length;
     for (i = 0; i < len; i += 1) {
