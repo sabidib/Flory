@@ -60,7 +60,7 @@ Flory.Vector.prototype.sub = function (a) {
             this.components[i] -= a.components[i];
         }
         for (len = a.components.length; i < len; i += 1) {
-            this.components[i] = a.components[i];
+            this.components[i] = -a.components[i];
         }
     } else {
         for (len = a.components.length; i < len; i += 1) {
