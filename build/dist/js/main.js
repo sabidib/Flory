@@ -15,11 +15,19 @@
 var Flory = { VERSION : '0.2',
               timestep: 0.01 ,
               RendererDefaults : {
-              	fov : 60,
-              	near_clip : 0.1,
-              	far_clip : 10000,
-              	camera_position : [0,0,20],
-              	auto_resize: true
+                fov : 60,
+                near_clip : 0.1,
+                far_clip : 10000,
+                camera_position : [80,80,70],
+                auto_resize: true
+              },
+              VisualizationDefaults :{
+                clearColor: 0xFFFFFF,
+                grid : true,
+                axis : true,
+                axisSize : 10,
+                gridPlane:"xy",
+                gridSize : 100
               }
 }
 
@@ -670,7 +678,7 @@ Flory.Vector.prototype.lengthSq = function () {
 Flory.Vector.prototype.cross = function (vec) {
     var vecToUse = vec;
     if(! (vecToUse instanceof Flory.baseVector)){
-        vecToUse = Flory.Vector(vecToUse);
+        vecToUse = new Flory.Vector(vecToUse);
     }
 
     if (vecToUse.components[2] === undefined) {
@@ -916,16 +924,29 @@ Flory.CoreEnvironment.prototype = {
             this.renderer = new Flory.PointCloudRenderer(canvas, data);
         }
         this.visualization = true;
-        if (data !== undefined) {
-            if (data.clearColor !== undefined) {
-                this.renderer.setClearColor(data.clearColor);
-            }
-            if (data.grid !== undefined && data.grid === true) {
-                this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
-            }
-            if (data.axis !== undefined && data.axis === true) {
-                this.addAxis(data.axisSize, data.axisPosition);
-            }
+        if(data == undefined){
+            data = {}
+        }
+
+        if (data.clearColor !== undefined) {
+            this.renderer.setClearColor(data.clearColor);
+        } else {
+            this.renderer.setClearColor(Flory.VisualizationDefaults.clearColor);
+        }
+
+        if (data.grid !== undefined && data.grid === true) {
+            this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
+        } else {
+            this.addGrid(Flory.VisualizationDefaults.gridSize,
+                         Flory.VisualizationDefaults.gridSteps,
+                         Flory.VisualizationDefaults.gridPlane,
+                         Flory.VisualizationDefaults.gridPosition);
+        }
+        if (data.axis !== undefined && data.axis === true) {
+            this.addAxis(data.axisSize, data.axisPosition);
+        } else {
+            this.addAxis(Flory.VisualizationDefaults.axisSize,
+                         Flory.VisualizationDefaults.axisPosition);
         }
         this.setUpVisualization(data);
         return this;
