@@ -120,7 +120,7 @@ Flory.Vector.prototype.lengthSq = function () {
 Flory.Vector.prototype.cross = function (vec) {
     var vecToUse = vec;
     if(! (vecToUse instanceof Flory.baseVector)){
-        vecToUse = Flory.Vector(vecToUse);
+        vecToUse = new Flory.Vector(vecToUse);
     }
 
     if (vecToUse.components[2] === undefined) {

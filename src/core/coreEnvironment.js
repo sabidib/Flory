@@ -62,16 +62,29 @@ Flory.CoreEnvironment.prototype = {
             this.renderer = new Flory.PointCloudRenderer(canvas, data);
         }
         this.visualization = true;
-        if (data !== undefined) {
-            if (data.clearColor !== undefined) {
-                this.renderer.setClearColor(data.clearColor);
-            }
-            if (data.grid !== undefined && data.grid === true) {
-                this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
-            }
-            if (data.axis !== undefined && data.axis === true) {
-                this.addAxis(data.axisSize, data.axisPosition);
-            }
+        if(data == undefined){
+            data = {}
+        }
+
+        if (data.clearColor !== undefined) {
+            this.renderer.setClearColor(data.clearColor);
+        } else {
+            this.renderer.setClearColor(Flory.VisualizationDefaults.clearColor);
+        }
+
+        if (data.grid !== undefined && data.grid === true) {
+            this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
+        } else {
+            this.addGrid(Flory.VisualizationDefaults.gridSize,
+                         Flory.VisualizationDefaults.gridSteps,
+                         Flory.VisualizationDefaults.gridPlane,
+                         Flory.VisualizationDefaults.gridPosition);
+        }
+        if (data.axis !== undefined && data.axis === true) {
+            this.addAxis(data.axisSize, data.axisPosition);
+        } else {
+            this.addAxis(Flory.VisualizationDefaults.axisSize,
+                         Flory.VisualizationDefaults.axisPosition);
         }
         this.setUpVisualization(data);
         return this;
