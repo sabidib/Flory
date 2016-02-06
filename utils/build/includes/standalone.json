@@ -28,5 +28,6 @@
 "objects/monomer.js",
 
 "experiments/newtonian.js",
-"experiments/randomWalk.js"
+"experiments/randomWalk.js",
+"experiments/lennardJones.js"
 ]

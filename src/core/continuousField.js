@@ -13,8 +13,8 @@ Flory.ContinuousField = function (field_function) {
 };
 Flory.ContinuousField.prototype = Object.create(Flory.baseField.prototype);
 Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;
-Flory.ContinuousField.prototype.getForce = function (position) {
-    return this.field_function(position).mult(this.scaler);
+Flory.ContinuousField.prototype.getForce = function (entity) {
+    return this.field_function(entity).mult(this.scaler);
 };
 Flory.ContinuousField.prototype.scale = function (num) {
     if (typeof num === 'number') {

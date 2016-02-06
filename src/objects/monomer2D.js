@@ -115,13 +115,15 @@ Flory.Monomer2D = function (options) {
         }
     }
     this.setDefaultMesh(renderableSettings);
+    return this
 };
 Flory.Monomer2D.prototype = Object.create(Flory.Particle.prototype);
 Flory.Monomer2D.prototype.setDefaultMesh = function (settings) {
     var material = {};
     var geometry = {};
     var segments = settings !== undefined && typeof settings.segments === 'number' ? settings.segments : 20;
-    geometry = new THREE.CircleGeometry(this.radius, segments, 0, 2 * 3.14159265359);
+    var dim = this.position.dimension();
+    geometry = new THREE.SphereGeometry(this.radius, segments, segments);
     var color_of_mesh = settings !== undefined && typeof settings.color === 'number' ? settings.color : 16711680;
     if (settings === undefined) {
         material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
@@ -130,9 +132,10 @@ Flory.Monomer2D.prototype.setDefaultMesh = function (settings) {
     } else {
         material = new THREE.MeshBasicMaterial({ color: color_of_mesh });
     }
-    this.mesh = new THREE.Mesh(geometry, material);
     this.geometry = geometry;
     this.material = material;
+    this.mesh = new THREE.Mesh(geometry, material);
+    return this;
 };
 Flory.Monomer2D.prototype.incrementX = function (amount) {
     this.position.x += amount;

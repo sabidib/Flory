@@ -43,7 +43,7 @@ Flory.Vector2.prototype.scale = function (num) {
 Flory.Vector2.prototype.cross = function (vec) {
     var vecToUse = vec;
     if(! (vecToUse instanceof Flory.baseVector)){
-        vecToUse = new Flory.Vector2(vecToUse);
+        vecToUse = new Flory.Vector3(vecToUse);
     }
     return new Flory.Vector2([
         this.y * vecToUse.components[2],
