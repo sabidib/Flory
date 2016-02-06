@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en" class="flory-docs-home">
+	<head>
+		<meta name="description" content="Flory is a WebGL powered JavaScript library for creating and visualizing educational and scientific molecular dynamic simulations." />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="UTF-8">
+		<title>Flory</title>    
+		<link href="/favicon.ico" type="image/x-icon" rel="icon" />
+		<link href='css/bootstrap.css' type='text/css' rel='stylesheet' />
+<link href='css/font-awesome.css' type='text/css' rel='stylesheet' />
+<link href='css/main.css' type='text/css' rel='stylesheet' />
+		<script src='js/jquery.js'></script>
+<script src='js/bootstrap.js'></script>
+<script src='js/flory.js'></script>
+<script src='js/anchor.js'></script>
+<script src='js/main.js'></script>
+<script src='js/prettify.js'></script>
+	</head>
+	<body>
+	
+<header class="flory-docs-nav navbar navbar-default navbar-static-top" id="top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".flory-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar top-bar"></span>
+                <span class="icon-bar middle-bar"></span>
+                <span class="icon-bar bottom-bar"></span>
+            </button>
+            <a href="./" class="navbar-brand">Flory</a>
+        </div>
+
+        <nav class="collapse navbar-collapse flory-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="./examples.html">Examples</a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="https://github.com/sabidib/flory">
+                        <i class="fa fa-github"></i> GitHub
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+		<script>
+    window.examples = []
+    window.getQueryVariable = function(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i < vars.length;i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == variable) {
+      return pair[1];
+    }
+  }
+}
+    var query = window.getQueryVariable("canvasrenderer");
+    console.log(query);
+    if(query == "true"){
+      window.use_canvas_renderer = true;
+    } else {
+      window.use_canvas_renderer = false;
+    }
+</script>
+
+<style type="text/css">
+  .img-flag {
+    height: 15px;
+    width: 18px;
+  }
+</style>
+
+
+
+<section class="jumbotron">
+  <div class="container">
+    <h1>
+      Examples
+    </h1>
+  </div>
+</section>
+
+<div class="container flory-docs-container">
+  <div class="row">
+    <div class="col-md-9" role="main">
+
+      <section>
+
+
+  <h1 id="basics" class="page-header">The basics</h1>
+    <p>
+      If you haven't installed Flory yet, follow the <a href="index.html#getting-started">installation guide</a>.
+    </p>
+    <p>
+      All examples have the same orbit controls: drag to orbit, scroll to zoom and right click to pan.
+    </p>
+  <h2 id="set-up">Setting up</h2>
+  <p>
+    The general structure of a Flory simulation is simple:
+  </p>
+  <ol>
+    <li>Instantiate a descendant of <code>Flory.Environment</code></li>
+    <li>Add a bunch of <code>Flory.Entity</code> objects to your environment with <code>Flory.Environment.add(entity)</code>.</li>
+    <li>Call <code>Flory.Environment.advance</code> in a loop to advance the time step and simulate according to the <code>Flory.Environment.update</code> function.</li>
+  </ol>
+  <p>
+      To visualize a simulation you need to call <code>Flory.Environment.enableVisualization(canvas,data)</code> with a canvas id and data object containing <a href="#rendering-settings">rendering settings</a>. Similarly, to stop the visualization call <code>Flory.Environment.disableVisualization</code>.
+  </p>
+
+  <h2 id="custom-environments" >Custom Environments</h2>
+  <p id="custom-simulations-multi-paradigm">
+    Flory provides a range of intuitive interfaces for creating simulations. 
+  <p>
+  <p>
+    There are two ways to set up custom simulations:
+    <ol>
+      <li>Create your own <a href="#environment">descendant</a> of <code>Flory.Environment</code>.
+      <li>Make use of <a href="#newtonian-handler">handlers</a> in the built-in <code>Flory.Newtonian</code> environment to define you own single-entity-wise update functions.</li>
+    </ol>
+  </p>
+
+
+  
+  <div class="flory-example">
+    <div class="flory-canvas" id="basic-example-canvas"></div>
+  </div>
+
+
+
+<pre class="code" data-fill-from=".js-code-basic"></pre>
+
+<div class="hidden-example js-code-basic">
+//Simulate a single particle random walk
+var env = new Flory.RandomWalk()
+var monomer = new Flory.Monomer({
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 0, 0],
+    name: "atom"
+})
+env.add(monomer)
+env.enableVisualization("basic-example-canvas")
+
+setInterval(function(){
+  //This will update the positions of the particles
+  //and render any thing that is renderable that was called with 
+  //env.add  
+  env.advance()
+},100) 
+</div>
+
+<script type="text/javascript">
+$(function(){
+
+  var our_canvas = "basic-example-canvas"
+
+  var env = new Flory.RandomWalk()
+  var monomer = new Flory.Monomer({
+      radius: 1,
+      charge: 0,
+      mass: 1,
+      position: [0, 0, 0],
+      name: "atom"
+  })
+  env.add(monomer)
+  env.enableVisualization(our_canvas)
+      env.advance()
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      console.log("Random walk is running!");
+      env.advance()
+    },
+    interval_timing : 100
+  })
+
+});
+</script>
+
+
+
+
+
+
+
+  
+</section>
+<!-- <section>
+  <h2 id="custom-experiments">Defining custom experiments</h2>
+
+  <p>
+    Flory gives you the ability to easily define custom experiments. The example below shows a simple example of an $r^2$ central potential.
+  </p>
+
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-custom-experiment-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-custom-experiment"></pre>
+
+<div class="hidden-example js-code-custom-experiment">
+  var env = new Flory.Newtonian({
+  update: function(entity) {
+      return entity.position.clone().negate().normalize().mult(entity.position.lengthSq());
+    }
+  });
+  var monomer = new Flory.Monomer({
+      radius: 1,
+      charge: 0,
+      mass: 1,
+      position: [0, 10, 0],
+      velocity: [20, 0, 0],
+      name: "atom"
+  });
+  env.add(monomer);
+  env.enableVisualization("basic-custom-experiment-canvas");
+
+  setInterval(function(){
+    env.advance();
+  }, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var env = new Flory.Newtonian({
+    update: function(entity) {
+        return entity.position.clone().negate().normalize().mult(entity.position.lengthSq());
+      }
+    });
+    var our_canvas = "basic-custom-experiment-canvas";
+    var monomer = new Flory.Monomer({
+        radius: 1,
+        charge: 0,
+        mass: 1,
+        position: [0, 10, 0],
+        velocity: [20, 0, 0],
+        name: "atom"
+    });
+    env.add(monomer);
+    env.enableVisualization(our_canvas);
+      env.advance()
+
+
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      env.advance()
+    },
+    interval_timing : 10
+  })
+});
+</script>
+
+</section> -->
+<section>
+  <h1 id="fields">Fields</h1>
+
+  <p>
+    Fields are exclusive to the <code>Flory.Newtonian</code> environment. They can be used to define <a href="#pair-wise-field">pair-wise</a> potentials, <a href="#continuous-field">global</a> potentials or <a href="#field-2d">discrete</a> global potentials.
+  </p>
+
+  <p>All fields implement the properties below.</p>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>data.field</code></td>
+            <td>
+              the function or list of {point,force} objects that define this field.
+            </td>
+            <td>
+                <code>function or array</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>getForce(entity)</code></td>
+            <td>
+              Calculates and returns the force on the given <code>Flory.Particle</code> based on its properties. This is implemented differently depending on the type of field.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>scale(num)</code></td>
+            <td>
+              Globally multiplies the magnitude of the field by <code>num</code>
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>clone</code></td>
+            <td>
+              Returns a clone of the field.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</section>
+
+<section>
+  <h2 id="continuous-field">Continuous Field</h2>
+
+  <p>
+    Using <code>Flory.Newtonian</code> you can abstract global continuous fields. To declare a <code>Flory.ContinuousField</code>, simply provide it with a function that takes a <code>Flory.Particle</code> object and returns the force applied on the object.
+  </p>
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-continuous-field-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-continuous-field-canvas"></pre>
+
+<div class="hidden-example js-code-continuous-field-canvas">
+//Simulate a central 1/r^2 potential
+var env = new Flory.Newtonian();
+var field = new Flory.ContinuousField(function(entity) {
+    return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+})
+env.add(field);
+var monomer = new Flory.Monomer({
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 40, 0],
+    velocity: [100, 0, 0],
+    name: "atom"
+});
+env.add(monomer);
+env.enableVisualization("basic-continuous-field-canvas");
+setInterval(function(){
+  env.advance();
+}, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var our_canvas = "basic-continuous-field-canvas";
+    var env = new Flory.Newtonian();
+    var field = new Flory.ContinuousField(function(entity) {
+        return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+    })
+    env.add(field);
+    var monomer = new Flory.Monomer({
+        radius: 1,
+        charge: 0,
+        mass: 1,
+        position: [0, 40, 0],
+        velocity: [100, 0, 0],
+        name: "atom"
+    });
+    env.add(monomer);
+    env.enableVisualization(our_canvas);
+      env.advance()
+
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      env.advance()
+    },
+    interval_timing : 10
+  })
+});
+</script>
+</section>
+
+<section>
+  <h2 id="pair-wise-field">Pair-wise fields</h2>
+
+  <p>
+    Using <code>Flory.Newtonian</code> you can abstract pair wise fields. To declare a <code>Flory.PairWiseField</code>, simply provide it with a function that takes 2 <code>Flory.Particle</code> objects and returns the force applied on the first particle.
+  </p>
+
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-pairwise-field-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-pairwise-field-canvas"></pre>
+
+<div class="hidden-example js-code-pairwise-field-canvas">
+// Simulate gravity for a 4 body system with initial velocities
+var env = new Flory.Newtonian();
+var field = new Flory.PairWiseField(function(entity_1,entity_2) {
+    var r = entity_1.position.clone().sub(entity_2.position).negate();
+    return r.clone().normalize().mult((entity_1.mass*entity_2.mass)/r.lengthSq())
+})
+env.add(field);
+var monomer_info = {
+    radius: 1,
+    charge: 0,
+    mass: 10000,
+    position: [0, 40, 0],
+    velocity: [23, 0, 0],
+    name: "atom1"
+}
+env.add(new Flory.Monomer(monomer_info));
+
+monomer_info.position = [0, -40, 0];
+monomer_info.velocity = [-23, 0, 0];   
+monomer_info.name = "atom2";
+env.add( new Flory.Monomer(monomer_info));
+
+monomer_info.position = [-40, 0, 0];
+monomer_info.velocity = [0, 0, -23];   
+monomer_info.name = "atom3";
+env.add(new Flory.Monomer(monomer_info));
+
+monomer_info.position =  [40, 0, 0];
+monomer_info.velocity =  [0, 0, 23];       
+monomer_info.name =  "atom4";
+env.add( new Flory.Monomer(monomer_info));
+
+
+env.enableVisualization("basic-pairwise-field-canvas");
+setInterval(function(){
+  env.advance();
+}, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+  var our_canvas =  "basic-pairwise-field-canvas" ;
+  var env = new Flory.Newtonian();
+  var field = new Flory.PairWiseField(function(entity_1,entity_2) {
+      var r = entity_1.position.clone().sub(entity_2.position).negate();
+      return r.clone().normalize().mult((entity_1.mass*entity_2.mass)/r.lengthSq())
+  })
+  env.add(field);
+  var monomer_info = {
+      radius: 1,
+      charge: 0,
+      mass: 10000,
+      position: [0, 40, 0],
+      velocity: [23, 0, 0],
+      name: "atom1"
+  }
+  env.add(new Flory.Monomer(monomer_info));
+  
+  monomer_info.position = [0, -40, 0];
+  monomer_info.velocity = [-23, 0, 0];   
+  monomer_info.name = "atom2";
+  env.add( new Flory.Monomer(monomer_info));
+  
+  monomer_info.position = [-40, 0, 0];
+  monomer_info.velocity = [0, 0, -23];   
+  monomer_info.name = "atom3";
+  env.add(new Flory.Monomer(monomer_info));
+  
+  monomer_info.position =  [40, 0, 0];
+  monomer_info.velocity =  [0, 0, 23];       
+  monomer_info.name =  "atom4";
+  env.add( new Flory.Monomer(monomer_info));
+
+
+  env.enableVisualization(our_canvas);
+      env.advance()
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      env.advance()
+    },
+    interval_timing : 10
+  });
+});
+</script>
+
+
+</section>
+
+
+<section>
+  <h2 id="field-2d">Field 2-D</h2>
+
+  <p>
+    Using <code>Flory.Newtonian</code> you can abstract a discrete 2-D field. To declare a <code>Flory.Field2D</code>, simply provide it with an list of objects with the properties <code>position</code> and <code>vector</code>.  Where <code>vector</code> is the force associated at position <code>position</code>
+  </p>
+  
+  <p><code>Flory.Field2D.getForce(entity)</code>  returns the force associated with the closest <code>position</code> to the <code>entity.position</code>.<p>
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-field-2d-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-field-2d-canvas"></pre>
+
+<div class="hidden-example js-code-field-2d-canvas">
+//Simulate a discrete toroidal field
+var range = function(start, stop, step) {
+  var a = [start];
+  while (start &lt; stop) {
+      start += step || 1;
+      a.push(start);
+  }
+  return a;
+};
+
+var env = new Flory.Newtonian();
+var x_coords = range(-100,100,1); // returns list of [0,100] in steps of 1
+var y_coords = range(-100,100,1);
+var field_info_cross = [];
+var field_info_central = [];
+//Generate 2 potentials:
+//field_cross that is the cross product of the position vector and [0,0,1].
+//field_center which is points opposite to the position vector.
+for (var i = 0; i &lt; x_coords.length; i++) {
+  for (var j = 0; j &lt; y_coords.length; j++) {
+    var position = new Flory.Vector2(y_coords[i],x_coords[j]);
+    var force_cross = position.clone().cross([0,0,1]).normalize().mult(10);
+    field_info_cross.push({
+      position: position,
+      vector : force_cross
+    })
+    var force_central = position.clone().negate().mult(1);
+    field_info_central.push({
+      position: position,
+      vector : force_central
+    })
+  };      
+};
+
+var field_cross = new Flory.Field2D(field_info_cross)
+var field_central = new Flory.Field2D(field_info_central)
+env.add(field_cross);
+env.add(field_central);
+var monomer = new Flory.Monomer({
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 40],
+    name: "atom"
+});
+env.add(monomer);
+env.enableVisualization("basic-field-2d-canvas");
+env.advance()
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var our_canvas = "basic-field-2d-canvas";
+    var range = function(start, stop, step) {
+      var a = [start];
+      while (start < stop) {
+          start += step || 1;
+          a.push(start);
+      }
+      return a;
+    };
+
+    var env = new Flory.Newtonian();
+    var x_coords = range(-100,100,1); // returns list of [0,100] in steps of 1
+    var y_coords = range(-100,100,1);
+    var field_info_cross = [];
+    var field_info_central = [];
+    //Generate 2 potentials:
+    //field_cross that is the cross product of the position vector and [0,0,1].
+    //field_center which is points opposite to the position vector.
+    for (var i = 0; i < x_coords.length; i++) {
+      for (var j = 0; j < y_coords.length; j++) {
+        var position = new Flory.Vector2(y_coords[i],x_coords[j]);
+        var force_cross = position.clone().cross([0,0,1]).normalize();
+        field_info_cross.push({
+          position: position,
+          vector : force_cross
+        })
+        var force_central = position.clone().negate();
+        field_info_central.push({
+          position: position,
+          vector : force_central
+        })
+      };      
+    };
+
+    var field_cross = new Flory.Field2D(field_info_cross)
+    var field_central = new Flory.Field2D(field_info_central)
+    env.add(field_cross);
+    env.add(field_central);
+    var monomer = new Flory.Monomer({
+        radius: 1,
+        charge: 0,
+        mass: 1,
+        position: [0, 40],
+        name: "atom"
+    });
+    env.add(monomer);
+    env.enableVisualization(our_canvas);
+    env.advance()
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      env.advance()
+    },
+    interval_timing : 10
+  })
+});
+</script>
+</section>
+
+
+<section>
+  <h1 id="built-in">Built in environments</h1>
+
+  <p>
+    Flory comes with built-in environments for you to explore.
+  </p>
+
+</section>
+
+
+<section>
+  <h2 id="random-walk">Random Walk </h2>
+
+  <p>
+    The random walk allows you define a random walk experiment.
+  </p>
+  
+  <p>
+    To start the random walk experiment, instantiate a <code>Flory.RandomWalk(data)</code> object and add entities. The valid values for <code>data</code> object are below.
+  </p>
+
+    <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>seed</code></td>
+            <td>
+              The seed for the Mersenne Twister random generator.
+            </td>
+            <td>
+                <code>current time</code>
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>step_size</code></td>
+            <td>
+              The size of the step for each call to <code>Flory.RandomWalk.advance</code>
+            </td>
+            <td>
+                <code>1</code>
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-random-walk-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-random-walk-canvas"></pre>
+
+<div class="hidden-example js-code-random-walk-canvas">
+//Simulate 30 particles undergoing non-interacting random walks
+var env = new Flory.RandomWalk();
+var monomer_info = {
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 0, 0]
+}
+for (var i = 0; i &lt; 30; i++) {
+  env.add(new Flory.Monomer(monomer_info));
+};
+
+
+env.enableVisualization("basic-random-walk-canvas");
+setInterval(function(){
+  env.advance();
+}, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+
+  var our_canvas = "basic-random-walk-canvas";
+  var env = new Flory.RandomWalk();
+  var monomer_info = {
+      radius: 1,
+      charge: 0,
+      mass: 1,
+      position: [0, 0, 0]
+  }
+  for (var i = 0; i < 30; i++) {
+    env.add(new Flory.Monomer(monomer_info));
+  };
+  
+  env.enableVisualization(our_canvas);
+      env.advance()
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      env.advance()
+    },
+    interval_timing : 10
+  });
+
+});
+</script>
+
+
+</section>
+
+
+<section>
+  <h2 id="lennard-jones">Lennard Jones </h2>
+
+  <p>
+    This defines an optimized <a href="en.wikipedia.org/wiki/Lennard-Jones_potential">Lennard-Jones potential</a>.
+  </p>
+
+  <p>
+    To start a Lennard-Jones experiment, instantiate a <code>Flory.LennardJones(data)</code> object and add entities. The valid values for <code>data</code> object are below.
+  </p>
+
+    <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Default</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>epsilon</code></td>
+            <td>
+              The value of epsilon in the Lennard Jones potential.
+            </td>
+            <td>
+                <code>1</code>
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>sigma</code></td>
+            <td>
+              The value of sigma in the Lennard Jones potential.
+            </td>
+            <td>
+                <code>1</code>
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>far_cutoff_distance</code></td>
+            <td>
+              The cutoff distance at which the potential between two entities will not be calculated.
+            </td>
+            <td>
+                <code>100</code>
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-lennard-jones-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-lennard-jones-canvas"></pre>
+
+<div class="hidden-example js-code-lennard-jones-canvas">
+// Simulate a cube of 9 particles with the lennard jones potential 
+var our_canvas = "basic-lennard-jones-canvas";
+var epsilon = 1;
+var sigma = 10;
+var lennard = new Flory.LennardJones(epsilon, sigma);
+var distance_apart = 4;
+var side_len = 3;
+var monomer_info = {
+    radius : 1,
+    charge : 0,
+    mass : 1,
+    position : [ 0, 0, 0 ]
+} 
+var i,j,k;
+for (i = 0; i &lt; side_len; i += 1) {
+    for (j = 0; j &lt; side_len; j += 1) {
+        for (k = 0; k &lt; side_len; k += 1) {
+            monomer_info.position = [i * distance_apart,j * distance_apart,k * distance_apart];
+            lennard.add(new Flory.Monomer(monomer_info));
+        }
+    }
+} 
+
+lennard.enableVisualization(our_canvas);
+setInterval( function(){
+    lennard.advance()
+},1)
+
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+  var our_canvas = "basic-lennard-jones-canvas";
+  var epsilon = 1;
+  var sigma = 1;
+  var lennard = new Flory.LennardJones(epsilon, sigma);
+  var distance_apart = 4;
+  var side_len = 3;
+  var monomer_info = {
+      radius : 1,
+      charge : 0,
+      mass : 1,
+      position : [ 0, 0, 0 ]
+  } 
+  var i,j,k;
+  for (i = 0; i < side_len; i += 1) {
+      for (j = 0; j < side_len; j += 1) {
+          for (k = 0; k < side_len; k += 1) {
+              monomer_info.position = [i * distance_apart,j * distance_apart,k * distance_apart];
+              lennard.add(new Flory.Monomer(monomer_info));
+          }
+      }
+  } 
+  
+  lennard.enableVisualization(our_canvas);
+      lennard.advance()
+
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      lennard.advance()
+    },
+    interval_timing : 1
+  });
+
+});
+</script>
+
+
+</section>
+
+
+
+
+<section>
+  <h2 id="newtonian-environment">Newtonian </h2>
+
+  <p>
+    The Newtonian environment simulates an environment where forces applied to objects are used to calculate the change in velocity and position. 
+  </p>
+  <p>
+    It is compatible with the <code>Flory.baseField</code> descendants so you can define custom global potentials, or pair wise potentials.
+  </p>
+
+  <p id="newtonian-handler">
+    If we want a simple potential, we need not define a field, we can simply pass an anonymous function handler when we instantiate the <code>Flory.Newtonian</code> object which will be called for all entities during the main loop.
+  </p>
+
+
+  <p>
+    To start a Newtonian experiment, instantiate a <code>Flory.Newtonian(handler)</code> object and add entities. The <code>handler</code> object should be a valid function, however it can be left <code>undefined</code>.
+  </p>
+
+
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-newtonian-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-newtonian-canvas"></pre>
+
+<div class="hidden-example js-code-newtonian-canvas">
+// Simulate an r^2 central potential
+var our_canvas = "basic-newtonian-canvas";
+var env = new Flory.Newtonian();
+var field = new Flory.ContinuousField(function(entity) {
+    return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+})
+var field2 = new Flory.ContinuousField(function(entity) {
+    return Flory.getRandomVector(100,100,100);
+})
+env.add(field);
+env.add(field2);
+var monomer = new Flory.Monomer({
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 40, 0],
+    velocity: [100, 0, 0],
+    name: "atom"
+});
+env.add(monomer);
+env.enableVisualization(our_canvas);
+setInterval(function(){
+  env.advance();
+}, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var our_canvas = "basic-newtonian-canvas";
+    var env = new Flory.Newtonian();
+    var field = new Flory.ContinuousField(function(entity) {
+        return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+    })
+    var field2 = new Flory.ContinuousField(function(entity) {
+        return Flory.getRandomVector(100,100,100);
+    })
+    env.add(field);
+    env.add(field2);
+    var monomer = new Flory.Monomer({
+        radius: 1,
+        charge: 0,
+        mass: 1,
+        position: [0, 40, 0],
+        velocity: [100, 0, 0],
+        name: "atom"
+    });
+    env.add(monomer);
+    env.enableVisualization(our_canvas);
+      env.advance()
+
+  window.examples.push({
+    canvas : our_canvas,
+    interval_function : function(){
+      env.advance()
+    },
+    interval_timing : 10
+  });
+});
+</script>
+
+
+</section>
+
+
+
+<section>
+  <h1 id="vector">Vector</h1> 
+  <p>
+    Flory provides a range of vector objects that are optimized for ease of use and performance.
+  </p>
+  <p>
+    Depending on the specific class of vector used, different properties are available. However, all vector classes are guaranteed to contain the properties below.  
+  </p>
+  <p>The arguments provided for any function properties need not be of the same dimensional vector class.</p>
+  <p>Unless otherwise stated, if a function returns a vector, then it will be of the same class as the callee.</p>
+
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>components</code></td>
+            <td>
+              An array containing the components of the vector.
+            </td>
+            <td>
+                <code>Array</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>dimension</code></td>
+            <td>
+              Returns the dimension of the vector.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>add(a)</code></td>
+            <td>
+              Adds the vector <code>a</code> to the current calling object.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>sub(a)</code></td>
+            <td>
+              Subtracts the vector <code>a</code> from the current calling object.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>scale(num)</code></td>
+            <td>
+              Multiplies all elements of the vector by <code>num</code>.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>mult(num)</code></td>
+            <td>
+              Returns a new vector that is a copy of <code>object.scale(num)</code>.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>dot(a)</code></td>
+            <td>
+              Returns the dot product of the vector with vector <code>a</code>.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>length</code></td>
+            <td>
+              Returns the magnitude of the vector.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>lengthSq</code></td>
+            <td>
+              Returns the magnitude squared of the vector.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>distanceTo(a)</code></td>
+            <td>
+              Calculates the distance from the vector to vector <code>a</code>
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>distanceToSq</code></td>
+            <td>
+              Calculates the squared distance from vector to vector <code>a</code>
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>zero</code></td>
+            <td>
+              Zeros all the components of the vector.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>negate</code></td>
+            <td>
+              Same as <code>scale(-1)</code>.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>normalize</code></td>
+            <td>
+              Normalizes the vector.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+          
+          <tr>
+            <td><code>clone</code></td>
+            <td>
+              Returns a clone of the vector.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</section>
+
+<section> 
+  <h2 id="vector-2d">Vector 2-D</h2> 
+  
+  <p>
+    <code>Flory.Vector2</code> is optimized for 2-D vector calculations. As such it optimizes the basic vector operations above for 2-d. It additionally provides access to the below properties:
+  </p>
+
+
+  
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>x</code></td>
+            <td>
+              The x components of the vector
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>y</code></td>
+            <td>
+              The y components of the vector
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>cross(vec)</code></td>
+            <td>
+              Returns the cross product of the vector with vector <code>vec</code> and assumes that the <code>object.z = 0</code>
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+</section>
+
+
+<section> 
+  <h2 id="vector-3d">Vector 3-D</h2> 
+  
+  <p>
+    <code>Flory.Vector3</code> is optimized for 3-D vector calculations. The properties are below.
+  </p>
+
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>x</code></td>
+            <td>
+              The x components of the vector
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>y</code></td>
+            <td>
+              The y components of the vector
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>z</code></td>
+            <td>
+              The z components of the vector
+            </td>
+            <td>
+                <code>Float</code>
+            </td>
+          </tr>
+
+          <tr>
+            <td><code>cross(vec)</code></td>
+            <td>
+              Returns the cross product of the vector with vector <code>vec</code>.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</section>
+
+
+<section> 
+  <h2 id="vector-nd">Vector N-D</h2> 
+  
+  <p>
+    <code>Flory.Vector</code> is optimized for general N-D vector calculations. It implements all the properties from <code>Flory.baseVector</code> in addition to:
+  </p>
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>cross(vec)</code></td>
+            <td>
+              Returns the cross product of the vector with vector <code>vec</code>.
+            </td>
+            <td>
+                <code>function</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<section> 
+  <h1 id="rendering-settings">Rendering settings</h1> 
+  
+  <p>
+    When calling <code>Flory.Environment.enableVisualization(canvas,data)</code> , the valid properties for <code>data</code> are below.
+  </p>
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <td><code>fov</code></td>
+              <td>The field of view for the camera.</td>
+              <td>
+                  60
+              </td>
+          </tr>
+          <tr>
+              <td><code>near_clip</code></td>
+              <td>The near clip cutoff for the rendering camera.</td>
+              <td>
+                  0.1
+              </td>
+          </tr>
+          <tr>
+              <td><code>far_clip</code></td>
+              <td>The far clip cutoff for the rendering camera.</td>
+              <td>
+                  10000
+              </td>
+          </tr>
+          <tr>
+              <td><code>size</code></td>
+              <td>A 2 element array representing width and height.</td>
+              <td>
+                  size of canvas
+              </td>
+          </tr>
+          <tr>
+              <td><code>camera_position</code></td>
+              <td>The 3-D position of the camera.</td>
+              <td>
+                  [80,80,70]
+              </td>
+          </tr>
+          <tr>
+              <td><code>auto_resize</code></td>
+              <td>Automatically change canvas size on browser<code>resize</code> event.</td>
+              <td>
+                  true
+              </td>
+          </tr>
+          <tr>
+              <td><code>clearColor</code></td>
+              <td>The background color of the visualization.</td>
+              <td>
+                  0xFFFFFF
+              </td>
+          </tr>
+          <tr>
+              <td><code>axis</code></td>
+              <td>Show world position axes.</td>
+              <td>
+                  true
+              </td>
+          </tr>
+          <tr>
+              <td><code>axisSize</code></td>
+              <td>The size of the axes.</td>
+              <td>
+                  10
+              </td>
+          </tr>
+          <tr>
+              <td><code>grid</code></td>
+              <td>Show a grid.</td>
+              <td>
+                  true
+              </td>
+          </tr>
+          <tr>
+              <td><code>gridPlane</code></td>
+              <td>The plane of the grid. Valid values are 2-character string permutations of ("x","y","z").</td>
+              <td>
+                  "xy"
+              </td>
+          </tr>
+          <tr>
+              <td><code>gridSize</code></td>
+              <td>The size of the grid.</td>
+              <td>
+                  10
+              </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+
+<section> 
+  <h1 id="environment">Environment</h1> 
+  
+  <p>For more flexibility, you can define your own environment. To do this, you create a class that inherits from <code>Flory.Environment</code> and then you can override the methods below. Keep in mind, that you are only required to override <code>Flory.Environment.update</code>, the rest are optional. For an example for how to inherit a class, checkout the <a href="">example</a> for inheritance.
+  </p>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <td><code>update(data)</code></td>
+              <td>Called before rendering during the <code>Flory.Environment.advance(data)</code> call. In order to have results rendered to the screen, this function should update the position of the entities in <code>Flory.Environment.entities</code>.</td>
+          </tr>
+          <tr>
+              <td><code>removedEntity(entity,id,index)</code></td>
+              <td>Called after an entity has been removed from the environment. <code>entity</code> is the removed entity and <code>id</code> is its id ,with <code>index</code> being the index of entity in <code>Flory.Environment.entities</code> before removal.</td>
+          </tr>
+          <tr>
+              <td><code>addedEntity(entity)</code></td>
+              <td>Called after an entity has been added from the environment. <code>entity</code> is the removed entity</td>
+          </tr>
+          <tr>
+              <td><code>setUpVisualization(data)</code></td>
+              <td>Called at the end of <code>Flory.Environment.enableVisualization(data)</code></td>
+          </tr>
+          <tr>
+              <td><code>disabledVisualization</code></td>
+              <td>Called at the of <code>Flory.Environment.disabledVisualization()</code></td>
+          </tr>
+          <tr>
+              <td><code>resetEnvironment</code></td>
+              <td>This can be directly called to reset the environment.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+
+
+
+</div>
+    <div class="col-md-3" role="complementary">
+
+<nav class="flory-docs-sidebar hidden-print hidden-xs hidden-sm">
+    <ul class="nav flory-docs-sidenav">
+        <li>
+            <a href="#basics">The basics</a>
+            <ul class="nav">
+                <li>
+                    <a href="#set-up">Setting up</a>
+                </li>
+                <li>
+                    <a href="#custom-environments">Custom Environments</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#fields">Fields</a>
+            <ul class="nav">
+                <li>
+                    <a href="#continuous-field">Continuous Fields</a>
+                </li>
+                <li>
+                    <a href="#pair-wise-field">Pair Wise Fields</a>
+                </li>
+                <li>
+                    <a href="#field-2d">Field 2-D</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#built-in">Built-in environments</a>
+            <ul class="nav">
+                <li>
+                    <a href="#random-walk">Random Walk</a>
+                </li>
+                <li>
+                    <a href="#lennard-jones">Lennard Jones</a>
+                </li>
+                <li>
+                    <a href="#newtonian-environment">Newtonian</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#vector">Vector</a>
+            <ul class="nav">
+                <li>
+                    <a href="#vector-2d">Vector 2-D</a>
+                </li>
+                <li>
+                    <a href="#vector-3d">Vector 3-D</a>
+                </li>
+                <li>
+                    <a href="#vector-nd">Vector N-D</a>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#rendering-settings">Rendering settings</a>
+        </li>
+        <li>
+            <a href="#environment">Environment</a>
+        </li>
+    </ul>
+    <a class="back-to-top" href="#top">Back to top</a>
+</nav>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+<script>
+
+  var $states = $(".js-source-states");
+  var statesOptions = $states.html();
+  $states.remove();
+
+  $(".js-states").append(statesOptions);
+
+  $("[data-fill-from]").each(function () {
+    var $this = $(this);
+
+    var codeContainer = $this.data("fill-from");
+    var $container = $(codeContainer);
+
+    var code = $.trim($container.html());
+
+    $this.text(code);
+    $this.addClass("prettyprint linenums");
+  });
+
+  function isElementInViewport (el) {
+    if (typeof jQuery === "function" && el instanceof jQuery) {
+        el = el[0];
+    }
+
+    var rect = el.getBoundingClientRect();
+
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or $(window).width() */
+    );
+}
+
+  prettyPrint();
+
+  (function ($) {
+    'use strict'; 
+
+
+
+
+    $(function () {
+      var $window = $(window);
+      var $body = $(document.body);
+      var $sidebar = $('.flory-docs-sidebar');
+
+      $body.scrollspy({
+        target: '.flory-docs-sidebar',
+        offset: 40
+      });
+
+      $window.on('load', function () {
+        $body.scrollspy('refresh');
+      });
+
+      $sidebar.affix({
+        offset: {
+          top: function () {
+            var offsetTop = $sidebar.offset().top;
+            var navOuterHeight = $('.flory-docs-nav').height();
+
+            return (this.top = offsetTop - navOuterHeight);
+          },
+          bottom: function () {
+            return (this.bottom = $('.flory-docs-footer').outerHeight(true));
+          }
+        }
+      });
+
+      if(Flory.isWebGlAvailable() || window.use_canvas_renderer){
+        window.examples.map(function(elem){
+          elem.currentInterval = undefined;
+          elem.startInterval = function(){
+            if(this.currentInterval === undefined){
+              this.currentInterval = setInterval(elem.interval_function,elem.interval_timing);  
+            }          
+          };
+          elem.stopInterval = function(){
+            if(this.currentInterval !== undefined){
+              clearInterval(this.currentInterval);  
+            }          
+            this.currentInterval = undefined;
+          };
+        })
+
+        setInterval(function(){
+          window.examples.filter(function(elem){return !isElementInViewport($("#"+elem.canvas))})
+                          .map(function(elem){elem.stopInterval(elem)})
+          window.examples.filter(function(elem){return isElementInViewport($("#"+elem.canvas))})
+                          .map(function(elem){elem.startInterval(elem)})
+          },250)
+      } else {
+        window.examples.map(function(elem){
+          $("#"+elem.canvas).addClass("no-web-gl")
+          $("#"+elem.canvas).html("It looks like your browser doesn't support webgl! These examples are best viewed with the webgl renderer. If you would like to render them with the canvas renderer click <a href='examples.html?canvasrenderer=true'>here</a>")
+        })
+      }
+
+    });
+
+
+  })(jQuery);
+
+  (function () {
+    'use strict';
+
+    anchors.options.placement = 'left';
+    anchors.add('.flory-docs-container h1, .flory-docs-container h2, .flory-docs-container h3, .flory-docs-container h4, .flory-docs-container h5');
+  })();
+</script>
+
+		<footer class="flory-docs-footer" role="contentinfo">
+    <div class="container">
+        <div class="flory-docs-social">
+            <ul class="flory-docs-social-buttons">
+                <li>
+                    <iframe class="github-btn" src="https://ghbtns.com/github-btn.html?user=sabidib&amp;repo=flory&amp;type=watch&amp;count=true" width="100" height="20" title="Star on GitHub"></iframe>
+                </li>
+                <li>
+                    <iframe class="github-btn" src="https://ghbtns.com/github-btn.html?user=sabidib&amp;repo=flory&amp;type=fork&amp;count=true" width="102" height="20" title="Fork on GitHub"></iframe>
+                </li>
+            </ul>
+        </div>
+
+        <p>
+            Flory is licensed under <a href="https://github.com/sabidib/flory/blob/master/LICENSE">MIT</a>. <br> 
+            Documentation is based off of <a href="select2.github.io">Select2</a> documentation under <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> .
+        </p>
+        <p>
+            Maintained by <a href="https://github.com/sabidib">Samy Abidib</a>.
+        </p>
+        <ul class="flory-docs-footer-links">
+            <li>Currently v0.1.4</li>
+            <li><a href="https://github.com/sabidib/flory">GitHub</a>
+            </li>
+            <li><a href="./examples.html">Examples</a>
+            </li>
+            <li><a href="https://github.com/sabidib/flory/issues">Issues</a>
+            </li>
+            <li><a href="https://github.com/sabidib/flory/releases">Releases</a>
+            </li>
+        </ul>
+    </div>
+</footer>
+	</body>
+</html>
