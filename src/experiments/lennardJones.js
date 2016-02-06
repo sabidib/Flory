@@ -6,7 +6,7 @@
 /*jslint white*/
 
 'use strict';
-Flory.LennardJones = function (epsilon, sigma,far_cutoff_distance) {
+Flory.LennardJones = function (epsilon, sigma, far_cutoff_distance) {
     Flory.Environment.call(this);
     this.epsilon = epsilon !== undefined ? epsilon : Flory.LennardJones.default_epsilon;
     this.sigma = sigma !== undefined ? sigma : Flory.LennardJones.default_sigma;
