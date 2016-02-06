@@ -13,8 +13,8 @@ Flory.PairWiseField = function (field_function) {
 };
 Flory.PairWiseField.prototype = Object.create(Flory.baseField.prototype);
 Flory.PairWiseField.prototype.constructor = Flory.PairWiseField;
-Flory.PairWiseField.prototype.getForce = function (position_1,position_2) {
-    return this.field_function(position_1,position_2).mult(this.scaler);
+Flory.PairWiseField.prototype.getForce = function (entity_1,entity_2) {
+    return this.field_function(entity_1,entity_2).mult(this.scaler);
 };
 Flory.PairWiseField.prototype.scale = function (num) {
     if (typeof num === 'number') {
