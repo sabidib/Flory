@@ -25,6 +25,7 @@
 "graphics/extern/orbitControls.js",
 "graphics/renderer.js",
 "graphics/renderers/pointCloudRenderer.js",
+"graphics/renderers/canvasrenderer.js",
 "graphics/options.js",
 "graphics/display.js",
 

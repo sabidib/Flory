@@ -78,7 +78,7 @@ Flory.Field2D.prototype.getForce = function (entity) {
     var len = this.field.length;
     var i;
     var cur_dist;
-    var position = new Flory.Vector2(entity.position.clone().components;
+    var position = new Flory.Vector2(entity.position.clone().components);
     if(len > 0){
         closest = this.field[0].position.distanceToSq(position);    
     } else {
