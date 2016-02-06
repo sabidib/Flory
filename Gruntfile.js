@@ -19,6 +19,7 @@ module.exports = function(grunt) {
     var various_tags = fs.readFileSync("src/html/various_tags.html", "utf-8");
     var link_tags = fs.readFileSync("src/html/link_tags.html", "utf-8");
     var footer = fs.readFileSync("src/html/footer.html", "utf-8");
+    var body_header = fs.readFileSync("src/html/body_header.html", "utf-8");
 
 
     scripts = javascript_source.map(function(entry) {
@@ -146,6 +147,7 @@ module.exports = function(grunt) {
                 css_scripts: "<link href='css/main.min.css' type='text/css' rel='stylesheet' />",
                 body: file_body,
                 footer: footer,
+                body_header : body_header,
                 scripts: "<script src='js/main.min.js'></script>",
             }
             ensureDirectoryExistence(html_entry_production_file_path);
@@ -173,6 +175,7 @@ module.exports = function(grunt) {
                 css_scripts: css_scripts,
                 body: file_body,
                 footer: footer,
+                body_header : body_header,
                 scripts: scripts,
             }
             ensureDirectoryExistence(html_entry_test_file_path);

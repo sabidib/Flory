@@ -8,6 +8,7 @@
 		<%= scripts %>
 	</head>
 	<body>
+	<%= body_header %>
 		<%= body %>
 		<%= footer %>
 	</body>
