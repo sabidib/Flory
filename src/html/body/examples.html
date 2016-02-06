@@ -1,56 +1,53 @@
 
-    <header class="flory-docs-nav navbar navbar-default navbar-static-top" id="top" role="banner">
-        <div class="container">
-            <div class="navbar-header">
-                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".flory-navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar top-bar"></span>
-                    <span class="icon-bar middle-bar"></span>
-                    <span class="icon-bar bottom-bar"></span>
-                </button>
-                <a href="./" class="navbar-brand">Flory</a>
-            </div>
-
-            <nav class="collapse navbar-collapse flory-navbar-collapse" role="navigation">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="./examples.html">Examples</a>
-                    </li>
-                    <li>
-                        <a href="./options.html">Options</a>
-                    </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            Topics
-            <span class="caret"></span>
-          </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="./announcements-4.0.html">1.0 Announcement</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="https://github.com/sabidib/flory/releases">
-                Release notes
-              </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="https://github.com/sabidib/flory">
-                            <i class="fa fa-github"></i> GitHub
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+<header class="flory-docs-nav navbar navbar-default navbar-static-top" id="top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".flory-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar top-bar"></span>
+                <span class="icon-bar middle-bar"></span>
+                <span class="icon-bar bottom-bar"></span>
+            </button>
+            <a href="./" class="navbar-brand">Flory</a>
         </div>
-    </header>
 
+        <nav class="collapse navbar-collapse flory-navbar-collapse" role="navigation">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="./examples.html">Examples</a>
+                </li>
+                <li>
+                    <a href="./options.html">Options</a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        Topics
+        <span class="caret"></span>
+      </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="./announcements-4.0.html">1.0 Announcement</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="https://github.com/sabidib/flory/releases">
+            Release notes
+          </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
 
-
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="https://github.com/sabidib/flory">
+                        <i class="fa fa-github"></i> GitHub
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
 
 <style type="text/css">
   .img-flag {
@@ -79,10 +76,10 @@
       The following examples are additionally updated on each page update.
     </p>
 
-  <h2 id="single">Run a simple built in simulation</h2>
+  <h2 id="single">Setting up</h2>
 
   <p>
-    Starting and modifying a built in simulation is easy with flory. Get a random walk experiment running by setting up the environment. 
+    Flory provides an intuitive interface for creating simulations. Experiments can be created as <code>Environments</code> and elements of the experiment can be added as <code>Entities</code>. To take a time step in the simulation we call <code>advance</code> on the environment.
   </p>
   
   <div class="flory-example">
@@ -104,7 +101,7 @@ var monomer = new Flory.Monomer({
 env.add(monomer)
 env.enableVisualization("basic-example-canvas")
 
-setTimeout(function(){
+setInterval(function(){
   //This will update the positions of the particles
   //and render any thing that is renderable that was called with 
   //env.add  
@@ -126,7 +123,7 @@ var monomer = new Flory.Monomer({
 env.add(monomer)
 env.enableVisualization("basic-example-canvas")
 
-setTimeout(function(){
+setInterval(function(){
   //This will update the positions of the particles
   //and render any thing that is renderable that was called with 
   //env.add  
@@ -137,26 +134,227 @@ setTimeout(function(){
 
 
   
-
-  <h2 id="multiple">Multiple select boxes</h2>
+</section>
+<section>
+  <h2 id="multiple">Defining custom experiments</h2>
 
   <p>
-    Select2 also supports multi-value select boxes. The select below is declared with the <code>multiple</code> attribute.
+    Flory gives you the ability to easily define custom experiments. The example below shows a simple example of an $r^2$ central potential.
   </p>
 
-  <div class="flory-example">
-    <p>
-      <select class="js-example-basic-multiple js-states form-control" multiple="multiple"></select>
-    </p>
-  </div>
 
-  <pre data-fill-from=".js-code-multiple"></pre>
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-custom-experiment-canvas"></div>
+</div>
 
+<pre class="code" data-fill-from=".js-code-custom-experiment"></pre>
+
+<div class="hidden-example js-code-custom-experiment">
+  var env = new Flory.Newtonian({
+  update: function(entity) {
+      return entity.position.clone().negate().normalize().mult(entity.position.lengthSq());
+    }
+  });
+  var monomer = new Flory.Monomer({
+      radius: 1,
+      charge: 0,
+      mass: 1,
+      position: [0, 10, 0],
+      velocity: [20, 0, 0],
+      name: "atom"
+  });
+  env.add(monomer);
+  env.enableVisualization("basic-custom-experiment-canvas");
+
+  setInterval(function(){
+    env.advance();
+  }, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var env = new Flory.Newtonian({
+    update: function(entity) {
+        return entity.position.clone().negate().normalize().mult(entity.position.lengthSq());
+      }
+    });
+    var monomer = new Flory.Monomer({
+        radius: 1,
+        charge: 0,
+        mass: 1,
+        position: [0, 10, 0],
+        velocity: [20, 0, 0],
+        name: "atom"
+    });
+    env.add(monomer);
+    env.enableVisualization("basic-custom-experiment-canvas");
+
+    setInterval(function(){
+      env.advance();
+    }, 10)
+});
+</script>
+
+</section>
+<section>
+  <h2 id="multiple">Fields</h2>
+
+  <p>
+    With the newtonian environment you can define fields that return a force given an entities position.
+  </p>
+
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-field-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-field-canvas"></pre>
+
+<div class="hidden-example js-code-field-canvas">
+var env = new Flory.Newtonian();
+var field = new Flory.ContinuousField(function(entity) {
+    return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+})
+env.add(field);
+var monomer = new Flory.Monomer({
+    radius: 1,
+    charge: 0,
+    mass: 1,
+    position: [0, 40, 0],
+    velocity: [100, 0, 0],
+    name: "atom"
+});
+env.add(monomer);
+env.enableVisualization("basic-field-canvas");
+setInterval(function(){
+  env.advance();
+}, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var env = new Flory.Newtonian();
+    var field = new Flory.ContinuousField(function(entity) {
+        return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+    })
+    env.add(field);
+    var monomer = new Flory.Monomer({
+        radius: 1,
+        charge: 0,
+        mass: 1,
+        position: [0, 40, 0],
+        velocity: [100, 0, 0],
+        name: "atom"
+    });
+    env.add(monomer);
+    env.enableVisualization("basic-field-canvas");
+    setInterval(function(){
+      env.advance();
+    }, 10)
+});
+</script>
 
 </section>
 
-</section>
+<section>
+  <h2 id="multiple">Pair-wise fields</h2>
 
+  <p>
+    You can also define pair-wise fields. <code>Flory.PairWiseField</code> provides 2 entities
+  </p>
+
+
+<div class="flory-example">
+  <div class="flory-canvas" id="basic-pairwise-field-canvas"></div>
+</div>
+
+<pre class="code" data-fill-from=".js-code-pairwise-field-canvas"></pre>
+
+<div class="hidden-example js-code-pairwise-field-canvas">
+var env = new Flory.Newtonian();
+var field = new Flory.PairWiseField(function(entity_1,entity_2) {
+    var r = entity_1.position.clone().sub(entity_2.position).negate();
+    return r.clone().normalize().mult((entity_1.mass*entity_2.mass)/r.lengthSq())
+})
+env.add(field);
+var monomer_info = {
+    radius: 1,
+    charge: 0,
+    mass: 10000,
+    position: [0, 40, 0],
+    velocity: [10, 0, 0],
+    name: "atom1"
+}
+env.add(new Flory.Monomer(monomer_info));
+
+monomer_info.position = [0, -40, 0];
+monomer_info.velocity = [-10, 0, 0];   
+monomer_info.name = "atom2";
+env.add( new Flory.Monomer(monomer_info));
+
+monomer_info.position = [-40, 0, 0];
+monomer_info.velocity = [0, 0, -10];   
+monomer_info.name = "atom3";
+env.add(new Flory.Monomer(monomer_info));
+
+monomer_info.position =  [40, 0, 0];
+monomer_info.velocity =  [0, 0, 10];       
+monomer_info.name =  "atom4";
+env.add( new Flory.Monomer(monomer_info));
+
+
+env.enableVisualization("basic-pairwise-field-canvas");
+setInterval(function(){
+  env.advance();
+}, 10)
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+  var env = new Flory.Newtonian();
+  var field = new Flory.PairWiseField(function(entity_1,entity_2) {
+      var r = entity_1.position.clone().sub(entity_2.position).negate();
+      return r.clone().normalize().mult((entity_1.mass*entity_2.mass)/r.lengthSq())
+  })
+  env.add(field);
+  var monomer_info = {
+      radius: 1,
+      charge: 0,
+      mass: 10000,
+      position: [0, 40, 0],
+      velocity: [10, 0, 0],
+      name: "atom1"
+  }
+  env.add(new Flory.Monomer(monomer_info));
+  
+  monomer_info.position = [0, -40, 0];
+  monomer_info.velocity = [-10, 0, 0];   
+  monomer_info.name = "atom2";
+  env.add( new Flory.Monomer(monomer_info));
+  
+  monomer_info.position = [-40, 0, 0];
+  monomer_info.velocity = [0, 0, -10];   
+  monomer_info.name = "atom3";
+  env.add(new Flory.Monomer(monomer_info));
+  
+  monomer_info.position =  [40, 0, 0];
+  monomer_info.velocity =  [0, 0, 10];       
+  monomer_info.name =  "atom4";
+  env.add( new Flory.Monomer(monomer_info));
+
+
+  env.enableVisualization("basic-pairwise-field-canvas");
+  setInterval(function(){
+    env.advance();
+  }, 10)
+});
+</script>
+
+
+</section>
       <section>
 
   <h1 id="placeholders">Placeholders</h1>

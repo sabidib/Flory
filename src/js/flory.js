@@ -18,8 +18,16 @@ var Flory = { VERSION : '0.2',
                 fov : 60,
                 near_clip : 0.1,
                 far_clip : 10000,
-                camera_position : [0,0,20],
+                camera_position : [80,80,70],
                 auto_resize: true
+              },
+              VisualizationDefaults :{
+                clearColor: 0xFFFFFF,
+                grid : true,
+                axis : true,
+                axisSize : 10,
+                gridPlane:"xy",
+                gridSize : 100
               }
 }
 
@@ -404,10 +412,14 @@ Flory.Vector3.prototype.mult = function (num) {
     return new Flory.Vector3(this.x * num, this.y * num, this.z * num);
 };
 Flory.Vector3.prototype.cross = function (vec) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector3(vecToUse);
+    }
     return new Flory.Vector3([
-        this.y * vec.components[2] - this.z * vec.components[1],
-        this.z * vec.components[0] - this.x * vec.components[2],
-        this.x * vec.components[1] - this.y * vec.components[0]
+        this.y * vecToUse.components[2] - this.z * vecToUse.components[1],
+        this.z * vecToUse.components[0] - this.x * vecToUse.components[2],
+        this.x * vecToUse.components[1] - this.y * vecToUse.components[0]
     ]);
 };
 Flory.Vector3.prototype.dot = function (a) {
@@ -439,6 +451,9 @@ Flory.Vector3.prototype.negate = function () {
 };
 Flory.Vector3.prototype.normalize = function () {
     var len = this.length();
+    if(length === 0.0){
+        return this;
+    }
     this.x = this.x / len;
     this.y = this.y / len;
     this.z = this.z / len;
@@ -470,8 +485,7 @@ Flory.Vector2 = function (x, y) {
     this.y = y === undefined ? 0 : y;
     this.components = [
         this.x,
-        this.y,
-        0
+        this.y
     ];
 };
 Flory.Vector2.prototype = Object.create(Flory.baseVector.prototype);
@@ -492,9 +506,13 @@ Flory.Vector2.prototype.scale = function (num) {
     return this;
 };
 Flory.Vector2.prototype.cross = function (vec) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector2(vecToUse);
+    }
     return new Flory.Vector2([
-        this.y * vec.components[2],
-        -this.x * vec.components[2]
+        this.y * vecToUse.components[2],
+        -this.x * vecToUse.components[2]
     ]);
 };
 Flory.Vector2.prototype.mult = function (num) {
@@ -527,6 +545,9 @@ Flory.Vector2.prototype.negate = function () {
 };
 Flory.Vector2.prototype.normalize = function () {
     var len = this.length();
+    if(len === 0.0){
+        return this;
+    }
     this.x = this.x / len;
     this.y = this.y / len;
     return this;
@@ -550,10 +571,15 @@ Flory.Vector2.prototype.clone = function () {
 
 
 
+
+
+
 Flory.Vector = function (vec) {
     Flory.baseVector.call(this);
     if (vec === undefined) {
         this.components = [];
+    } else if(vec instanceof Array){
+        this.components = vec.slice();
     } else if (typeof vec === 'number') {
         this.components = new Array(vec);
         var a = this.components;
@@ -562,7 +588,7 @@ Flory.Vector = function (vec) {
             a[i] = 0;
         }
     } else {
-        this.components = vec;
+        this.components = vec.components.slice();
     }
 };
 Flory.Vector.prototype = Object.create(Flory.baseVector.prototype);
@@ -592,7 +618,7 @@ Flory.Vector.prototype.sub = function (a) {
             this.components[i] -= a.components[i];
         }
         for (len = a.components.length; i < len; i += 1) {
-            this.components[i] = a.components[i];
+            this.components[i] = -a.components[i];
         }
     } else {
         for (len = a.components.length; i < len; i += 1) {
@@ -650,17 +676,22 @@ Flory.Vector.prototype.lengthSq = function () {
     return sum;
 };
 Flory.Vector.prototype.cross = function (vec) {
-    if (vec.components[2] === undefined) {
+    var vecToUse = vec;
+    if(! (vecToUse instanceof Flory.baseVector)){
+        vecToUse = new Flory.Vector(vecToUse);
+    }
+
+    if (vecToUse.components[2] === undefined) {
         return new Flory.Vector([
-            -this.components[2] * vec.components[1],
-            this.components[2] * vec.components[0],
-            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+            -this.components[2] * vecToUse.components[1],
+            this.components[2] * vecToUse.components[0],
+            this.components[0] * vecToUse.components[1] - this.components[1] * vecToUse.components[0]
         ]);
     } else {
         return new Flory.Vector([
-            this.components[1] * vec.components[2] - this.components[2] * vec.components[1],
-            this.components[2] * vec.components[0] - this.components[0] * vec.components[2],
-            this.components[0] * vec.components[1] - this.components[1] * vec.components[0]
+            this.components[1] * vecToUse.components[2] - this.components[2] * vecToUse.components[1],
+            this.components[2] * vecToUse.components[0] - this.components[0] * vecToUse.components[2],
+            this.components[0] * vecToUse.components[1] - this.components[1] * vecToUse.components[0]
         ]);
     }
 };
@@ -753,6 +784,9 @@ Flory.Vector.prototype.negate = function () {
 };
 Flory.Vector.prototype.normalize = function () {
     var length = this.length();
+    if(length === 0.0){
+        return this;
+    }
     var i;
     var len = this.components.length;
     for (i = 0; i < len; i += 1) {
@@ -890,16 +924,29 @@ Flory.CoreEnvironment.prototype = {
             this.renderer = new Flory.PointCloudRenderer(canvas, data);
         }
         this.visualization = true;
-        if (data !== undefined) {
-            if (data.clearColor !== undefined) {
-                this.renderer.setClearColor(data.clearColor);
-            }
-            if (data.grid !== undefined && data.grid === true) {
-                this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
-            }
-            if (data.axis !== undefined && data.axis === true) {
-                this.addAxis(data.axisSize, data.axisPosition);
-            }
+        if(data == undefined){
+            data = {}
+        }
+
+        if (data.clearColor !== undefined) {
+            this.renderer.setClearColor(data.clearColor);
+        } else {
+            this.renderer.setClearColor(Flory.VisualizationDefaults.clearColor);
+        }
+
+        if (data.grid !== undefined && data.grid === true) {
+            this.addGrid(data.gridSize, data.gridSteps, data.gridPlane, data.gridPosition);
+        } else {
+            this.addGrid(Flory.VisualizationDefaults.gridSize,
+                         Flory.VisualizationDefaults.gridSteps,
+                         Flory.VisualizationDefaults.gridPlane,
+                         Flory.VisualizationDefaults.gridPosition);
+        }
+        if (data.axis !== undefined && data.axis === true) {
+            this.addAxis(data.axisSize, data.axisPosition);
+        } else {
+            this.addAxis(Flory.VisualizationDefaults.axisSize,
+                         Flory.VisualizationDefaults.axisPosition);
         }
         this.setUpVisualization(data);
         return this;
@@ -1102,8 +1149,8 @@ Flory.ContinuousField = function (field_function) {
 };
 Flory.ContinuousField.prototype = Object.create(Flory.baseField.prototype);
 Flory.ContinuousField.prototype.constructor = Flory.ContinuousField;
-Flory.ContinuousField.prototype.getForce = function (position) {
-    return this.field_function(position).mult(this.scaler);
+Flory.ContinuousField.prototype.getForce = function (entity) {
+    return this.field_function(entity).mult(this.scaler);
 };
 Flory.ContinuousField.prototype.scale = function (num) {
     if (typeof num === 'number') {
@@ -1113,6 +1160,34 @@ Flory.ContinuousField.prototype.scale = function (num) {
 };
 Flory.ContinuousField.prototype.clone = function () {
     return new Flory.ContinuousField(this.field_function);
+};
+
+/**
+ * @author sabidib http://github.com/sabidib
+ */
+/** @constructor */
+
+
+
+
+Flory.PairWiseField = function (field_function) {
+    Flory.baseField.call(this, []);
+    this.scaler = 1;
+    this.field_function = (field_function !== undefined) ? field_function : function () {};
+};
+Flory.PairWiseField.prototype = Object.create(Flory.baseField.prototype);
+Flory.PairWiseField.prototype.constructor = Flory.PairWiseField;
+Flory.PairWiseField.prototype.getForce = function (entity_1,entity_2) {
+    return this.field_function(entity_1,entity_2).mult(this.scaler);
+};
+Flory.PairWiseField.prototype.scale = function (num) {
+    if (typeof num === 'number') {
+        this.scaler = num;
+    }
+    return this;
+};
+Flory.PairWiseField.prototype.clone = function () {
+    return new Flory.PairWiseField(this.field_function);
 };
 
 /**
@@ -39129,7 +39204,7 @@ Flory.Monomer.prototype.distanceToSq = function (a) {
     return this.position.distanceToSq(a.position);
 };
 Flory.Monomer.prototype.clone = function () {
-    return new Flory.Monomer3D(this.radius, this.position);
+    return new Flory.Monomer(this.radius, this.position);
 };
 Flory.Monomer.defaultRadius = 1;
 
@@ -39140,31 +39215,61 @@ Flory.Monomer.defaultRadius = 1;
 
 
 
-Flory.Newtonian = function () {
-    Flory.Environment.call(this);
+Flory.Newtonian = function (handler) {
+    Flory.Environment.call(this, handler);
     this.meshes = [];
+    this.field_entities = [];
+    this.pairwise_field_entities = [];
+    this.particle_entities = [];
 };
 Flory.Newtonian.prototype = Object.create(Flory.Environment.prototype);
 Flory.Newtonian.constructor = Flory.Newtonian;
-Flory.Newtonian.prototype.update = function () {
-    var len = this.entities.length;
-    var i, entity, entity2, tmp, j;
-    for (i = 0; i < len; i += 1) {
-        entity = this.entities[i];
-        tmp = new Flory.Vector();
-        if (entity instanceof Flory.Particle) {
-            for (j = 0; j < len; j += 1) {
-                entity2 = this.entities[j];
-                if (entity2 instanceof Flory.baseField) {
-                    tmp.add(entity2.getForce(entity.position));
-                }
-            }
-            entity.force = tmp.clone();
-            entity.acceleration = entity.force.mult(1 / entity.mass);
-            entity.velocity.add(entity.acceleration.mult(Flory.timestep));
-            entity.position.add(entity.velocity.mult(Flory.timestep * 0.5));
-        }
+
+Flory.Newtonian.prototype.addedEntity = function (entity) {
+    if (entity instanceof Flory.Particle) {
+        this.particle_entities.push(entity);
+    } else if (entity instanceof Flory.PairWiseField) {
+        this.pairwise_field_entities.push(entity);
+    } else if (entity instanceof Flory.baseField) {
+        this.field_entities.push(entity);
     }
+};
+
+Flory.Newtonian.prototype.update = function () {
+    var particles_length = this.particle_entities.length;
+    var field_length = this.field_entities.length;
+    var pairwise_length = this.pairwise_field_entities.length;
+    var i, tmp, j, k, m, n;
+    var handler_length = this.handlers.length;
+    var particle;
+
+    for (i = 0; i < particles_length; i += 1) {
+        particle = this.particle_entities[i];
+        tmp = new Flory.Vector();
+        for (k = 0; k < handler_length; k += 1) {
+            tmp.add(this.handlers[k].update(particle));
+        }
+        for (m = 0; m < particles_length; m += 1) {
+            for (j = 0; j < pairwise_length; j += 1) {
+                if(i == m){
+                    continue;
+                }
+                tmp.add(this.pairwise_field_entities[j].getForce(particle,this.particle_entities[m]))
+            };  
+        };          
+        for (n = 0; n < field_length; n += 1) {
+            tmp.add(this.field_entities[n].getForce(particle));
+        };
+        particle.force = tmp.clone();
+    };
+
+
+    for (i = 0; i < particles_length; i += 1) {
+        particle = this.particle_entities[i];
+        particle.acceleration = particle.force.mult(1 / particle.mass);
+        particle.velocity.add(particle.acceleration.mult(Flory.timestep));
+        particle.position.add(particle.velocity.mult(Flory.timestep * 0.5));
+    };
     return this;
 };
 
@@ -39222,3 +39327,13 @@ Flory.RandomWalk.prototype.update = function (additional) {
     }
     return this;
 };
+
+if ( typeof define === 'function' && define.amd ) {
+  
+    define( 'flory',Flory );
+
+} else if ( 'undefined' !== typeof exports && 'undefined' !== typeof module ) {
+
+    module.exports = Flory;
+
+}
