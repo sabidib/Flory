@@ -28,9 +28,9 @@ module.exports = function(grunt) {
     var min_output_file = "";
     if (args.minify == true) {
         min_output_file = args.output
-        min_output_file = min_output_file.split(".")
-        min_output_file.splice(min_output_file.length - 1, 0, "min");
-        min_output_file = min_output_file.join(".")
+        min_output_file += ".min";
+        // min_output_file.splice(min_output_file.length - 1, 0, "min");
+        // min_output_file = min_output_file.join(".")
     }
 
 
