@@ -47,9 +47,11 @@
     <p>
       If you haven't installed Flory yet, follow the <a href="index.html#getting-started">installation guide</a>.
     </p>
-    <p>
-      All examples have the same orbit controls: drag to orbit, scroll to zoom and right click to pan.
-    </p>
+    <div class="alert alert-info">
+          <i class="fa fa-info-circle"></i>
+            All examples have the same orbit controls: drag to orbit, scroll to zoom and right click to pan. Make sure you can see the entire example for it to run.
+    </div>
+      
   <h2 id="set-up">Setting up</h2>
   <p>
     The general structure of a Flory simulation is simple:
@@ -1461,7 +1463,7 @@ $(function() {
   </p>
 
   <ol>
-    <li><code>grunt --minify --output custom_folder/flory.js</code> to minify the library into <code>custom_folder/flory.js</code></li>
+    <li><code>grunt --minify --output custom_folder/flory.js</code> to minify the library into <code>custom_folder/flory.js.min</code></li>
     <li><code>grunt --minify --include my_light_weight/include.json</code> to minify a list of includes into the default <code>build/flory.js.min</code> file</li>
   </ol>
 
@@ -1478,7 +1480,7 @@ $(function() {
         <tbody>
           <tr>
               <td><code>--minify</code></td>
-              <td>If this is set to <code>true</code>, then the library will be minified into the <code>--output</code> file. If the default <code>--output</code> file is selected, then the output file becomes <code>build/flory.min.js</code>.</td>
+              <td>If this flag is set, then the library will be minified into the <code>--output</code>+<code>.min</code> .</td>
               <td><code>false</code></td>
           </tr>
           <tr>
@@ -1493,12 +1495,12 @@ $(function() {
           </tr>
           <tr>
               <td><code>--output</code></td>
-              <td>The path of output file for this build. sourcemaps, if selected, will be generated along side with <code>.map</code> suffixed in the same directory.</td>
+              <td>The path of output file for this build.If the <code>sourcemaps</code> flag is selected, then the sourcemap is added as <code>--output</code>+<code>.map</code>. Similarly, if the <code>--minify</code> flag is set, then the minified file is added as <code>--output</code>+<code>.min</code></td>
               <td><code>build/flory.js</code></td>
           </tr>
           <tr>
               <td><code>--sourcemaps</code></td>
-              <td>A boolean value of <code>true</code> or <code>false</code> to indicate if source maps should be generated in the same directory as the output.</td>
+              <td>A flag that when set indicates that source maps should be generated in the same directory as the output.</td>
               <td><code>false</code></td>
           </tr>
         </tbody>
