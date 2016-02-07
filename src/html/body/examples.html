@@ -789,7 +789,7 @@ $(function() {
 // Simulate a cube of 9 particles with the lennard jones potential 
 var our_canvas = "basic-lennard-jones-canvas";
 var epsilon = 1;
-var sigma = 10;
+var sigma = 2;
 var lennard = new Flory.LennardJones(epsilon, sigma);
 var distance_apart = 4;
 var side_len = 3;
@@ -821,7 +821,7 @@ setInterval( function(){
 $(function() {
   var our_canvas = "basic-lennard-jones-canvas";
   var epsilon = 1;
-  var sigma = 1;
+  var sigma = 2;
   var lennard = new Flory.LennardJones(epsilon, sigma);
   var distance_apart = 4;
   var side_len = 3;
@@ -890,12 +890,12 @@ $(function() {
 <pre class="code" data-fill-from=".js-code-newtonian-canvas"></pre>
 
 <div class="hidden-example js-code-newtonian-canvas">
-// Simulate an r^2 central potential
-var our_canvas = "basic-newtonian-canvas";
-var env = new Flory.Newtonian();
-var field = new Flory.ContinuousField(function(entity) {
-    return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
-})
+// Simulate an r^2 central potential with a continuous field and handler function
+var env = new Flory.Newtonian({
+    update: function(entity) {
+        return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+      }
+});
 var field2 = new Flory.ContinuousField(function(entity) {
     return Flory.getRandomVector(100,100,100);
 })
@@ -910,7 +910,7 @@ var monomer = new Flory.Monomer({
     name: "atom"
 });
 env.add(monomer);
-env.enableVisualization(our_canvas);
+env.enableVisualization("basic-newtonian-canvas");
 setInterval(function(){
   env.advance();
 }, 10)
@@ -919,8 +919,13 @@ setInterval(function(){
 
 <script type="text/javascript">
 $(function() {
+
     var our_canvas = "basic-newtonian-canvas";
-    var env = new Flory.Newtonian();
+    var env = new Flory.Newtonian({
+        update: function(entity) {
+            return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
+          }
+    });
     var field = new Flory.ContinuousField(function(entity) {
         return entity.position.clone().negate().normalize().mult(250000./entity.position.lengthSq());
     })
