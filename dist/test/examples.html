@@ -1499,6 +1499,64 @@ $(function() {
 
 </section>
 
+<section> 
+  <h1 id="build-options">Build Options</h1> 
+  
+  <p>Flory uses the grunt build system in a different way. While it does offer the simplicity of just typing <code>npm install;grunt;</code> into the terminal, it also makes use command line parameters similar to the three.js build system. The options for the build system are shown below.
+  </p>
+
+  <p>
+    For example:
+  </p>
+
+  <ol>
+    <li><code>grunt --minify --output custom_folder/flory.js</code> to minify the library into <code>custom_folder/flory.js</code></li>
+    <li><code>grunt --minify --include my_light_weight/include.json</code> to minify a list of includes into the default <code>build/flory.js.min</code> file</li>
+  </ol>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>Description</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <td><code>--minify</code></td>
+              <td>If this is set to <code>true</code>, then the library will be minified into the <code>--output</code> file. If the default <code>--output</code> file is selected, then the output file becomes <code>build/flory.min.js</code>.</td>
+              <td><code>false</code></td>
+          </tr>
+          <tr>
+              <td><code>--include</code></td>
+              <td>The relative or absolute path to a json file containing an array of file paths where order indicates how the source files for the build will be included. Use <a href="https://github.com/sabidib/Flory/blob/master/utils/build/includes/source.json">this</a> as an example for building your own.</td>
+              <td><code>utils/build/includes/source.json</code></td>
+          </tr>
+          <tr>
+              <td><code>--externs</code></td>
+              <td>The relative or absolute path to a js file defining the externs for the closure compiler during the minification step.</td>
+              <td><code>./externs/common.js</code></td>
+          </tr>
+          <tr>
+              <td><code>--output</code></td>
+              <td>The path of output file for this build. sourcemaps, if selected, will be generated along side with <code>.map</code> suffixed in the same directory.</td>
+              <td><code>build/flory.js</code></td>
+          </tr>
+          <tr>
+              <td><code>--sourcemaps</code></td>
+              <td>A boolean value of <code>true</code> or <code>false</code> to indicate if source maps should be generated in the same directory as the output.</td>
+              <td><code>false</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</section>
 
 
 
@@ -1565,6 +1623,9 @@ $(function() {
         </li>
         <li>
             <a href="#environment">Environment</a>
+        </li>
+        <li>
+            <a href="#build-options">Build options</a>
         </li>
     </ul>
     <a class="back-to-top" href="#top">Back to top</a>
