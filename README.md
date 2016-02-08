@@ -1,12 +1,12 @@
 ![Build status](https://travis-ci.org/sabidib/Flory.svg)
-Flory
+[Flory](https://sabidib.github.io/Flory)
 ====
-Flory lets both educators and students show simple and beautiful molecular dynamics simulations directly in a browser.
 
+[Flory](https://sabidib.github.io/Flory) lets both educators and students show simple and beautiful molecular dynamics simulations directly in a browser.
 
 Demo
 ------------
-Open your trusty terminal to install and build Flory:
+Checkout the [website](https://sabidib.github.io/Flory) or alternatively open your trusty terminal to try out the demos:
 ```sh
 git clone https://github.com/sabidib/Flory.git
 cd Flory
@@ -23,7 +23,7 @@ To modify the demos open up the `demo/` folder and modify the .js files, then re
 
 ##Installation
 Download the [minified library](https://raw.githubusercontent.com/sabidib/Flory/master/build/flory.min.js) and include it in your html.
-Alternatively, [build it yourself](https://github.com/sabidib/Flory/wiki/Build-Flory).
+Alternatively, [build it yourself](https://sabidib.github.io/Flory).
 
 ##  Getting Started
 The goal of Flory is to provide a simple framework for designing educational molecular dynamic simulations in browser. At its base, Flory provides an `Flory.Environment` class that defines basic events that occur during a simulation and visualization. 
@@ -38,12 +38,12 @@ env.add(monomer)
 env.enableVisualization("mycanvas")
 
 var numberOfSteps = 10000
-for(var i = 0; i < numberOfSteps;i++){
+setInterval(function(){
     //This will update the positions of the particles
     //and render any thing that is renderable that was called with 
     //env.add
     env.advance();
-}
+},10)
 ```
 `Flory.Environment` is an empty class that does not define any physical simulations. In order to create you own simulation you need to inherit from `Flory.Environment` and define your own `update()` function. On each call to `Flory.Environment.advance` your subclassed `update()` function is called.  For example, the `Flory.RandomWalk` is implemented as : 
 

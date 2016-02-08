@@ -15,17 +15,10 @@
 "core/coreEnvironment.js",
 "core/environment.js",
 "core/baseField.js",
-"core/field2D.js",
-"core/field3D.js",
 "core/continuousField.js",
-"core/pairWiseField.js",
 "core/dataProcessor.js",
 
-"graphics/extern/three.js",
-"graphics/extern/orbitControls.js",
 "graphics/renderer.js",
-"graphics/renderers/pointCloudRenderer.js",
-"graphics/renderers/canvasrenderer.js",
 "graphics/options.js",
 "graphics/display.js",
 
@@ -35,7 +28,6 @@
 "objects/monomer.js",
 
 "experiments/newtonian.js",
-"experiments/newtonian2D.js",
 "experiments/randomWalk.js",
 "experiments/lennardJones.js"
 ]

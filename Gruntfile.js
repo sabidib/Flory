@@ -3,8 +3,8 @@ module.exports = function(grunt) {
     var argparse = require("argparse");
     var parser = new argparse.ArgumentParser();
     parser.addArgument(['--include'], {
-        action: 'append',
-        defaultValue: ['utils/build/includes/source.json']
+        action: 'store',
+        defaultValue: 'utils/build/includes/source.json'
     });
     parser.addArgument(['--externs'], {
         action: 'append',
@@ -22,15 +22,17 @@ module.exports = function(grunt) {
         defaultValue: true
     });
     var args = parser.parseArgs();
-
+    console.log(args);
     var output_file = args.output;
+    
     var min_output_file = "";
     if (args.minify == true) {
         min_output_file = args.output
-        min_output_file = min_output_file.split(".")
-        min_output_file.splice(min_output_file.length - 1, 0, "min");
-        min_output_file = min_output_file.join(".")
+        min_output_file += ".min";
+        // min_output_file.splice(min_output_file.length - 1, 0, "min");
+        // min_output_file = min_output_file.join(".")
     }
+
 
     var defaultTask = []
     if (args.minify == true) {
@@ -56,7 +58,7 @@ module.exports = function(grunt) {
 
     var source = [];
 
-    args.include.map(function(file){
+    [args.include].map(function(file){
         source = source.concat(JSON.parse(fs.readFileSync(file, 'utf8')))
     })
     source = source.map(function(entry) {
@@ -76,7 +78,7 @@ module.exports = function(grunt) {
                 dest: 'build/dist/js/main.js',
             },
             javascript_final_header: {
-                src: ["utils/build/header.txt", "build/dist/js/main.js"],
+                src: ["utils/build/header.txt", "build/dist/js/main.js","utils/build/footer.js"],
                 dest: "build/dist/js/main.js"
             }
         },

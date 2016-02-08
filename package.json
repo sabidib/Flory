@@ -1,6 +1,6 @@
 {
   "name": "flory",
-  "version": "0.2.0",
+  "version": "0.1.4",
   "description": "A JavaScript library for creating educational molecular dynamic simulations in browser.",
   "main": "Gruntfile.js",
   "repository": {
@@ -28,6 +28,7 @@
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-uglify": "^0.11.0"
+    "grunt-contrib-uglify": "^0.11.0",
+    "intern": "^3.0.6"
   }
 }

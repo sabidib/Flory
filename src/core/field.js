@@ -64,6 +64,35 @@ Flory.Field = function (data) {
         }
     }
 };
+/**
+ * Returns the force at the given position
+ * by finding the closest point to the given position and returning
+ * the associated vector
+ *
+ * @param  {base.Particle} entity
+ * @return {baseVector}     The force at the given position
+ */
+Flory.Field2D.prototype.getForce = function (entity) {
+    var closest = 0;
+    var index_of_closest = 0;
+    var len = this.field.length;
+    var i;
+    var cur_dist;
+    var position = entity.position.clone();
+    if(len > 0){
+        closest = this.field[0].position.distanceToSq(position);    
+    } else {
+        return new Flory.Vector(0,0);
+    }
+    for (i = 1; i < len; i += 1) {
+        cur_dist = this.field[i].position.distanceToSq(position);
+        if (cur_dist <= closest) {
+            index_of_closest = i;
+            closest = cur_dist;
+        }
+    }
+    return this.field[index_of_closest].vector;
+};
 Flory.Field.prototype = Object.create(Flory.baseField.prototype);
 Flory.Field.prototype.constructor = Flory.Field;
 Flory.Field.prototype.clone = function () {

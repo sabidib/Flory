@@ -150,6 +150,6 @@ Flory.Monomer.prototype.distanceToSq = function (a) {
     return this.position.distanceToSq(a.position);
 };
 Flory.Monomer.prototype.clone = function () {
-    return new Flory.Monomer3D(this.radius, this.position);
+    return new Flory.Monomer(this.radius, this.position);
 };
 Flory.Monomer.defaultRadius = 1;
