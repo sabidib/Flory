@@ -104,3 +104,32 @@ Flory.isWebGlAvailable = function () {
         return false;
     }
 };
+
+/**
+ * Behaves the same as setTimeout except uses requestAnimationFrame() where possible for better performance
+ * @param {function} fn The callback function
+ * @param {int} delay The delay in milliseconds
+ */
+Flory.requestTimeout = function(fn, delay) {
+    if( !window.requestAnimationFrame       && 
+        !window.webkitRequestAnimationFrame && 
+        !(window.mozRequestAnimationFrame && window.mozCancelRequestAnimationFrame) && // Firefox 5 ships without cancel support
+        !window.oRequestAnimationFrame      && 
+        !window.msRequestAnimationFrame)
+            return window.setTimeout(fn, delay);
+            
+    var start = new Date().getTime(),
+        handle = new Object();
+        
+    function loop(){
+        var current = new Date().getTime(),
+            delta = current - start;
+            
+        delta >= delay ? fn.call() : handle.value = requestAnimFrame(loop);
+    };
+    
+    handle.value = requestAnimFrame(loop);
+    return handle;
+};
+
+
