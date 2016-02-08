@@ -6,7 +6,7 @@
 
 Demo
 ------------
-Checkout the [website](https://sabidib.github.io/Flory) or alternatively open your trusty terminal to install try out the demo:
+Checkout the [website](https://sabidib.github.io/Flory) or alternatively open your trusty terminal to try out the demos:
 ```sh
 git clone https://github.com/sabidib/Flory.git
 cd Flory
@@ -39,12 +39,12 @@ env.add(monomer)
 env.enableVisualization("mycanvas")
 
 var numberOfSteps = 10000
-for(var i = 0; i < numberOfSteps;i++){
+setInterval(function(){
     //This will update the positions of the particles
     //and render any thing that is renderable that was called with
     //env.add
     env.advance();
-}
+},10)
 ```
 `Flory.Environment` is an empty class that does not define any physical simulations. In order to create you own simulation you need to inherit from `Flory.Environment` and define your own `update()` function. On each call to `Flory.Environment.advance` your subclassed `update()` function is called.  For example, the `Flory.RandomWalk` is implemented as :
 
