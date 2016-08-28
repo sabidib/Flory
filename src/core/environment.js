@@ -30,6 +30,21 @@ Flory.Environment.prototype = {
 		}
 		return this;
 	},
+	addPair : function(entity1,entity2){
+
+		if(this.id == entity1.id || this.id == entity2.id ){
+			console.log("Flory: Can't add an entity to itself.");
+		} else {
+			for(var i = 0, len = this.entities.length; i  < len ; i++){
+				if(this.entities[i].id === entity1.id || this.entities[i].id === entity2.id ){
+					console.log("Flory : Can't add an entity twice to the same enviroment.");
+					return undefined;
+				}
+			}
+			this.addedEntityPair(this.entities[this.entities.push(entity1)-1],this.entities[this.entities.push(entity2)-1]);	
+		}
+		return this;
+	},
 	remove : function(entity){
 		for(var i = 0, len = this.entities.length; i  < len ; i++){
 			if(this.entities[i].id === entity.id){
@@ -43,6 +58,9 @@ Flory.Environment.prototype = {
 
 	},
 	addedEntity : function(){
+
+	},
+	addedEntityPair: function(){
 
 	},
 	update : function(data){
